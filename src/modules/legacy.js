@@ -31,13 +31,17 @@
     window.addEventListener('resize', resizeRain);
     setInterval(drawRain, 60);
 
-    // Geliştirilmiş T-Peak Protokolü: 4 oturum + orantılı molalar, tamamı T bazlı.
-    // Oturumlar: T, 0.75T, 0.50T, 0.25T | Molalar: Si/3 | Final: toplam/5 (= 0.5T).
-    function protocolSteps(T) {
+    // Dynamic Time Multiplier Array (Spec 1): T*1.00, T*0.80, T*0.65, T*0.50, >4 cap 0.50
+    const MULTIPLIERS = [1.00, 0.80, 0.65, 0.50];
+    function protocolSteps(T, count = 4) {
         T = Math.max(5, Math.round(T * 10) / 10);
         const r1 = v => Math.max(1, Math.round(v * 2) / 2);
-        const works = [T, 0.75 * T, 0.50 * T, 0.25 * T].map(w => Math.max(5, r1(w)));
-        const brks = [works[0] / 3, works[1] / 3, works[2] / 3, works[3] / 3].map(r1);
+        const n = Math.max(1, Math.floor(count));
+        const works = Array.from({ length: n }, (_, i) => {
+            const m = i < MULTIPLIERS.length ? MULTIPLIERS[i] : 0.50;
+            return Math.max(5, r1(T * m));
+        });
+        const brks = works.map(w => r1(w / 3));
         return works.map((w, i) => ({
             work: w,
             break: brks[i],
@@ -1672,7 +1676,7 @@ p.upStamp = recent.length;
         const totalWork = steps.reduce((a, s) => a + s.work, 0);
         currentModeKey = 'ascending';
         userData.plan = {
-            date: todayStr(), mode: 'ascending', steps, energy, capacity, mult: 2.5, totalWork,
+            date: todayStr(), mode: 'ascending', steps, energy, capacity, mult: 2.95, totalWork,
             record: p.record, tpeak: p.current,
             notes, rate: completionRate7(),
             compLen: (p.completions || []).length,

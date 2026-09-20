@@ -3,12 +3,22 @@ import { userData, saveUserData, timerState } from './store.js';
 import { t } from './i18n.js';
 import { fmtMin, todayStr, avgArr } from './utils.js';
 
-export function protocolSteps(T) {
+/**
+ * Dynamic Time Multiplier Array (Core Algorithm) — Ascentrix spec 1
+ * Step1: T*1.00 (Full) | Step2: T*0.80 (Friction) | Step3: T*0.65 (Fatigue) | Step4: T*0.50 (Descent)
+ * >4 steps → cap 0.50 unless re-initialized
+ */
+export const MULTIPLIERS = [1.00, 0.80, 0.65, 0.50];
+export function protocolSteps(T, count = 4) {
   T = Math.max(5, Math.round(T * 10) / 10);
   const r1 = v => Math.max(1, Math.round(v * 2) / 2);
-  const works = [T, 0.75 * T, 0.50 * T, 0.25 * T].map(w => Math.max(5, r1(w)));
-  const brks = [works[0]/3, works[1]/3, works[2]/3, works[3]/3].map(r1);
-  return works.map((w,i)=> ({ work:w, break:brks[i], label: t('proto_step', { n:i+1, x: fmtMin(w) }) }));
+  const n = Math.max(1, Math.floor(count));
+  const works = Array.from({ length: n }, (_, i) => {
+    const m = i < MULTIPLIERS.length ? MULTIPLIERS[i] : 0.50;
+    return Math.max(5, r1(T * m));
+  });
+  const brks = works.map(w => r1(w / 3));
+  return works.map((w, i) => ({ work: w, break: brks[i], label: t('proto_step', { n: i + 1, x: fmtMin(w) }) }));
 }
 export function avgLastDays(n){
   const since = Date.now() - n*864e5;
@@ -55,7 +65,7 @@ export function buildSessionPlan(){
   const capacity=(p.record&&p.current)? Math.round(p.current/p.record*1000)/10 : null;
   const totalWork=steps.reduce((a,s)=>a+s.work,0);
   timerState.currentModeKey='ascending';
-  userData.plan={ date:todayStr(), mode:'ascending', steps, energy, capacity, mult:2.5, totalWork, record:p.record, tpeak:p.current, notes, rate:completionRate7(), compLen:(p.completions||[]).length, abandLen:(userData.partialRuns||[]).length };
+  userData.plan={ date:todayStr(), mode:'ascending', steps, energy, capacity, mult:2.95, totalWork, record:p.record, tpeak:p.current, notes, rate:completionRate7(), compLen:(p.completions||[]).length, abandLen:(userData.partialRuns||[]).length };
   saveUserData(); return userData.plan;
 }
 export function maybeRefreshPlan(){
