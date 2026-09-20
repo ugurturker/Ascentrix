@@ -140,7 +140,6 @@
         ctl_back_title: 'İlk odak adımına geri dön',
         ctl_reset: 'Sıfırla',
         ctl_skip: 'Atla',
-        ctl_flow: '+11 Dk Akış Uzatma (Derin Odak)',
         alarm_work_done: 'OTURUM BİTTİ',
         alarm_break_done: 'MOLA BİTTİ',
         alarm_session_done: 'OTURUM TAMAMLANDI',
@@ -170,7 +169,6 @@
         stat_streak: 'Günlük Seri (Streak)',
         stat_level: 'Seviye',
         stat_xp: 'Toplam XP',
-        stat_score: 'Piramit Skoru',
         stat_partial: 'Yarım Koşu (Güvenlik Ağı)',
         hist_title: 'T-Peak / Enerji Geçmişi',
         hist_today: 'Bugünkü T-Peak',
@@ -185,7 +183,6 @@
         hist_comp: 'Tamamlama (7 gün)',
         hist_todayFocus: 'Bugünkü Odak',
         hist_goal: 'Günlük Hedef',
-        hist_sick: 'Sıkıldım (7 gün)',
         hist_extra: 'Ekstra Odak (7 gün)',
         chart_title: 'T-Peak Grafiği (tarih bazlı)',
         chart_empty: 'Grafik için en az 2 ölçüm gerekli',
@@ -203,7 +200,6 @@
         profile_name: 'Kullanıcı Adı / Unvan',
         profile_name_ph: 'Örn: Araştırmacı',
         profile_goal: 'Günlük Hedef (Dakika)',
-        profile_score: 'Piramit Skoru',
         profile_save: 'Ayarları Kaydet',
         profile_export: 'Verileri Dışa Aktar (JSON)',
         profile_import: 'Dışarıdan Yükle',
@@ -233,7 +229,6 @@
         toast_work_ready: "Sonraki adım hazır — Başlat'a bas",
         toast_back: 'Başlangıç adımına dönüldü',
         toast_skip: 'Sonraki adıma geçildi',
-        toast_flow: 'Akış uzatıldı: +11 dakika',
         toast_extra_start: 'Ekstra odak başladı — sınırsız',
         toast_extra_saved: 'Ekstra odak kaydedildi: +{x} dk',
         toast_test_run: 'Önce ana oturumu bitir ya da sıfırla',
@@ -251,7 +246,6 @@
         toast_record: 'Yeni rekor! T-Peak: {x} dk',
         toast_tpeak_up: 'T-Peak yükseldi: {x} dk',
         toast_tpeak_down: 'T-Peak güncellendi: {x} dk (sürdürülebilirlik)',
-        toast_sick_saved: 'Sıkıldım kaydedildi — adım tamamlandı, T-Peak güncellendi',
         toast_back_full: 'Tüm oturum en başa alındı',
         confirm_back: 'Oturum tamamen iptal edilip en başa dönülecek. Emin misiniz?',
         confirm_tpeak: 'Güncel T-Peak temizlenecek (rekor ve geçmiş korunur). Emin misin?',
@@ -259,13 +253,10 @@
         log_session: 'OTURUM {n}',
         log_extra: 'Ekstra Odak',
         log_test: 'T-Peak Testi',
-        log_sick: 'Sıkıldım ({x}/{y} dk)',
         log_partial: 'Yarım Kaldı ({x}/{y})',
         step_title: '{n}.Adım',
-        flow_extend: '+11',
         reason_reset: 'sıfırlama',
         reason_close: 'kapanış',
-        sick_latest: 'son',
         proto_step: 'Oturum {n} ({x} dk)',
         extra_finish: 'Ekstrayı Bitir',
         toast_fullbreak_ready: "Tam mola hazır — başlamak için Başlat'a bas",
@@ -312,7 +303,6 @@
         ctl_back_title: 'Return to the first focus step',
         ctl_reset: 'Reset',
         ctl_skip: 'Skip',
-        ctl_flow: '+11 Min Flow Extension (Deep Focus)',
         alarm_work_done: 'SESSION DONE',
         alarm_break_done: 'BREAK OVER',
         alarm_session_done: 'CYCLE COMPLETE',
@@ -342,7 +332,6 @@
         stat_streak: 'Daily Streak',
         stat_level: 'Level',
         stat_xp: 'Total XP',
-        stat_score: 'Pyramid Score',
         stat_partial: 'Partial Runs (Safety Net)',
         hist_title: 'T-Peak / Energy History',
         hist_today: "Today's T-Peak",
@@ -357,7 +346,6 @@
         hist_comp: 'Completion (7 days)',
         hist_todayFocus: "Today's Focus",
         hist_goal: 'Daily Goal',
-        hist_sick: 'Bored (7 days)',
         hist_extra: 'Extra Focus (7 days)',
         chart_title: 'T-Peak Chart (by date)',
         chart_empty: 'At least 2 measurements needed for chart',
@@ -375,7 +363,6 @@
         profile_name: 'Username / Title',
         profile_name_ph: 'E.g.: Researcher',
         profile_goal: 'Daily Goal (Minutes)',
-        profile_score: 'Pyramid Score',
         profile_save: 'Save Settings',
         profile_export: 'Export Data (JSON)',
         profile_import: 'Import from File',
@@ -405,7 +392,6 @@
         toast_work_ready: "Next step ready — press Start",
         toast_back: 'Returned to start step',
         toast_skip: 'Moved to next step',
-        toast_flow: 'Flow extended: +11 minutes',
         toast_extra_start: 'Extra focus started — unlimited',
         toast_extra_saved: 'Extra focus saved: +{x} min',
         toast_test_run: 'Finish or reset the main session first',
@@ -423,7 +409,6 @@
         toast_record: 'New record! T-Peak: {x} min',
         toast_tpeak_up: 'T-Peak increased: {x} min',
         toast_tpeak_down: 'T-Peak updated: {x} min (sustainability)',
-        toast_sick_saved: 'Boredom logged — step completed, T-Peak updated',
         toast_back_full: 'Entire session reset to start',
         confirm_back: 'The entire session will be cancelled and reset to start. Are you sure?',
         confirm_tpeak: 'Current T-Peak will be cleared (record and history kept). Are you sure?',
@@ -431,13 +416,10 @@
         log_session: 'SESSION {n}',
         log_extra: 'Extra Focus',
         log_test: 'T-Peak Test',
-        log_sick: 'Bored ({x}/{y} min)',
         log_partial: 'Aborted ({x}/{y})',
         step_title: 'Step {n}',
-        flow_extend: '+11',
         reason_reset: 'reset',
         reason_close: 'tab closed',
-        sick_latest: 'last',
         proto_step: 'Session {n} ({x} min)',
         extra_finish: 'End Extra',
         toast_fullbreak_ready: 'Full break ready — press Start to begin',
@@ -486,7 +468,6 @@
         ctl_back_title: 'Zum ersten Fokusschritt zurückkehren',
         ctl_reset: 'Zurücksetzen',
         ctl_skip: 'Überspringen',
-        ctl_flow: '+11 Min. Flow-Verlängerung (Tiefenfokus)',
         alarm_work_done: 'SITZUNG FERTIG',
         alarm_break_done: 'PAUSE VORBEI',
         alarm_session_done: 'ZYKLUS ABGESCHLOSSEN',
@@ -516,7 +497,6 @@
         stat_streak: 'Tages-Serie',
         stat_level: 'Stufe',
         stat_xp: 'Gesamt-XP',
-        stat_score: 'Pyramiden-Score',
         stat_partial: 'Abgebrochene Läufe (Sicherheitsnetz)',
         hist_title: 'T-Peak- / Energieverlauf',
         hist_today: 'Heutiger T-Peak',
@@ -531,7 +511,6 @@
         hist_comp: 'Abschluss (7 Tage)',
         hist_todayFocus: 'Heutiger Fokus',
         hist_goal: 'Tagesziel',
-        hist_sick: 'Gelangeweilt (7 Tage)',
         hist_extra: 'Extra-Fokus (7 Tage)',
         chart_title: 'T-Peak-Diagramm (nach Datum)',
         chart_empty: 'Mindestens 2 Messungen für Diagramm nötig',
@@ -549,7 +528,6 @@
         profile_name: 'Benutzername / Titel',
         profile_name_ph: 'Z.B.: Forscher',
         profile_goal: 'Tagesziel (Minuten)',
-        profile_score: 'Pyramiden-Score',
         profile_save: 'Einstellungen speichern',
         profile_export: 'Daten exportieren (JSON)',
         profile_import: 'Aus Datei laden',
@@ -579,7 +557,6 @@
         toast_work_ready: 'Nächster Schritt bereit — Start drücken',
         toast_back: 'Zum Startschritt zurückgekehrt',
         toast_skip: 'Zum nächsten Schritt gesprungen',
-        toast_flow: 'Flow verlängert: +11 Minuten',
         toast_extra_start: 'Extra-Fokus gestartet — unbegrenzt',
         toast_extra_saved: 'Extra-Fokus gespeichert: +{x} Min.',
         toast_test_run: 'Erst die Hauptsitzung beenden oder zurücksetzen',
@@ -597,7 +574,6 @@
         toast_record: 'Neuer Rekord! T-Peak: {x} Min.',
         toast_tpeak_up: 'T-Peak gestiegen: {x} Min.',
         toast_tpeak_down: 'T-Peak aktualisiert: {x} Min. (Nachhaltigkeit)',
-        toast_sick_saved: 'Langeweile erfasst — Schritt abgeschlossen, T-Peak aktualisiert',
         toast_back_full: 'Gesamte Sitzung zurückgesetzt',
         confirm_back: 'Die gesamte Sitzung wird abgebrochen und zurückgesetzt. Sicher?',
         confirm_tpeak: 'Aktueller T-Peak wird gelöscht (Rekord und Verlauf bleiben). Sicher?',
@@ -605,13 +581,10 @@
         log_session: 'SITZUNG {n}',
         log_extra: 'Extra-Fokus',
         log_test: 'T-Peak-Test',
-        log_sick: 'Gelangeweilt ({x}/{y} Min.)',
         log_partial: 'Abgebrochen ({x}/{y})',
         step_title: 'Schritt {n}',
-        flow_extend: '+11',
         reason_reset: 'Zurücksetzen',
         reason_close: 'Tab geschlossen',
-        sick_latest: 'zuletzt',
         proto_step: 'Sitzung {n} ({x} Min.)',
         extra_finish: 'Extra beenden',
         toast_fullbreak_ready: 'Volle Pause bereit — zum Starten Start drücken',
@@ -692,7 +665,7 @@
             settings: { soundEnabled: true, lang: 'tr' },
             logs: [],
             partialRuns: [],
-            peak: { current: null, record: null, history: [], completions: [], sickPoints: [], extras: [], dailyFocus: [], upStamp: 0 },
+            peak: { current: null, record: null, history: [], completions: [], extras: [], dailyFocus: [], upStamp: 0 },
             plan: null
         };
     }
@@ -728,11 +701,10 @@
         if (!isPlainObject(merged.settings)) merged.settings = Object.assign({}, defs.settings);
         if (!Array.isArray(merged.logs)) merged.logs = [];
         if (!Array.isArray(merged.partialRuns)) merged.partialRuns = [];
-        if (!isPlainObject(merged.peak)) merged.peak = { current: null, record: null, history: [], completions: [], sickPoints: [], extras: [], dailyFocus: [], upStamp: 0 };
+        if (!isPlainObject(merged.peak)) merged.peak = { current: null, record: null, history: [], completions: [], extras: [], dailyFocus: [], upStamp: 0 };
         delete merged.peak.downStamp;
         if (!Array.isArray(merged.peak.history)) merged.peak.history = [];
         if (!Array.isArray(merged.peak.completions)) merged.peak.completions = [];
-        if (!Array.isArray(merged.peak.sickPoints)) merged.peak.sickPoints = [];
         if (!Array.isArray(merged.peak.extras)) merged.peak.extras = [];
         if (!Array.isArray(merged.peak.dailyFocus)) merged.peak.dailyFocus = [];
 
@@ -1791,8 +1763,6 @@ p.upStamp = recent.length;
         set('histTodayFocus', fmtMin(today) + ' ' + t('minUnit'));
         set('histGoal', `${fmtMin(today)} / ${goal} ${t('minUnit')} (%${goal ? Math.min(100, Math.round(today / goal * 100)) : 0})`);
         const since7 = Date.now() - 7 * 864e5;
-        const sick7 = p.sickPoints.filter(s => new Date(s.date + 'T00:00:00').getTime() >= since7);
-        set('histSick', sick7.length ? `${sick7.length} (${t('sick_latest')}: ${fmtMin(sick7[0].elapsed)} ${t('minUnit')})` : '0');
         const ex7 = p.extras.filter(e => new Date(e.date + 'T00:00:00').getTime() >= since7);
         set('histExtra', ex7.length ? `+${fmtMin(Math.round(ex7.reduce((a, e) => a + e.minutes, 0) * 10) / 10)} ${t('minUnit')} (${ex7.length}x)` : '—');
         drawTpeakChart();

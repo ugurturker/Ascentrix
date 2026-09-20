@@ -13,7 +13,7 @@ function getDefaultUserData() {
     settings: { soundEnabled: true, lang: 'tr' },
     logs: [],
     partialRuns: [],
-    peak: { current: null, record: null, history: [], completions: [], sickPoints: [], extras: [], dailyFocus: [], upStamp: 0 },
+    peak: { current: null, record: null, history: [], completions: [], extras: [], dailyFocus: [], upStamp: 0 },
     plan: null
   };
 }
@@ -45,7 +45,6 @@ function normalizeUserData(data) {
   delete merged.peak.downStamp;
   if (!Array.isArray(merged.peak.history)) merged.peak.history = [];
   if (!Array.isArray(merged.peak.completions)) merged.peak.completions = [];
-  if (!Array.isArray(merged.peak.sickPoints)) merged.peak.sickPoints = [];
   if (!Array.isArray(merged.peak.extras)) merged.peak.extras = [];
   if (!Array.isArray(merged.peak.dailyFocus)) merged.peak.dailyFocus = [];
   if (typeof merged.peak.upStamp !== 'number') merged.peak.upStamp = 0;

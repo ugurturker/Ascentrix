@@ -419,18 +419,6 @@
         }
         .btn-back:hover { background: rgba(0,255,65,0.2); box-shadow: 0 0 16px rgba(0,255,65,0.35); }
 
-        .btn-flow {
-            background: rgba(52, 211, 153, 0.1);
-            color: var(--break-color);
-            border: 1px solid var(--break-color);
-            width: 100%;
-            padding: 8px;
-            font-size: 0.8rem;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .btn-flow:hover { background: rgba(52,211,153,0.2); }
-
         /* İstatistik Paneli Stilleri */
         .stats-grid {
             display: grid;
@@ -657,18 +645,6 @@
         .tpeak-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; gap: 8px; }
         .tpeak-row strong { color: var(--accent); }
 
-        .btn-sick {
-            background: rgba(255, 87, 87, 0.08);
-            color: var(--danger);
-            border: 1px solid var(--danger);
-            width: 100%;
-            padding: 12px 20px;
-            font-size: 0.95rem;
-            letter-spacing: 0.1em;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .btn-sick:hover { background: rgba(255,87,87,0.2); box-shadow: 0 0 16px rgba(255,87,87,0.35); }
         .plan-goal { font-size: 0.82rem; font-weight: 700; text-align: center; color: var(--break-color); margin-bottom: 4px; font-variant-numeric: tabular-nums; }
 
         .lang-bar { display: flex; gap: 6px; justify-content: flex-end; margin-bottom: 12px; }
