@@ -938,10 +938,8 @@
         currentSequence.forEach((step, idx) => {
             const card = document.createElement('div');
             card.className = `step-card ${idx === stepIndex ? 'active' : ''} ${idx < stepIndex ? 'completed' : ''}`;
-            // Merdiven görünümü: basamak yükseklikleri
-            let lift = 0;
-            if (currentModeKey === 'descending') lift = -((currentSequence.length - 1) - idx) * 7;
-            else lift = -idx * 7;
+            // Top-to-Bottom decryption sequence (spec 3): Step1 top, duration decays downward
+            const lift = idx * 12;
             card.style.transform = `translateY(${lift}px)`;
             card.style.animationDelay = `${idx * 0.06}s`;
             card.innerHTML = `
@@ -966,9 +964,7 @@
             timerDisplay.classList.remove('break');
             timerDisplay.classList.remove('ending');
             timerDisplay.classList.add('running');
-            const extraEndBtn = document.getElementById('flowBtn');
-            extraEndBtn.innerText = t('extra_finish');
-            extraEndBtn.style.display = 'block';
+            // [REMOVED] Flow button deleted per spec — extra finish handled via status text
             return;
         }
         const mins = Math.floor(secondsLeft / 60);
@@ -990,11 +986,7 @@
         timerDisplay.classList.toggle('break', isBreak);
         timerDisplay.classList.toggle('ending', !isBreak && secondsLeft <= 5 && secondsLeft > 0);
 
-        // Akış butonu mantığı (zirve adımında aktifleşir)
-        const flowBtn = document.getElementById('flowBtn');
-        const maxW = currentSequence.length ? Math.max(...currentSequence.map(s => s.work)) : 0;
-        const isPeakStep = !isBreak && currentSequence[stepIndex] && currentSequence[stepIndex].work >= maxW;
-flowBtn.style.display = isPeakStep ? 'block' : 'none';
+        // [REMOVED] Extend Flow button deleted per spec
         const sBtn = document.getElementById('startBtn');
         if (sBtn && !sBtn.disabled) {
             sBtn.innerText = isRunning ? t('timer_pause') : (stepIndex === 0 && !isBreak && secondsLeft >= totalSeconds ? t('timer_start') : t('timer_resume'));
@@ -1568,12 +1560,20 @@ p.upStamp = recent.length;
 
     function clearTPeak() {
         if (userData.peak.current == null) return;
-        if (!confirm(t('confirm_tpeak'))) return;
+        // Secure hacker-style confirmation
+        if (!confirm(t('confirm_tpeak') + "\n\n[SYS_PURGE: CONFIRM // SECURE_DELETE]")) return;
+        // Terminal delete audio: low buzz + glitch
+        try { playTone(180,0,0.12,'square',0.14); playTone(90,0.13,0.15,'square',0.12); playTone(1200,0.28,0.06,'square',0.08); } catch(_){}
         userData.peak.current = null;
         saveUserData();
         resetTimer();
         renderTPeakUI();
-        showToast(t('toast_tpeak_cleared'), 'info');
+        showToast('[SYS_PURGE: SUCCESS] — ' + t('toast_tpeak_cleared'), 'warn');
+        // Glitch flash on container
+        try {
+            container.classList.add('purge-flash');
+            setTimeout(()=> container.classList.remove('purge-flash'), 380);
+        } catch(_){}
     }
 
     function renderTPeakUI() {
@@ -2021,13 +2021,8 @@ p.upStamp = recent.length;
 
     function applyFlowOverride() {
         if (extraActive) { endExtraFocus(); return; }
-        secondsLeft += 11 * 60;
-        totalSeconds += 11 * 60;
-        if (endAt) endAt += 11 * 60 * 1000;
-        document.getElementById('flowBtn').style.display = 'none';
-        updateDisplay();
-        playFlowSound();
-        showToast(t('toast_flow'), 'info');
+        // [REMOVED] Extend Flow (+11) deleted per spec
+        return;
     }
 
     function renderStats() {
@@ -2041,7 +2036,7 @@ p.upStamp = recent.length;
         document.getElementById('statLevel').innerText = info.level;
         document.getElementById('statLevelTitle').innerText = info.title;
         document.getElementById('statXp').innerText = userData.gamification.xp;
-        document.getElementById('statScore').innerText = userData.profile.totalScore || 0;
+        // [REMOVED] Pyramid Score deleted per spec
         document.getElementById('statPartial').innerText = userData.stats.partialRuns || 0;
 
         const goalMins = userData.profile.dailyGoalMins || 110;
@@ -2369,7 +2364,7 @@ p.upStamp = recent.length;
         document.getElementById('userNameInput').value = userData.profile.name;
         document.getElementById('dailyGoalInput').value = userData.profile.dailyGoalMins;
         document.getElementById('welcomeTitle').innerText = `${userData.profile.name} - ${t('appSuffix')}`;
-        document.getElementById('profileScore').innerText = userData.profile.totalScore || 0;
+        // [REMOVED] Pyramid Score deleted per spec
     }
 
     function saveProfileSettings() {

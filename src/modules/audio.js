@@ -81,6 +81,19 @@ export async function showSystemNotification(title, body, actionType = 'work'){
   } catch(_){}
 }
 
+export function playNotifySuccess(){
+  // Terminal success chime: crisp two-tone
+  playTone(1200,0,0.08,'square',0.12);
+  playTone(1800,0.09,0.12,'square',0.12);
+  playTone(2400,0.22,0.18,'sine',0.10);
+}
+export function playDeleteConfirm(){
+  // Secure purge: low buzz + click
+  playTone(180,0,0.12,'square',0.14);
+  playTone(90,0.13,0.15,'square',0.12);
+  playTone(1200,0.28,0.06,'square',0.08);
+}
+
 // alarm loops — delegated to timer module but keep helpers here for reuse
 export function getAudioCtx(){ return audioCtx; }
 export function setAudioCtx(ctx){ audioCtx = ctx; }

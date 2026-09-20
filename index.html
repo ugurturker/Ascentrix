@@ -29,7 +29,7 @@
     <!-- 1. SEKME: ZAMANLAYICI -->
     <div id="timerTab" class="tab-content active">
         <header>
-            <h1 id="welcomeTitle">MATRIX Merdiven Odak</h1>
+            <h1 id="welcomeTitle">Ascentrix</h1>
             <p data-i18n="hdr_timer_sub">Kırmızı hapı seçtin — Derin Odak Protokolü Başladı</p>
         </header>
 
@@ -43,7 +43,7 @@
             </div>
             <div class="tpeak-row">
                 <span><span data-i18n="direct_tpeakRow">Zirve Süresi (T-peak):</span> <strong id="tpeakVal">—</strong></span>
-                <button class="btn btn-secondary btn-small" id="clearTpeakBtn" onclick="clearTPeak()" style="display:none;" data-i18n="direct_clear">Temizle</button>
+                <button class="btn btn-danger btn-small" id="clearTpeakBtn" onclick="clearTPeak()" style="display:none; border-color:#ff3344; background:rgba(255,50,60,0.12); color:#ff5a65; font-weight:800; letter-spacing:0.06em; box-shadow:0 0 12px rgba(255,50,60,0.25);" data-i18n="direct_clear">⌖ Ölçümü Sil</button>
             </div>
         </div>
 
@@ -110,7 +110,6 @@
             <button class="btn btn-secondary" onclick="skipStep()" data-i18n="ctl_skip">Atla</button>
         </div>
 
-        <button class="btn btn-flow" id="flowBtn" onclick="applyFlowOverride()" data-i18n="ctl_flow">+11 Dk Akış Uzatma (Derin Odak)</button>
     </div>
 
     <!-- 2. SEKME: İSTATİSTİKLER VE GEÇMİŞ -->
@@ -155,10 +154,6 @@
             <div class="stat-card accent">
                 <div class="stat-label" data-i18n="stat_xp">Toplam XP</div>
                 <div class="stat-value" id="statXp">0</div>
-            </div>
-            <div class="stat-card accent">
-                <div class="stat-label" data-i18n="stat_score">Piramit Skoru</div>
-                <div class="stat-value" id="statScore">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label" data-i18n="stat_partial">Yarım Koşu (Güvenlik Ağı)</div>
@@ -268,13 +263,6 @@
         <div class="form-group">
             <label for="dailyGoalInput" data-i18n="profile_goal">Günlük Hedef (Dakika)</label>
             <input type="number" id="dailyGoalInput" class="form-control" value="180">
-        </div>
-
-        <div class="goal-container">
-            <div class="goal-header">
-                <span data-i18n="profile_score">Piramit Skoru</span>
-                <span id="profileScore">0</span>
-            </div>
         </div>
 
         <button class="btn btn-primary" style="width: 100%; margin-bottom: 12px;" onclick="saveProfileSettings()" data-i18n="profile_save">Ayarları Kaydet</button>
