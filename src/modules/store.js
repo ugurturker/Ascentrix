@@ -1,0 +1,128 @@
+// store.js — merkezi state + localStorage persist
+import { todayStr } from './utils.js';
+
+function getDefaultUserData() {
+  return {
+    profile: { name: 'Neo', dailyGoalMins: 180, totalScore: 0 },
+    stats: {
+      totalWorkSeconds: 0, completedSteps: 0, completedLadders: 0,
+      streakDays: 0, lastActiveDate: null, todayWorkMins: 0,
+      todayDate: null, maxStepMins: 0, partialRuns: 0
+    },
+    gamification: { xp: 0, achievements: [] },
+    settings: { soundEnabled: true, lang: 'tr' },
+    logs: [],
+    partialRuns: [],
+    peak: { current: null, record: null, history: [], completions: [], sickPoints: [], extras: [], dailyFocus: [], upStamp: 0 },
+    plan: null
+  };
+}
+function isPlainObject(v) {
+  return v !== null && typeof v === 'object' && !Array.isArray(v);
+}
+function deepMerge(target, source) {
+  const out = Object.assign({}, target);
+  if (!isPlainObject(source)) return out;
+  Object.keys(source).forEach((k) => {
+    const sv = source[k];
+    const tv = out[k];
+    if (isPlainObject(sv) && isPlainObject(tv)) out[k] = deepMerge(tv, sv);
+    else if (sv !== undefined) out[k] = sv;
+  });
+  return out;
+}
+function normalizeUserData(data) {
+  const defs = getDefaultUserData();
+  if (!isPlainObject(data)) return defs;
+  const merged = deepMerge(defs, data);
+  if (!isPlainObject(merged.profile)) merged.profile = Object.assign({}, defs.profile);
+  if (!isPlainObject(merged.stats)) merged.stats = Object.assign({}, defs.stats);
+  if (!isPlainObject(merged.gamification)) merged.gamification = Object.assign({}, defs.gamification);
+  if (!isPlainObject(merged.settings)) merged.settings = Object.assign({}, defs.settings);
+  if (!Array.isArray(merged.logs)) merged.logs = [];
+  if (!Array.isArray(merged.partialRuns)) merged.partialRuns = [];
+  if (!isPlainObject(merged.peak)) merged.peak = { current: null, record: null, history: [], completions: [], sickPoints: [], extras: [], dailyFocus: [], upStamp: 0 };
+  delete merged.peak.downStamp;
+  if (!Array.isArray(merged.peak.history)) merged.peak.history = [];
+  if (!Array.isArray(merged.peak.completions)) merged.peak.completions = [];
+  if (!Array.isArray(merged.peak.sickPoints)) merged.peak.sickPoints = [];
+  if (!Array.isArray(merged.peak.extras)) merged.peak.extras = [];
+  if (!Array.isArray(merged.peak.dailyFocus)) merged.peak.dailyFocus = [];
+  if (typeof merged.peak.upStamp !== 'number') merged.peak.upStamp = 0;
+  delete merged.peak.durationStats;
+  if (!isPlainObject(merged.plan) && merged.plan !== null) merged.plan = null;
+  if (merged.peak.current == null && typeof merged.settings.tPeak === 'number' && merged.settings.tPeak > 0) {
+    merged.peak.current = merged.settings.tPeak;
+    merged.peak.record = merged.settings.tPeak;
+    merged.peak.history.push({ date: todayStr(), tpeak: merged.settings.tPeak });
+  }
+  delete merged.settings.tPeak;
+  if (!Array.isArray(merged.gamification.achievements)) merged.gamification.achievements = [];
+  delete merged.gamification.clearedDifficulties;
+  if (typeof merged.profile.dailyGoalMins !== 'number' || !(merged.profile.dailyGoalMins > 0)) merged.profile.dailyGoalMins = defs.profile.dailyGoalMins;
+  if (typeof merged.profile.totalScore !== 'number') merged.profile.totalScore = 0;
+  delete merged.settings.difficulty;
+  return merged;
+}
+function loadUserData() {
+  try {
+    const rawText = localStorage.getItem('ladder_user_data');
+    if (!rawText) return getDefaultUserData();
+    let raw;
+    try { raw = JSON.parse(rawText); } catch (parseErr) { console.warn('Kayıtlı veri bozuk (JSON), varsayılanlar yükleniyor:', parseErr); return getDefaultUserData(); }
+    return normalizeUserData(raw);
+  } catch (e) { console.warn('Veri yükleme hatası, varsayılanlar yükleniyor:', e); return getDefaultUserData(); }
+}
+
+export const userData = loadUserData();
+
+export function saveUserData() {
+  localStorage.setItem('ladder_user_data', JSON.stringify(userData));
+}
+export function resetAllData() {
+  localStorage.removeItem('ladder_user_data');
+  const defs = getDefaultUserData();
+  Object.keys(defs).forEach(k => { userData[k] = defs[k]; });
+  saveUserData();
+}
+export function checkDailyReset() {
+  const today = todayStr();
+  if (userData.stats.todayDate !== today) {
+    if (userData.stats.lastActiveDate) {
+      const lastDate = new Date(userData.stats.lastActiveDate);
+      const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+      if (lastDate.getTime() < yesterday.getTime()) userData.stats.streakDays = 0;
+    }
+    userData.stats.todayWorkMins = 0;
+    userData.stats.todayDate = today;
+    saveUserData();
+  }
+}
+// Timer / session mutable state — single source of truth
+export const timerState = {
+  currentModeKey: 'ascending',
+  stepIndex: 0,
+  isBreak: false,
+  timerInterval: null,
+  isRunning: false,
+  alarmActive: false,
+  workStepPending: false,
+  breakStepPending: false,
+  alarmMode: null,
+  alarmTimer: null,
+  testRunning: false,
+  testSeconds: 0,
+  testInterval: null,
+  suppressPartial: false,
+  endAt: null,
+  testBase: 0,
+  sessionDone: false,
+  extraActive: false,
+  extraSeconds: 0,
+  extraBase: 0,
+  extraInterval: null,
+  fullBreak: false,
+  currentSequence: [],
+  totalSeconds: 0,
+  secondsLeft: 0,
+};
