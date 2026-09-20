@@ -76,9 +76,75 @@ function loadUserData() {
 
 export const userData = loadUserData();
 
+// Firestore cloud sync — localStorage her zaman fallback
+let cloudEnabled = false;
+let cloudSaveTimer = null;
+let firestoreUnsub = null;
+
 export function saveUserData() {
   localStorage.setItem('ladder_user_data', JSON.stringify(userData));
+  // Debounced cloud write (auth + firestore varsa)
+  if (cloudEnabled) {
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(() => { cloudSave().catch(()=>{}); }, 800);
+  }
 }
+
+async function cloudSave() {
+  try {
+    const { db, auth, isFirebaseConfigured } = await import('./firebase.js');
+    const { doc, setDoc } = await import('firebase/firestore');
+    if (!isFirebaseConfigured || !auth || !auth.currentUser || !db) return;
+    const uid = auth.currentUser.uid;
+    const ref = doc(db, 'users', uid);
+    await setDoc(ref, { data: userData, updatedAt: new Date().toISOString() }, { merge: true });
+  } catch (e) { console.warn('[Ascentrix] cloudSave hatası:', e?.message); }
+}
+
+export async function enableCloudSync() {
+  try {
+    const { isFirebaseConfigured, auth, db } = await import('./firebase.js');
+    const { doc, getDoc, onSnapshot } = await import('firebase/firestore');
+    if (!isFirebaseConfigured || !auth || !db || !auth.currentUser) return false;
+    cloudEnabled = true;
+    const uid = auth.currentUser.uid;
+    const ref = doc(db, 'users', uid);
+    // İlk yüklemede cloud verisi varsa merge et (cloud öncelikli değil, en güncel kazanır)
+    try {
+      const snap = await getDoc(ref);
+      if (snap.exists() && snap.data() && snap.data().data) {
+        const cloudData = snap.data().data;
+        // Basit strateji: eğer cloud'da daha çok history varsa onu al, yoksa local'i koru
+        const localLen = (userData.peak?.history?.length || 0) + (userData.logs?.length || 0);
+        const cloudLen = (cloudData.peak?.history?.length || 0) + (cloudData.logs?.length || 0);
+        if (cloudLen > localLen) {
+          const merged = normalizeUserData(cloudData);
+          Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
+          localStorage.setItem('ladder_user_data', JSON.stringify(userData));
+        } else if (localLen > 0) {
+          await cloudSave();
+        }
+      } else {
+        await cloudSave();
+      }
+    } catch(e) { console.warn('[Ascentrix] cloud load hatası:', e?.message); }
+    // Realtime sync (optional — tek cihazda debounce yeterli)
+    try {
+      if (firestoreUnsub) firestoreUnsub();
+    } catch(_){}
+    // Not enabling continuous onSnapshot to avoid loop; manual save yeterli
+    return true;
+  } catch (e) { console.warn('[Ascentrix] enableCloudSync hatası:', e?.message); return false; }
+}
+
+export function disableCloudSync() {
+  cloudEnabled = false;
+  try { if (firestoreUnsub) firestoreUnsub(); } catch(_){}
+  firestoreUnsub = null;
+  clearTimeout(cloudSaveTimer);
+}
+
+export function isCloudEnabled() { return cloudEnabled; }
 export function resetAllData() {
   localStorage.removeItem('ladder_user_data');
   const defs = getDefaultUserData();

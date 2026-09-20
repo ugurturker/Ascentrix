@@ -46,5 +46,11 @@ npm run test     # vitest
 - `vite-plugin-pwa` `generateSW` — offline, precache, autoUpdate.
 - `base: /Ascentrix/` — GitHub Pages uyumlu
 
+## Google Auth (Firebase)
+- Local: `cp .env.example .env` → Firebase Console keylerini doldur → `npm run dev`
+- Profil sekmesinde `[AUTH: GOOGLE]` kartı — giriş yapınca `CLOUD: SYNC` + `[SYS_AUTH: CONNECTED]`, veriler Firestore `users/{uid}`'ye yedeklenir, yoksa localStorage fallback
+- Detay: `docs/FIREBASE.md`
+- GitHub Pages için repo Secrets'a 7 `VITE_FIREBASE_*` ekle (Actions → deploy.yml inject eder)
+
 ## Deploy
 Push to `main` → GitHub Actions otomatik deploy → https://ugurturker.github.io/Ascentrix/

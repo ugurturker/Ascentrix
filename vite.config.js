@@ -4,6 +4,16 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   base: '/Ascentrix/',
   server: { port: 5173, open: false },
+  build: {
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+        },
+      },
+    },
+  },
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
