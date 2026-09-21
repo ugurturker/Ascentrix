@@ -729,21 +729,8 @@
     }
 
     function loadUserData() {
-        try {
-            const rawText = localStorage.getItem('ladder_user_data');
-            if (!rawText) return getDefaultUserData();
-            let raw;
-            try {
-                raw = JSON.parse(rawText);
-            } catch (parseErr) {
-                console.warn('Kayıtlı veri bozuk (JSON), varsayılanlar yükleniyor:', parseErr);
-                return getDefaultUserData();
-            }
-            return normalizeUserData(raw);
-        } catch (e) {
-            console.warn('Veri yükleme hatası, varsayılanlar yükleniyor:', e);
-            return getDefaultUserData();
-        }
+        // Offline yedek kaldırıldı — sadece Firestore, bellekte başlar
+        return getDefaultUserData();
     }
 
     let userData = loadUserData();
@@ -890,7 +877,22 @@
     }
 
     function saveUserData() {
-        localStorage.setItem('ladder_user_data', JSON.stringify(userData));
+        // Sadece Firestore'a yaz — offline yedek yok, legacy <-> store sync
+        try {
+            import('./store.js').then(async m => {
+                try {
+                    Object.keys(userData).forEach(k => { m.userData[k] = JSON.parse(JSON.stringify(userData[k])); });
+                    m.saveUserData();
+                } catch(_){}
+            }).catch(()=>{});
+        } catch(_){}
+        try {
+            import('./firebase.js').then(async fb => {
+                if (!fb.isFirebaseConfigured || !fb.auth?.currentUser || !fb.db) return;
+                const { doc, setDoc } = await import('firebase/firestore');
+                await setDoc(doc(fb.db, 'users', fb.auth.currentUser.uid), { data: userData, updatedAt: new Date().toISOString() }, { merge: true });
+            }).catch(()=>{});
+        } catch(_){}
     }
 
     // Timer oturumu kalıcılığı — tarayıcı reset/sayfa yenilemede kaldığı yerden devam
@@ -2492,8 +2494,21 @@ p.upStamp = recent.length;
 
     function clearAllData() {
         if (confirm(t('confirm_wipe'))) {
-            localStorage.removeItem('ladder_user_data');
+            // Sadece Firestore — localStorage yedeği yok
+            try { localStorage.removeItem('ladder_user_data'); } catch(_){}
+            try { localStorage.removeItem('ascentrix_timer_state'); } catch(_){}
             userData = getDefaultUserData();
+            // Firestore'da da sil
+            import('./store.js').then(m => { try { m.resetAllData(); } catch(_){} }).catch(()=>{});
+            import('./firebase.js').then(async fb => {
+                try {
+                    const { doc, deleteDoc } = await import('firebase/firestore');
+                    if (fb.isFirebaseConfigured && fb.auth?.currentUser && fb.db) {
+                        await deleteDoc(doc(fb.db, 'users', fb.auth.currentUser.uid)).catch(()=>{});
+                    }
+                } catch(_){}
+            }).catch(()=>{});
+            clearTimerState();
             initApp();
             showToast(t('toast_cleared'), 'info');
         }
@@ -2529,4 +2544,6 @@ try {
   _g.clearAllData = clearAllData;
   _g.alarmPrimary = alarmPrimary;
   _g.alarmSecondary = alarmSecondary;
+  window._legacyUserData = userData;
+  window.AscentrixStore = { saveUserData: () => { try { import('./store.js').then(m=>m.saveUserData()); } catch(_){} } };
 } catch(e) { console.warn('expose failed', e); }

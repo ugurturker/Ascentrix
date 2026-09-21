@@ -1,4 +1,4 @@
-// store.js — merkezi state + localStorage persist
+// store.js — Firestore-only persist (offline yedek kaldırıldı)
 import { todayStr } from './utils.js';
 
 function getDefaultUserData() {
@@ -41,7 +41,7 @@ function normalizeUserData(data) {
   if (!isPlainObject(merged.settings)) merged.settings = Object.assign({}, defs.settings);
   if (!Array.isArray(merged.logs)) merged.logs = [];
   if (!Array.isArray(merged.partialRuns)) merged.partialRuns = [];
-  if (!isPlainObject(merged.peak)) merged.peak = { current: null, record: null, history: [], completions: [], sickPoints: [], extras: [], dailyFocus: [], upStamp: 0 };
+  if (!isPlainObject(merged.peak)) merged.peak = { current: null, record: null, history: [], completions: [], extras: [], dailyFocus: [], upStamp: 0 };
   delete merged.peak.downStamp;
   if (!Array.isArray(merged.peak.history)) merged.peak.history = [];
   if (!Array.isArray(merged.peak.completions)) merged.peak.completions = [];
@@ -49,6 +49,7 @@ function normalizeUserData(data) {
   if (!Array.isArray(merged.peak.dailyFocus)) merged.peak.dailyFocus = [];
   if (typeof merged.peak.upStamp !== 'number') merged.peak.upStamp = 0;
   delete merged.peak.durationStats;
+  delete merged.peak.sickPoints;
   if (!isPlainObject(merged.plan) && merged.plan !== null) merged.plan = null;
   if (merged.peak.current == null && typeof merged.settings.tPeak === 'number' && merged.settings.tPeak > 0) {
     merged.peak.current = merged.settings.tPeak;
@@ -63,26 +64,20 @@ function normalizeUserData(data) {
   delete merged.settings.difficulty;
   return merged;
 }
+// Offline yedek kaldırıldı — sadece Firestore, bellekte başlar
 function loadUserData() {
-  try {
-    const rawText = localStorage.getItem('ladder_user_data');
-    if (!rawText) return getDefaultUserData();
-    let raw;
-    try { raw = JSON.parse(rawText); } catch (parseErr) { console.warn('Kayıtlı veri bozuk (JSON), varsayılanlar yükleniyor:', parseErr); return getDefaultUserData(); }
-    return normalizeUserData(raw);
-  } catch (e) { console.warn('Veri yükleme hatası, varsayılanlar yükleniyor:', e); return getDefaultUserData(); }
+  return getDefaultUserData();
 }
 
 export const userData = loadUserData();
 
-// Firestore cloud sync — localStorage her zaman fallback
+// Firestore cloud sync — tek kaynak
 let cloudEnabled = false;
 let cloudSaveTimer = null;
 let firestoreUnsub = null;
 
 export function saveUserData() {
-  localStorage.setItem('ladder_user_data', JSON.stringify(userData));
-  // Debounced cloud write (auth + firestore varsa)
+  // Sadece Firestore'a yaz (debounced)
   if (cloudEnabled) {
     clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(() => { cloudSave().catch(()=>{}); }, 800);
@@ -103,30 +98,33 @@ async function cloudSave() {
 export async function enableCloudSync() {
   try {
     const { isFirebaseConfigured, auth, db } = await import('./firebase.js');
-    const { doc, getDoc, onSnapshot } = await import('firebase/firestore');
+    const { doc, getDoc } = await import('firebase/firestore');
     if (!isFirebaseConfigured || !auth || !db || !auth.currentUser) return false;
     cloudEnabled = true;
     const uid = auth.currentUser.uid;
     const ref = doc(db, 'users', uid);
-    // İlk yüklemede cloud verisi varsa merge et (cloud öncelikli değil, en güncel kazanır)
     try {
       const snap = await getDoc(ref);
       if (snap.exists() && snap.data() && snap.data().data) {
-        // Spec: Site her yenilendiğinde tüm veriler Firestore'dan çekilsin — cloud overwrite
         const cloudData = snap.data().data;
         const merged = normalizeUserData(cloudData);
         Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
-        localStorage.setItem('ladder_user_data', JSON.stringify(userData));
-        console.log('[Ascentrix] Firestore verisi yüklendi — local overwrite');
+        // Sync to legacy module's userData if exists (dual store)
+        try {
+            if (typeof window !== 'undefined' && window._legacyUserData) {
+                Object.keys(merged).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(merged[k])); });
+                // Trigger legacy UI refresh
+                if (window.renderTPeakUI) window.renderTPeakUI();
+                if (window.updateProfileUI) window.updateProfileUI();
+                if (window.renderStats) window.renderStats();
+            }
+        } catch(_){}
+        console.log('[Ascentrix] Firestore verisi yüklendi — bellek overwrite');
       } else {
         await cloudSave();
       }
     } catch(e) { console.warn('[Ascentrix] cloud load hatası:', e?.message); }
-    // Realtime sync (optional — tek cihazda debounce yeterli)
-    try {
-      if (firestoreUnsub) firestoreUnsub();
-    } catch(_){}
-    // Not enabling continuous onSnapshot to avoid loop; manual save yeterli
+    try { if (firestoreUnsub) firestoreUnsub(); } catch(_){}
     return true;
   } catch (e) { console.warn('[Ascentrix] enableCloudSync hatası:', e?.message); return false; }
 }
@@ -139,10 +137,17 @@ export function disableCloudSync() {
 }
 
 export function isCloudEnabled() { return cloudEnabled; }
-export function resetAllData() {
-  localStorage.removeItem('ladder_user_data');
+export async function resetAllData() {
   const defs = getDefaultUserData();
   Object.keys(defs).forEach(k => { userData[k] = defs[k]; });
+  // Firestore'da da sil
+  try {
+    const { db, auth, isFirebaseConfigured } = await import('./firebase.js');
+    const { doc, deleteDoc } = await import('firebase/firestore');
+    if (isFirebaseConfigured && auth?.currentUser && db) {
+      await deleteDoc(doc(db, 'users', auth.currentUser.uid)).catch(()=>{});
+    }
+  } catch(_){}
   saveUserData();
 }
 export function checkDailyReset() {
@@ -158,7 +163,7 @@ export function checkDailyReset() {
     saveUserData();
   }
 }
-// Timer / session mutable state — single source of truth
+// Timer / session mutable state — single source of truth (oturum persist için localStorage korunuyor, veri değil)
 export const timerState = {
   currentModeKey: 'ascending',
   stepIndex: 0,
@@ -186,3 +191,4 @@ export const timerState = {
   totalSeconds: 0,
   secondsLeft: 0,
 };
+export { normalizeUserData, getDefaultUserData };
