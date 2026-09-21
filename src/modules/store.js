@@ -150,6 +150,15 @@ export async function resetAllData() {
   } catch(_){}
   saveUserData();
 }
+export function resetDailyProgress() {
+  userData.stats.todayWorkMins = 0;
+  userData.stats.todayDate = todayStr();
+  // dailyFocus bugün kaydını temizle
+  if (Array.isArray(userData.peak.dailyFocus)) {
+    userData.peak.dailyFocus = userData.peak.dailyFocus.filter(d => d.date !== todayStr());
+  }
+  saveUserData();
+}
 export function checkDailyReset() {
   const today = todayStr();
   if (userData.stats.todayDate !== today) {

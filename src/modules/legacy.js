@@ -163,6 +163,9 @@
         stats_title: 'Performans Analitiği',
         stats_sub: 'Kalıcı Bilişsel Veri Geçmişi',
         stats_goal: 'Günlük Odak Hedefi',
+        stats_reset_daily: '↺ Günlük İlerlemeyi Sıfırla',
+        confirm_daily_reset: 'Günlük ilerleme (bugünkü odak, T-Peak planı değil) sıfırlanacak. Emin misin?',
+        toast_daily_reset: 'Günlük ilerleme sıfırlandı',
         stat_totalTime: 'Toplam Odak',
         stat_totalSteps: 'Tamamlanan Adımlar',
         stat_ladders: 'Tam Döngüler',
@@ -326,6 +329,9 @@
         stats_title: 'Performance Analytics',
         stats_sub: 'Persistent cognitive data history',
         stats_goal: 'Daily Focus Goal',
+        stats_reset_daily: '↺ Reset Daily Progress',
+        confirm_daily_reset: 'Daily progress (today\'s focus) will be reset. Are you sure?',
+        toast_daily_reset: 'Daily progress reset',
         stat_totalTime: 'Total Focus',
         stat_totalSteps: 'Completed Steps',
         stat_ladders: 'Full Cycles',
@@ -491,6 +497,9 @@
         stats_title: 'Leistungsanalyse',
         stats_sub: 'Verlauf kognitiver Dauerdaten',
         stats_goal: 'Tägliches Fokus-Ziel',
+        stats_reset_daily: '↺ Tagesfortschritt zurücksetzen',
+        confirm_daily_reset: 'Tagesfortschritt wird zurückgesetzt. Sicher?',
+        toast_daily_reset: 'Tagesfortschritt zurückgesetzt',
         stat_totalTime: 'Gesamtfokus',
         stat_totalSteps: 'Abgeschlossene Schritte',
         stat_ladders: 'Volle Zyklen',
@@ -2514,6 +2523,25 @@ p.upStamp = recent.length;
         }
     }
 
+    function resetDailyProgress() {
+        if (!confirm(t('confirm_daily_reset'))) return;
+        userData.stats.todayWorkMins = 0;
+        userData.stats.todayDate = todayStr();
+        if (Array.isArray(userData.peak.dailyFocus)) {
+            userData.peak.dailyFocus = userData.peak.dailyFocus.filter(d => d.date !== todayStr());
+        }
+        saveUserData();
+        // Firestore sync
+        try { import('./store.js').then(m => { try { m.resetDailyProgress(); m.saveUserData(); } catch(_){} }).catch(()=>{}); } catch(_){}
+        updateProfileUI();
+        renderTracker();
+        updateDisplay();
+        renderPlanCard();
+        renderStats();
+        try { playTone(900,0,0.08,'square',0.08); playTone(600,0.09,0.12,'square',0.08); } catch(_){}
+        showToast(t('toast_daily_reset'), 'info');
+    }
+
     // Periyodik timer persist — her 1sn ve her etkileşimde
     setInterval(saveTimerState, 1000);
     window.addEventListener('beforeunload', () => { try { saveTimerState(); } catch(_){} });
@@ -2542,6 +2570,7 @@ try {
   _g.exportUserData = exportUserData;
   _g.importUserData = importUserData;
   _g.clearAllData = clearAllData;
+  _g.resetDailyProgress = resetDailyProgress;
   _g.alarmPrimary = alarmPrimary;
   _g.alarmSecondary = alarmSecondary;
   window._legacyUserData = userData;
