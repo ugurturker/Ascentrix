@@ -8,10 +8,15 @@
     <meta name="description" content="Ascentrix - T-Peak tabanli merdiven odak sistemi">
 </head>
 <body>
+<script>try{var t=localStorage.getItem('ascentrix_theme');if(t&&['matrix','mario','aero','galaxy'].includes(t))document.body.classList.add('theme-'+t);else document.body.classList.add('theme-matrix');var s=localStorage.getItem('ascentrix_simplify');if(s!==null&&['0','1','2','3'].includes(s))document.body.classList.add('simplify-'+s);else document.body.classList.add('simplify-0');}catch(e){}</script>
 <canvas id="matrixRain" class="matrix-rain"></canvas>
 <div class="orb orb-a"></div>
 <div class="orb orb-b"></div>
 <div class="orb orb-c"></div>
+<!-- Tema bazlı arka planlar -->
+<div class="theme-bg mario-bg" aria-hidden="true"><div class="mario-cloud c1"></div><div class="mario-cloud c2"></div><div class="mario-cloud c3"></div><div class="mario-hill"></div><div class="mario-pipe-bg"></div></div>
+<div class="theme-bg aero-bg" aria-hidden="true"><div class="aero-bubble b1"></div><div class="aero-bubble b2"></div><div class="aero-bubble b3"></div><div class="aero-bubble b4"></div></div>
+<div class="theme-bg galaxy-bg" aria-hidden="true"><div class="galaxy-stars"></div><div class="galaxy-nebula"></div></div>
 
 <div class="container">
     <div class="lang-bar">

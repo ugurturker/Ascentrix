@@ -1,4 +1,5 @@
-:root {
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@500;700;800&family=Orbitron:wght@600;800&family=Space+Grotesk:wght@500;700&display=swap');
+        :root {
             --bg-color: #020805;
             --card-bg: rgba(0, 22, 11, 0.82);
             --border-color: rgba(0, 255, 65, 0.16);
@@ -48,6 +49,29 @@
             --text-muted: #9ca3d6;
             --danger: #f43f5e;
         }
+        /* Per-theme fonts — kapsamlı */
+        body.theme-matrix { font-family: "Consolas", "Courier New", "Ubuntu Mono", monospace; }
+        body.theme-mario { font-family: "Outfit", system-ui, sans-serif; }
+        body.theme-mario h1, body.theme-mario .custom-title, body.theme-mario .plan-title, body.theme-mario .step-title { font-family: "Press Start 2P", monospace; letter-spacing: 0.02em; }
+        body.theme-mario .step-time, body.theme-mario .time-text { font-family: "Press Start 2P", monospace; }
+        body.theme-aero { font-family: "Outfit", system-ui, sans-serif; }
+        body.theme-aero h1, body.theme-aero .custom-title { font-family: "Outfit", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+        body.theme-galaxy { font-family: "Space Grotesk", system-ui, sans-serif; }
+        body.theme-galaxy h1, body.theme-galaxy .custom-title { font-family: "Orbitron", sans-serif; letter-spacing: 0.08em; }
+        /* Per-theme cards — kapsamlı */
+        body.theme-mario .container { border: 4px solid #1a1a1a; border-radius: 0; box-shadow: 0 8px 0 #000, 0 0 0 4px #fff; background: #ffffff; }
+        body.theme-mario .step-card { background: #43b047; border: 3px solid #1a1a1a; border-radius: 0; box-shadow: 0 4px 0 #1a1a1a; color: #fff; }
+        body.theme-mario .step-card::before { content: "▛"; color: #ffcc00; opacity: 1; left: 50%; top: -8px; transform: translateX(-50%); font-size: 10px; }
+        body.theme-mario .step-card.active { background: #e52521; border-color: #1a1a1a; box-shadow: 0 0 0 3px #ffcc00, 0 4px 0 #1a1a1a; }
+        body.theme-mario .step-card.completed { opacity: 0.9; background: #5a9c3a; }
+        body.theme-mario .progress-ring__circle { stroke: #e52521; }
+        body.theme-aero .container { border-radius: 24px; background: rgba(255,255,255,0.55); backdrop-filter: blur(20px) saturate(1.6); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 20px 40px rgba(0,149,255,0.15), inset 0 1px 0 rgba(255,255,255,0.8); }
+        body.theme-aero .step-card { background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 8px 24px rgba(0,149,255,0.12); }
+        body.theme-aero .step-card.active { background: rgba(0,149,255,0.12); border-color: #0095ff; box-shadow: 0 0 20px rgba(0,149,255,0.3); }
+        body.theme-galaxy .container { border: 1px solid rgba(168,85,247,0.35); background: rgba(12,10,30,0.88); box-shadow: 0 0 40px rgba(168,85,247,0.25), inset 0 0 40px rgba(34,211,238,0.06); }
+        body.theme-galaxy .step-card { background: radial-gradient(ellipse at top, rgba(168,85,247,0.25), rgba(18,12,40,0.9)); border: 1px solid rgba(168,85,247,0.4); border-radius: 14px; box-shadow: 0 0 16px rgba(168,85,247,0.2); }
+        body.theme-galaxy .step-card.active { border-color: #a855f7; box-shadow: 0 0 20px rgba(168,85,247,0.55), 0 0 40px rgba(34,211,238,0.2); }
+        body.theme-galaxy .progress-ring__circle { stroke: #a855f7; filter: drop-shadow(0 0 10px #a855f7); }
         /* Simplify levels — 4 seviye, en alt en sade */
         body.simplify-1 .orb { opacity: 0.06 !important; }
         body.simplify-1 .matrix-rain { opacity: 0.3 !important; }
@@ -59,7 +83,8 @@
         body.simplify-3 .matrix-rain,
         body.simplify-3 body::before,
         body.simplify-3 body::after,
-        body.simplify-3 .container::before { display: none !important; }
+        body.simplify-3 .container::before,
+        body.simplify-3 .theme-bg { display: none !important; }
         body.simplify-3 .container,
         body.simplify-3 .custom-panel,
         body.simplify-3 .plan-card,
@@ -135,6 +160,39 @@
         @keyframes floatA { from { transform: translate(0,0) scale(1); } to { transform: translate(70px, 90px) scale(1.18); } }
         @keyframes floatB { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px, -70px) scale(1.12); } }
         @keyframes floatC { from { transform: translate(0,0) scale(1); } to { transform: translate(40px, -50px) scale(1.2); } }
+
+        /* Tema bazlı arka planlar — kapsamlı */
+        .theme-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; display: none; overflow: hidden; }
+        body.theme-matrix .matrix-rain { display: block; }
+        body.theme-matrix .orb { display: block; }
+        body:not(.theme-matrix) .matrix-rain,
+        body:not(.theme-matrix) .orb { display: none; }
+        body.theme-mario .mario-bg { display: block; }
+        body.theme-aero .aero-bg { display: block; }
+        body.theme-galaxy .galaxy-bg { display: block; }
+        /* Mario: bulutlar + tepe + boru */
+        .mario-bg { background: linear-gradient(180deg, #5c94fc 0%, #8ec8ff 60%, #5c94fc 100%); }
+        .mario-cloud { position: absolute; background: #fff; border-radius: 50%; box-shadow: 0 4px 0 #1a1a1a; border: 3px solid #1a1a1a; animation: marioDrift 28s linear infinite; }
+        .mario-cloud.c1 { width: 90px; height: 40px; top: 12%; left: -120px; animation-duration: 32s; }
+        .mario-cloud.c2 { width: 70px; height: 32px; top: 22%; left: -100px; animation-duration: 38s; animation-delay: -10s; }
+        .mario-cloud.c3 { width: 110px; height: 44px; top: 8%; left: -150px; animation-duration: 44s; animation-delay: -18s; }
+        .mario-hill { position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: #43b047; border-top: 4px solid #1a1a1a; }
+        .mario-pipe-bg { position: absolute; bottom: 120px; right: 12%; width: 48px; height: 90px; background: #43b047; border: 4px solid #1a1a1a; border-bottom: none; box-shadow: inset 0 6px 0 rgba(255,255,255,0.3); }
+        .mario-pipe-bg::before { content: ""; position: absolute; top: -14px; left: -6px; right: -6px; height: 14px; background: #43b047; border: 4px solid #1a1a1a; border-radius: 4px; }
+        @keyframes marioDrift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 300px)); } }
+        /* Aero: cam baloncuklar */
+        .aero-bg { background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.9), transparent 60%), linear-gradient(180deg, #e0f6ff 0%, #b8e6ff 50%, #d6f0ff 100%); }
+        .aero-bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(0,149,255,0.18)); border: 1px solid rgba(255,255,255,0.7); backdrop-filter: blur(8px); animation: aeroFloat 18s ease-in-out infinite; }
+        .aero-bubble.b1 { width: 120px; height: 120px; top: 10%; left: 8%; animation-delay: 0s; }
+        .aero-bubble.b2 { width: 80px; height: 80px; top: 50%; right: 12%; animation-delay: -6s; }
+        .aero-bubble.b3 { width: 160px; height: 160px; bottom: 12%; left: 18%; animation-delay: -12s; }
+        .aero-bubble.b4 { width: 60px; height: 60px; top: 30%; right: 28%; animation-delay: -4s; }
+        @keyframes aeroFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.05); } }
+        /* Galaxy: yıldızlar + nebula */
+        .galaxy-bg { background: radial-gradient(ellipse at 50% 0%, #1a1240 0%, #070b1a 55%, #020205 100%); }
+        .galaxy-stars { position: absolute; inset: 0; background-image: radial-gradient(1px 1px at 12% 18%, #fff 100%, transparent), radial-gradient(1.2px 1.2px at 38% 42%, #a5b4fc 100%, transparent), radial-gradient(1px 1px at 72% 12%, #22d3ee 100%, transparent), radial-gradient(0.8px 0.8px at 82% 68%, #fff 100%, transparent), radial-gradient(1.4px 1.4px at 18% 78%, #c084fc 100%, transparent), radial-gradient(1px 1px at 58% 88%, #fff 100%, transparent); background-size: 400px 400px; opacity: 0.7; animation: galaxyTwinkle 6s ease-in-out infinite alternate; }
+        .galaxy-nebula { position: absolute; width: 600px; height: 600px; top: -120px; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(168,85,247,0.18), transparent 70%); filter: blur(30px); }
+        @keyframes galaxyTwinkle { from { opacity: 0.55; } to { opacity: 0.85; } }
 
         .container {
             width: 100%;

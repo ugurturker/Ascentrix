@@ -6,6 +6,7 @@ import { onAuthChange, getCurrentUser } from './modules/auth.js';
 import { enableCloudSync, disableCloudSync } from './modules/store.js';
 import { applyTheme, getTheme, getSimplifyLevel, setSimplifyLevel } from './modules/theme.js';
 
+try { applyTheme(); } catch(_){}
 console.log('[Ascentrix] v2.0 — Vite + PWA aktif');
 
 // Firebase Auth UI — matrix terminal style
