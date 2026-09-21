@@ -11,12 +11,69 @@
             --danger: #ff5757;
         }
 
+        /* Theme variables */
+        body.theme-mario {
+            --bg-color: #5c94fc;
+            --card-bg: #ffffff;
+            --border-color: rgba(0,0,0,0.12);
+            --primary: #e52521;
+            --work-color: #e52521;
+            --break-color: #43b047;
+            --accent: #ffcc00;
+            --text-main: #1a1a1a;
+            --text-muted: #6b7280;
+            --danger: #e52521;
+        }
+        body.theme-aero {
+            --bg-color: #c8efff;
+            --card-bg: rgba(255,255,255,0.72);
+            --border-color: rgba(0,149,255,0.18);
+            --primary: #0095ff;
+            --work-color: #0095ff;
+            --break-color: #00c896;
+            --accent: #00d4ff;
+            --text-main: #0a2540;
+            --text-muted: #5a8ab0;
+            --danger: #ff3b30;
+        }
+        body.theme-galaxy {
+            --bg-color: #070b1a;
+            --card-bg: rgba(18,12,40,0.82);
+            --border-color: rgba(168,85,247,0.28);
+            --primary: #a855f7;
+            --work-color: #a855f7;
+            --break-color: #22d3ee;
+            --accent: #22d3ee;
+            --text-main: #e9d5ff;
+            --text-muted: #9ca3d6;
+            --danger: #f43f5e;
+        }
+        /* Simplify levels — 4 seviye, en alt en sade */
+        body.simplify-1 .orb { opacity: 0.06 !important; }
+        body.simplify-1 .matrix-rain { opacity: 0.3 !important; }
+        body.simplify-2 .orb,
+        body.simplify-2 .matrix-rain,
+        body.simplify-2 body::before { display: none !important; }
+        body.simplify-2 .container { box-shadow: 0 8px 24px rgba(0,0,0,0.25) !important; }
+        body.simplify-3 .orb,
+        body.simplify-3 .matrix-rain,
+        body.simplify-3 body::before,
+        body.simplify-3 body::after,
+        body.simplify-3 .container::before { display: none !important; }
+        body.simplify-3 .container,
+        body.simplify-3 .custom-panel,
+        body.simplify-3 .plan-card,
+        body.simplify-3 .xp-widget { box-shadow: none !important; backdrop-filter: none !important; }
+        body.simplify-3 * { animation: none !important; transition: none !important; }
+        body.simplify-3 { font-family: system-ui, -apple-system, sans-serif !important; }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: "Consolas", "Courier New", "Ubuntu Mono", monospace;
         }
+        body.simplify-3 * { font-family: system-ui, -apple-system, sans-serif !important; }
 
         body {
             background-color: var(--bg-color);

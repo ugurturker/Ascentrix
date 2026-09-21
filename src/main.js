@@ -1,9 +1,10 @@
 import './styles/main.css';
 import './modules/legacy.js';
-import { playNotifySuccess } from './modules/audio.js';
+import { playNotifySuccess, playClickSound } from './modules/audio.js';
 import { isFirebaseConfigured } from './modules/firebase.js';
 import { onAuthChange, getCurrentUser } from './modules/auth.js';
 import { enableCloudSync, disableCloudSync } from './modules/store.js';
+import { applyTheme, getTheme, getSimplifyLevel, setSimplifyLevel } from './modules/theme.js';
 
 console.log('[Ascentrix] v2.0 — Vite + PWA aktif');
 
@@ -65,3 +66,38 @@ setTimeout(() => {
     updateAuthUI(u);
   });
 }, 500);
+
+// Tema sistemi — uygula ve UI senkronla
+function syncThemeUI() {
+  const cur = getTheme();
+  const lvl = getSimplifyLevel();
+  document.querySelectorAll('.theme-btn').forEach(b => {
+    const isActive = b.dataset.theme === cur;
+    b.classList.toggle('active', isActive);
+    if (isActive) { b.style.borderColor = 'var(--primary)'; b.style.background = 'rgba(0,255,65,0.12)'; b.style.color = 'var(--primary)'; }
+    else { b.style.borderColor = ''; b.style.background = ''; b.style.color = ''; }
+  });
+  const slider = document.getElementById('simplifySlider');
+  const label = document.getElementById('simplifyLabel');
+  if (slider) slider.value = String(lvl);
+  if (label) {
+    const labels = ['Seviye 0 — Kapalı','Seviye 1 — Hafif','Seviye 2 — Orta','Seviye 3 — Sade (göz dostu)'];
+    label.textContent = labels[lvl] || labels[0];
+  }
+}
+setTimeout(() => {
+  try { applyTheme(); syncThemeUI(); } catch(_){}
+  const slider = document.getElementById('simplifySlider');
+  if (slider) {
+    slider.addEventListener('input', (e) => {
+      const v = Number(e.target.value);
+      setSimplifyLevel(v);
+      syncThemeUI();
+      try { playClickSound(); } catch(_){}
+    });
+  }
+  document.querySelectorAll('.theme-btn').forEach(b => {
+    b.addEventListener('click', () => { try { playClickSound(); } catch(_){} setTimeout(syncThemeUI, 50); });
+  });
+  window.addEventListener('themechange', syncThemeUI);
+}, 600);

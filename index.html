@@ -60,7 +60,6 @@
             <div class="plan-goal" id="planGoal">—</div>
             <div class="plan-notes" id="planNotes"></div>
             <button class="btn btn-primary" id="planStartBtn" style="width:100%; margin-top:10px;" onclick="startPlannedSession()" data-i18n="plan_start">Çalışmaya Başla</button>
-            <button class="btn btn-secondary btn-small" style="width:100%; margin-top:8px;" onclick="switchTab('statsTab')" data-i18n="plan_remeasure">T-Peak'i Yeniden Ölç</button>
         </div>
 
         <div class="xp-widget">
@@ -269,6 +268,27 @@
             <div style="font-size:0.65rem;color:var(--text-muted);text-align:center;margin-top:8px;opacity:0.8;">Giriş yaparsan verilerin Google hesabına bağlı Firestore'da yedeklenir. Yapılandırma yoksa localStorage ile çalışır.</div>
         </div>
 
+        <!-- Tema Seçici + Sadeleştir -->
+        <div class="theme-card" style="border:1px solid var(--border-color);border-radius:14px;padding:14px;margin-bottom:16px;background:rgba(255,255,255,0.02);">
+            <div class="custom-title" style="font-size:0.72rem;letter-spacing:0.12em;margin-bottom:10px;">TEMA</div>
+            <div class="theme-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;">
+                <button class="btn btn-secondary theme-btn" data-theme="matrix" onclick="window.AscentrixTheme && window.AscentrixTheme.setTheme('matrix')" style="padding:10px;font-weight:800;">◈ Matrix</button>
+                <button class="btn btn-secondary theme-btn" data-theme="mario" onclick="window.AscentrixTheme && window.AscentrixTheme.setTheme('mario')" style="padding:10px;font-weight:800;">🍄 Mario</button>
+                <button class="btn btn-secondary theme-btn" data-theme="aero" onclick="window.AscentrixTheme && window.AscentrixTheme.setTheme('aero')" style="padding:10px;font-weight:800;">✧ Aero</button>
+                <button class="btn btn-secondary theme-btn" data-theme="galaxy" onclick="window.AscentrixTheme && window.AscentrixTheme.setTheme('galaxy')" style="padding:10px;font-weight:800;">✦ Galaksi</button>
+            </div>
+            <div style="border-top:1px solid var(--border-color);padding-top:12px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;letter-spacing:0.06em;">SADELEŞTİR</span>
+                    <span id="simplifyLabel" style="font-size:0.7rem;color:var(--accent);font-weight:800;">Seviye 0 — Kapalı</span>
+                </div>
+                <input type="range" id="simplifySlider" min="0" max="3" value="0" step="1" style="width:100%;accent-color:var(--primary);">
+                <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--text-muted);margin-top:4px;">
+                    <span>Kapalı</span><span>Hafif</span><span>Orta</span><span>Sade</span>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="userNameInput" data-i18n="profile_name">Kullanıcı Adı / Unvan</label>
             <input type="text" id="userNameInput" class="form-control" placeholder="Örn: Araştırmacı" data-i18n-ph="profile_name_ph">
@@ -281,12 +301,6 @@
 
         <button class="btn btn-primary" style="width: 100%; margin-bottom: 12px;" onclick="saveProfileSettings()" data-i18n="profile_save">Ayarları Kaydet</button>
 
-        <div style="display: flex; gap: 10px; margin-top: 12px;">
-            <button class="btn btn-secondary" style="flex:1;" onclick="exportUserData()" data-i18n="profile_export">Verileri Dışa Aktar (JSON)</button>
-            <button class="btn btn-secondary" style="flex:1;" onclick="document.getElementById('importFileInput').click()" data-i18n="profile_import">Dışarıdan Yükle</button>
-            <input type="file" id="importFileInput" style="display:none;" onchange="importUserData(event)">
-        </div>
-
         <div class="donate-card">
             <div class="custom-title" data-i18n="donate_title">PROJEYİ DESTEKLE</div>
             <p data-i18n="donate_text">Merdiven Odak tamamen ücretsiz ve reklamsızdır; verileriniz yalnızca kendi tarayıcınızda saklanır. Patreon üzerinden yapacağınız küçük bir bağış, yeni özelliklerin geliştirilmesine ve uygulamanın sürdürülmesine doğrudan katkı sağlar. Desteğiniz için teşekkürler.</p>
@@ -297,9 +311,7 @@
             </div>
         </div>
 
-        <div class="danger-zone">
-            <button class="btn btn-danger" onclick="clearAllData()" data-i18n="profile_danger">Tüm Verileri ve Geçmişi Sıfırla</button>
-        </div>
+
     </div>
 
     <div class="app-footer" data-i18n="footer.copyright">© 2026 CoderS568. Tüm hakları saklıdır. Lisanssız kopyalanamaz ve dağıtılamaz.</div>
