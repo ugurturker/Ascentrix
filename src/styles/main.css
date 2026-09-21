@@ -52,8 +52,11 @@
         /* Per-theme fonts — kapsamlı */
         body.theme-matrix { font-family: "Consolas", "Courier New", "Ubuntu Mono", monospace; }
         body.theme-mario { font-family: "Outfit", system-ui, sans-serif; }
-        body.theme-mario h1, body.theme-mario .custom-title, body.theme-mario .plan-title, body.theme-mario .step-title { font-family: "Press Start 2P", monospace; letter-spacing: 0.02em; }
-        body.theme-mario .step-time, body.theme-mario .time-text { font-family: "Press Start 2P", monospace; }
+        body.theme-mario h1, body.theme-mario .custom-title, body.theme-mario .plan-title { font-family: "Press Start 2P", monospace; letter-spacing: 0.02em; line-height: 1.4; }
+        body.theme-mario .step-title { font-family: "Press Start 2P", monospace; font-size: 0.42rem; letter-spacing: 0.04em; line-height: 1.5; }
+        body.theme-mario .step-time { font-family: "Outfit", sans-serif; font-weight: 800; font-size: 0.95rem; }
+        body.theme-mario .time-text { font-family: "Outfit", sans-serif; font-weight: 900; letter-spacing: -0.02em; }
+        body.theme-mario .stat-label, body.theme-mario .plan-grid span { font-family: "Outfit", sans-serif; font-weight: 600; }
         body.theme-aero { font-family: "Outfit", system-ui, sans-serif; }
         body.theme-aero h1, body.theme-aero .custom-title { font-family: "Outfit", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
         body.theme-galaxy { font-family: "Space Grotesk", system-ui, sans-serif; }
@@ -180,19 +183,67 @@
         .mario-pipe-bg { position: absolute; bottom: 120px; right: 12%; width: 48px; height: 90px; background: #43b047; border: 4px solid #1a1a1a; border-bottom: none; box-shadow: inset 0 6px 0 rgba(255,255,255,0.3); }
         .mario-pipe-bg::before { content: ""; position: absolute; top: -14px; left: -6px; right: -6px; height: 14px; background: #43b047; border: 4px solid #1a1a1a; border-radius: 4px; }
         @keyframes marioDrift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 300px)); } }
-        /* Aero: cam baloncuklar */
-        .aero-bg { background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.9), transparent 60%), linear-gradient(180deg, #e0f6ff 0%, #b8e6ff 50%, #d6f0ff 100%); }
-        .aero-bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(0,149,255,0.18)); border: 1px solid rgba(255,255,255,0.7); backdrop-filter: blur(8px); animation: aeroFloat 18s ease-in-out infinite; }
-        .aero-bubble.b1 { width: 120px; height: 120px; top: 10%; left: 8%; animation-delay: 0s; }
-        .aero-bubble.b2 { width: 80px; height: 80px; top: 50%; right: 12%; animation-delay: -6s; }
-        .aero-bubble.b3 { width: 160px; height: 160px; bottom: 12%; left: 18%; animation-delay: -12s; }
-        .aero-bubble.b4 { width: 60px; height: 60px; top: 30%; right: 28%; animation-delay: -4s; }
-        @keyframes aeroFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.05); } }
+        .mario-coin { position: absolute; width: 28px; height: 28px; top: 18%; left: 62%; background: radial-gradient(circle at 30% 30%, #ffeb3b 0%, #ffcc00 55%, #e6a600 100%); border: 3px solid #1a1a1a; border-radius: 50%; box-shadow: 0 3px 0 #1a1a1a, inset 0 2px 0 rgba(255,255,255,0.6); animation: marioCoin 2.2s ease-in-out infinite; }
+        .mario-coin::before { content: "$"; position: absolute; inset: 0; display: grid; place-items: center; font-family: "Press Start 2P", monospace; font-size: 10px; color: #7a4a00; }
+        @keyframes marioCoin { 0%,100% { transform: translateY(0) rotateY(0deg); } 50% { transform: translateY(-10px) rotateY(18deg); } }
+        /* Aero: Frutiger Aero — glossy, aurora, lens flare (XP/Vista hissi) */
+        .aero-bg {
+            background:
+                radial-gradient(ellipse 900px 500px at 18% 8%, rgba(255,255,255,0.95) 0%, transparent 55%),
+                radial-gradient(ellipse 700px 400px at 82% 18%, rgba(0,255,150,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 600px 300px at 50% 100%, rgba(0,180,120,0.12) 0%, transparent 70%),
+                linear-gradient(180deg, #a8e4ff 0%, #7dd8ff 28%, #b8ecff 48%, #e0f6ff 75%, #c8f0d8 100%);
+        }
+        .aero-bg::before {
+            content: "";
+            position: absolute;
+            width: 180px; height: 180px;
+            top: 6%; left: 52%;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.45) 35%, transparent 70%);
+            filter: blur(18px);
+            border-radius: 50%;
+            opacity: 0.9;
+            animation: aeroLens 14s ease-in-out infinite alternate;
+        }
+        .aero-hill {
+            position: absolute; bottom: 0; left: -10%; right: -10%; height: 160px;
+            background: linear-gradient(180deg, #7ad46a 0%, #43b047 45%, #2d8a2a 100%);
+            border-top: 3px solid rgba(255,255,255,0.6);
+            border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+            box-shadow: 0 -8px 32px rgba(0,149,255,0.18), inset 0 12px 24px rgba(255,255,255,0.25);
+        }
+        .aero-bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 28% 28%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.55) 22%, rgba(0,180,255,0.14) 58%, rgba(0,149,255,0.08) 100%); border: 1.5px solid rgba(255,255,255,0.85); box-shadow: inset 0 8px 16px rgba(255,255,255,0.9), inset 0 -6px 12px rgba(0,120,200,0.15), 0 8px 24px rgba(0,149,255,0.18); backdrop-filter: blur(6px); animation: aeroFloat 16s ease-in-out infinite; }
+        .aero-bubble::after {
+            content: ""; position: absolute; width: 28%; height: 18%; top: 18%; left: 22%; background: radial-gradient(ellipse, rgba(255,255,255,0.95), transparent 70%); border-radius: 50%; transform: rotate(-18deg);
+        }
+        .aero-bubble.b1 { width: 140px; height: 140px; top: 14%; left: 6%; animation-delay: 0s; }
+        .aero-bubble.b2 { width: 96px; height: 96px; top: 42%; right: 10%; animation-delay: -5s; }
+        .aero-bubble.b3 { width: 180px; height: 180px; bottom: 16%; left: 14%; animation-delay: -10s; }
+        .aero-bubble.b4 { width: 72px; height: 72px; top: 26%; right: 24%; animation-delay: -3s; }
+        @keyframes aeroFloat { 0%,100% { transform: translateY(0) scale(1) rotate(0deg); } 33% { transform: translateY(-14px) scale(1.03) rotate(0.5deg); } 66% { transform: translateY(-8px) scale(0.98) rotate(-0.5deg); } }
+        @keyframes aeroLens { 0% { transform: translateX(0) scale(1); opacity: 0.9; } 100% { transform: translateX(18px) scale(1.08); opacity: 0.7; } }
         /* Galaxy: yıldızlar + nebula */
         .galaxy-bg { background: radial-gradient(ellipse at 50% 0%, #1a1240 0%, #070b1a 55%, #020205 100%); }
         .galaxy-stars { position: absolute; inset: 0; background-image: radial-gradient(1px 1px at 12% 18%, #fff 100%, transparent), radial-gradient(1.2px 1.2px at 38% 42%, #a5b4fc 100%, transparent), radial-gradient(1px 1px at 72% 12%, #22d3ee 100%, transparent), radial-gradient(0.8px 0.8px at 82% 68%, #fff 100%, transparent), radial-gradient(1.4px 1.4px at 18% 78%, #c084fc 100%, transparent), radial-gradient(1px 1px at 58% 88%, #fff 100%, transparent); background-size: 400px 400px; opacity: 0.7; animation: galaxyTwinkle 6s ease-in-out infinite alternate; }
-        .galaxy-nebula { position: absolute; width: 600px; height: 600px; top: -120px; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(168,85,247,0.18), transparent 70%); filter: blur(30px); }
+        .galaxy-nebula { position: absolute; width: 700px; height: 700px; top: -140px; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(168,85,247,0.22) 0%, rgba(34,211,238,0.12) 45%, transparent 72%); filter: blur(28px); animation: nebulaPulse 12s ease-in-out infinite alternate; }
+        .galaxy-shooting { position: absolute; width: 140px; height: 2px; top: 22%; left: -160px; background: linear-gradient(90deg, transparent, #fff 55%, #22d3ee); border-radius: 2px; box-shadow: 0 0 8px #22d3ee; opacity: 0; animation: shooting 9s linear infinite; animation-delay: 3s; }
         @keyframes galaxyTwinkle { from { opacity: 0.55; } to { opacity: 0.85; } }
+        @keyframes nebulaPulse { from { transform: translateX(-50%) scale(1); opacity: 0.9; } to { transform: translateX(-50%) scale(1.08); opacity: 1; } }
+        @keyframes shooting { 0% { transform: translateX(0) translateY(0); opacity: 0; } 8% { opacity: 1; } 22% { transform: translateX(calc(100vw + 320px)) translateY(90px); opacity: 0; } 100% { opacity: 0; } }
+        /* Responsive — tema arka planları mobilde sadeleşir, oranlar korunur */
+        @media (max-width: 640px) {
+            .mario-hill { height: 70px; }
+            .mario-pipe-bg { display: none; }
+            .mario-coin { width: 22px; height: 22px; top: 14%; }
+            .mario-coin::before { font-size: 8px; }
+            .aero-hill { height: 90px; }
+            .aero-bubble.b1 { width: 90px; height: 90px; }
+            .aero-bubble.b3 { width: 120px; height: 120px; }
+            .galaxy-nebula { width: 420px; height: 420px; }
+            body.theme-mario .container { border-width: 3px; box-shadow: 0 4px 0 #000; }
+            body.theme-mario h1 { font-size: 1.1rem; }
+            body.theme-mario .custom-title { font-size: 0.62rem; }
+        }
 
         .container {
             width: 100%;
