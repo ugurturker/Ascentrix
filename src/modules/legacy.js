@@ -810,7 +810,73 @@
 
     function initApp() {
         checkDailyReset();
-        currentSequence = buildSequence();
+        const restored = loadTimerState();
+        if (!restored) {
+            currentSequence = buildSequence();
+            totalSeconds = currentSequence[0]?.work * 60 || totalSeconds;
+            secondsLeft = totalSeconds;
+        } else {
+            // Restore sonrası interval'i yeniden başlat (kaldığı yerden devam)
+            if (isRunning && endAt && secondsLeft > 0) {
+                // interval'i yeniden kur — toggleTimer içindeki aynı mantık
+                try {
+                    clearInterval(timerInterval);
+                    timerInterval = setInterval(() => {
+                        try {
+                            const prev = secondsLeft;
+                            secondsLeft = endAt ? Math.max(0, Math.round((endAt - Date.now()) / 1000)) : Math.max(0, secondsLeft - 1);
+                            if (!isBreak) userData.stats.totalWorkSeconds += Math.max(0, prev - secondsLeft);
+                            if (!isBreak && secondsLeft <= 5 && secondsLeft > 0) playTickSound();
+                            updateDisplay();
+                            saveTimerState();
+                            if (secondsLeft <= 0) {
+                                clearInterval(timerInterval);
+                                isRunning = false;
+                                timerDisplay.classList.remove('running');
+                                if (!isBreak) {
+                                    if (stepIndex >= currentSequence.length - 1) onSessionEnd();
+                                    else onWorkFinished();
+                                } else if (fullBreak) {
+                                    playAlertSound();
+                                    finishFullBreak();
+                                } else {
+                                    onBreakFinished();
+                                }
+                                saveTimerState();
+                            }
+                        } catch (e) { console.error('Timer interval hatası:', e); clearInterval(timerInterval); isRunning = false; saveTimerState(); }
+                    }, 1000);
+                    timerDisplay.classList.add('running');
+                } catch(_){}
+            }
+            if (alarmActive) {
+                // Alarm çalıyorsa döngüyü yeniden başlat
+                try {
+                    if (alarmMode === 'break') startBreakAlarmLoop();
+                    else if (alarmMode === 'work') startAlarmLoop();
+                } catch(_){}
+            }
+            if (extraActive && extraBase) {
+                try {
+                    clearInterval(extraInterval);
+                    extraInterval = setInterval(() => {
+                        extraSeconds = Math.floor((Date.now() - extraBase) / 1000);
+                        updateDisplay();
+                        saveTimerState();
+                    }, 1000);
+                } catch(_){}
+            }
+            if (testRunning && testBase) {
+                try {
+                    clearInterval(testInterval);
+                    testInterval = setInterval(() => {
+                        testSeconds = Math.floor((Date.now() - testBase) / 1000);
+                        renderTestClock();
+                        saveTimerState();
+                    }, 1000);
+                } catch(_){}
+            }
+        }
         updateProfileUI();
         renderTracker();
         updateDisplay();
@@ -820,10 +886,69 @@
         renderTPeakUI();
         renderPlanCard();
         renderStats();
+        saveTimerState();
     }
 
     function saveUserData() {
         localStorage.setItem('ladder_user_data', JSON.stringify(userData));
+    }
+
+    // Timer oturumu kalıcılığı — tarayıcı reset/sayfa yenilemede kaldığı yerden devam
+    function saveTimerState() {
+        try {
+            const data = {
+                stepIndex, isBreak, secondsLeft, totalSeconds, isRunning, endAt,
+                alarmActive, workStepPending, breakStepPending, alarmMode,
+                testRunning, testSeconds, testBase, sessionDone,
+                extraActive, extraSeconds, extraBase, fullBreak,
+                currentSequence, currentModeKey, suppressPartial
+            };
+            localStorage.setItem('ascentrix_timer_state', JSON.stringify(data));
+        } catch(_){}
+    }
+    function clearTimerState() {
+        try { localStorage.removeItem('ascentrix_timer_state'); } catch(_){}
+    }
+    function loadTimerState() {
+        try {
+            const raw = localStorage.getItem('ascentrix_timer_state');
+            if (!raw) return false;
+            const d = JSON.parse(raw);
+            if (typeof d.stepIndex !== 'number' || !Array.isArray(d.currentSequence) || d.currentSequence.length === 0) return false;
+            stepIndex = d.stepIndex ?? 0;
+            isBreak = !!d.isBreak;
+            secondsLeft = typeof d.secondsLeft === 'number' ? d.secondsLeft : totalSeconds;
+            totalSeconds = typeof d.totalSeconds === 'number' ? d.totalSeconds : secondsLeft;
+            // endAt recalc for running timer
+            if (d.isRunning && typeof d.endAt === 'number' && d.endAt > Date.now() - 86400000) {
+                isRunning = true;
+                endAt = d.endAt;
+                const recalc = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+                // if still running, keep recalc, otherwise mark expired
+                if (recalc > 0) secondsLeft = recalc;
+                else { secondsLeft = 0; isRunning = false; endAt = null; }
+            } else {
+                isRunning = !!d.isRunning && !d.alarmActive;
+                endAt = null;
+                if (d.isRunning && !d.alarmActive) isRunning = false;
+            }
+            alarmActive = !!d.alarmActive;
+            workStepPending = !!d.workStepPending;
+            breakStepPending = !!d.breakStepPending;
+            alarmMode = d.alarmMode ?? null;
+            testRunning = !!d.testRunning;
+            testSeconds = d.testSeconds ?? 0;
+            testBase = d.testBase ?? 0;
+            sessionDone = !!d.sessionDone;
+            extraActive = !!d.extraActive;
+            extraSeconds = d.extraSeconds ?? 0;
+            extraBase = d.extraBase ?? 0;
+            fullBreak = !!d.fullBreak;
+            currentSequence = d.currentSequence;
+            currentModeKey = d.currentModeKey || 'ascending';
+            suppressPartial = !!d.suppressPartial;
+            return true;
+        } catch(e) { return false; }
     }
 
     function checkDailyReset() {
@@ -979,6 +1104,7 @@
             document.getElementById('startBtn').innerText = t('timer_resume');
             isRunning = false;
             timerDisplay.classList.remove('running');
+            saveTimerState();
         } else {
             if (testRunning) { showToast(t('toast_test_run'), 'warn'); return; }
             endAt = Date.now() + secondsLeft * 1000;
@@ -1012,6 +1138,7 @@
             document.getElementById('startBtn').innerText = t('timer_pause');
             isRunning = true;
             timerDisplay.classList.add('running');
+            saveTimerState();
         }
     }
 
@@ -1970,12 +2097,23 @@ p.upStamp = recent.length;
             timerDisplay.classList.remove('running');
         }
         if (!isBreak) {
+            // Skip: atlanan dakikalar günlük odağa EKLEMEZ (spec)
             let elapsed = Math.max(0, totalSeconds - secondsLeft);
             if (isRunning && endAt) elapsed = Math.max(0, totalSeconds - Math.max(0, Math.round((endAt - Date.now()) / 1000)));
             const mins = elapsed / 60;
             const plannedW = currentSequence[stepIndex] ? currentSequence[stepIndex].work : 0;
             if (mins >= Math.max(1, 0.2 * plannedW)) pullTPeakDown(mins);
-            completeWorkStep(false);
+            // Log skip without counting to dailyFocus/todayWorkMins/XP
+            const currentStep = currentSequence[stepIndex];
+            const now = new Date();
+            userData.logs.unshift({
+                timestamp: `${now.toLocaleDateString(logLocale())} ${now.toLocaleTimeString(logLocale(), { hour: '2-digit', minute: '2-digit' })}`,
+                mode: t('log_session', { n: todaySessionsDone() + 1 }),
+                step: t('log_partial', { x: stepIndex + 1, y: currentSequence.length }) + ' — Atlandı',
+                duration: `${fmtMin(plannedW)} ${t('minUnit')} (atlandı)`
+            });
+            if (userData.logs.length > 50) userData.logs.pop();
+            // No completedSteps / todayWorkMins / bumpDailyFocus / awardXp
             saveUserData();
             if (stepIndex >= currentSequence.length - 1) { showSessionBar(false); return; }
             enterBreakPaused();
@@ -1987,7 +2125,9 @@ p.upStamp = recent.length;
             startBtn.innerText = t('timer_start');
             startBtn.disabled = false;
             showToast(t('toast_skip'), 'info');
+            saveTimerState();
         }
+        saveTimerState();
     }
 
     function applyFlowOverride() {
@@ -2358,6 +2498,11 @@ p.upStamp = recent.length;
             showToast(t('toast_cleared'), 'info');
         }
     }
+
+    // Periyodik timer persist — her 1sn ve her etkileşimde
+    setInterval(saveTimerState, 1000);
+    window.addEventListener('beforeunload', () => { try { saveTimerState(); } catch(_){} });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) try { saveTimerState(); } catch(_){} });
 
     // BAŞLANGIÇ: tüm modül durumu (let/const) init edildikten sonra çalıştır (TDZ koruması)
     initApp();

@@ -112,17 +112,12 @@ export async function enableCloudSync() {
     try {
       const snap = await getDoc(ref);
       if (snap.exists() && snap.data() && snap.data().data) {
+        // Spec: Site her yenilendiğinde tüm veriler Firestore'dan çekilsin — cloud overwrite
         const cloudData = snap.data().data;
-        // Basit strateji: eğer cloud'da daha çok history varsa onu al, yoksa local'i koru
-        const localLen = (userData.peak?.history?.length || 0) + (userData.logs?.length || 0);
-        const cloudLen = (cloudData.peak?.history?.length || 0) + (cloudData.logs?.length || 0);
-        if (cloudLen > localLen) {
-          const merged = normalizeUserData(cloudData);
-          Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
-          localStorage.setItem('ladder_user_data', JSON.stringify(userData));
-        } else if (localLen > 0) {
-          await cloudSave();
-        }
+        const merged = normalizeUserData(cloudData);
+        Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
+        localStorage.setItem('ladder_user_data', JSON.stringify(userData));
+        console.log('[Ascentrix] Firestore verisi yüklendi — local overwrite');
       } else {
         await cloudSave();
       }
