@@ -67,7 +67,9 @@
         body.theme-aero .stat-label, body.theme-aero .plan-grid span { color: #1e293b; }
         body.theme-mario .stat-label, body.theme-mario .plan-grid span { color: #334155; }
         body.theme-galaxy .galaxy-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
-        body.theme-galaxy .galaxy-stars, body.theme-galaxy .galaxy-nebula, body.theme-galaxy .black-hole, body.theme-galaxy .galaxy-spiral { z-index: 1; }
+        /* Canvas tek kaynaktır — statik kopyalar çift karadeliğe yol açtığı için kapalı */
+        body.theme-galaxy .galaxy-stars, body.theme-galaxy .galaxy-nebula, body.theme-galaxy .galaxy-shooting,
+        body.theme-galaxy .black-hole, body.theme-galaxy .galaxy-spiral { display: none !important; }
         /* Per-theme cards — kapsamlı */
         body.theme-mario .container { border: 4px solid #1a1a1a; border-radius: 0; box-shadow: 0 8px 0 #000, 0 0 0 4px #fff; background: #ffffff; }
         body.theme-mario .custom-panel, body.theme-mario .plan-card, body.theme-mario .xp-widget, body.theme-mario .goal-container, body.theme-mario .stat-card, body.theme-mario .donate-card { background: #ffffff; border: 3px solid #1a1a1a; border-radius: 0; box-shadow: 0 4px 0 #1a1a1a; color: #1a1a1a; }
@@ -97,9 +99,11 @@
         body.simplify-2 .orb,
         body.simplify-2 .matrix-rain,
         body.simplify-2 body::before,
-        body.simplify-2 .aero-bubble,
+        body.simplify-2 .aero-cloud,
+        body.simplify-2 .aero-water,
         body.simplify-2 .mario-cloud,
-        body.simplify-2 .galaxy-stars { display: none !important; }
+        body.simplify-2 .mario-goomba,
+        body.simplify-2 .mario-mario { display: none !important; }
         body.simplify-2 .theme-bg { opacity: 0.45 !important; }
         body.simplify-2 .container { box-shadow: 0 8px 24px rgba(0,0,0,0.25) !important; }
         body.simplify-3 .orb,
@@ -193,80 +197,154 @@
         body.theme-mario .mario-bg { display: block; }
         body.theme-aero .aero-bg { display: block; }
         body.theme-galaxy .galaxy-bg { display: block; }
-        /* Mario: bulutlar + tepe + boru */
-        .mario-bg { background: linear-gradient(180deg, #5c94fc 0%, #8ec8ff 60%, #5c94fc 100%); }
-        .mario-cloud { position: absolute; background: #fff; border-radius: 50%; box-shadow: 0 4px 0 #1a1a1a; border: 3px solid #1a1a1a; animation: marioDrift 28s linear infinite; }
-        .mario-cloud.c1 { width: 90px; height: 40px; top: 12%; left: -120px; animation-duration: 32s; }
-        .mario-cloud.c2 { width: 70px; height: 32px; top: 22%; left: -100px; animation-duration: 38s; animation-delay: -10s; }
-        .mario-cloud.c3 { width: 110px; height: 44px; top: 8%; left: -150px; animation-duration: 44s; animation-delay: -18s; }
-        .mario-hill { position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: #43b047; border-top: 4px solid #1a1a1a; }
-        .mario-pipe-bg { position: absolute; bottom: 120px; right: 12%; width: 48px; height: 90px; background: #43b047; border: 4px solid #1a1a1a; border-bottom: none; box-shadow: inset 0 6px 0 rgba(255,255,255,0.3); }
-        .mario-pipe-bg::before { content: ""; position: absolute; top: -14px; left: -6px; right: -6px; height: 14px; background: #43b047; border: 4px solid #1a1a1a; border-radius: 4px; }
-        @keyframes marioDrift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 300px)); } }
-        .mario-coin { position: absolute; width: 28px; height: 28px; top: 18%; left: 62%; background: radial-gradient(circle at 30% 30%, #ffeb3b 0%, #ffcc00 55%, #e6a600 100%); border: 3px solid #1a1a1a; border-radius: 50%; box-shadow: 0 3px 0 #1a1a1a, inset 0 2px 0 rgba(255,255,255,0.6); animation: marioCoin 2.2s ease-in-out infinite; }
-        .mario-coin::before { content: "$"; position: absolute; inset: 0; display: grid; place-items: center; font-family: "Press Start 2P", monospace; font-size: 10px; color: #7a4a00; }
-        @keyframes marioCoin { 0%,100% { transform: translateY(0) rotateY(0deg); } 50% { transform: translateY(-10px) rotateY(18deg); } }
-        /* Aero: Frutiger Aero — glossy, aurora, lens flare (XP/Vista hissi) */
-        .aero-bg {
+        /* ============ MATRIX: 3D derinlik — zemin ızgarası + neon süpürme ============ */
+        body.theme-matrix .theme-matrix-floor { display: block; }
+        .theme-matrix-floor { display: none; position: fixed; left: -25%; right: -25%; bottom: -6%; height: 34%; z-index: -1; pointer-events: none;
+            background-image: linear-gradient(rgba(0,255,65,0.22) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(0,255,65,0.22) 1.5px, transparent 1.5px);
+            background-size: 54px 54px; transform: perspective(520px) rotateX(58deg); transform-origin: bottom;
+            mask-image: linear-gradient(180deg, transparent, black 42%); -webkit-mask-image: linear-gradient(180deg, transparent, black 42%);
+            animation: matrixFloorSlide 2.6s linear infinite; opacity: 0.5; }
+        @keyframes matrixFloorSlide { from { background-position: 0 0, 0 0; } to { background-position: 0 54px, 0 0; } }
+        body.theme-matrix .container { transform: perspective(1100px) rotateX(0.6deg); transition: transform 0.45s ease, border-color 0.4s ease, box-shadow 0.4s ease; }
+        body.theme-matrix .container:hover { transform: perspective(1100px) rotateX(0deg) translateY(-2px); }
+        body.theme-matrix .container::after { content: ""; position: absolute; top: 0; bottom: 0; left: -30%; width: 26%; background: linear-gradient(100deg, transparent, rgba(0,255,65,0.10), transparent); transform: skewX(-12deg); animation: matrixSheen 7s ease-in-out infinite; pointer-events: none; }
+        @keyframes matrixSheen { 0%,100% { left: -30%; } 50% { left: 110%; } }
+        /* ============ MARIO: 3D paralaks sahnesi ============ */
+        .mario-bg { background: linear-gradient(180deg, #4a8cf7 0%, #6fa8ff 38%, #a5d2ff 68%, #d8ecff 100%); perspective: 700px; }
+        .mario-parallax { position: absolute; inset: 0; transform-style: preserve-3d; }
+        .mario-layer { position: absolute; inset: 0; }
+        .mario-bg-layer { transform: translateZ(-170px) scale(1.3); }
+        .mario-cloud-layer { transform: translateZ(-80px) scale(1.13); }
+        .mario-mid-layer { transform: translateZ(0); }
+        .mario-fg-layer { transform: translateZ(80px) scale(0.92); }
+        /* Güneş + uzak tepeler (arka katman) */
+        .mario-bg-layer::before {
+            content: ""; position: absolute; top: 7%; left: 9%; width: 92px; height: 92px; border-radius: 50%;
+            background: radial-gradient(circle at 38% 35%, #fff9c4 0%, #ffeb3b 45%, #ffb300 100%);
+            border: 4px solid #1a1a1a; box-shadow: 0 0 34px rgba(255, 213, 0, 0.75), 0 4px 0 #1a1a1a;
+            animation: marioSunPulse 5s ease-in-out infinite;
+        }
+        .mario-bg-layer::after {
+            content: ""; position: absolute; bottom: 96px; left: -6%; right: -6%; height: 150px;
             background:
-                radial-gradient(ellipse 900px 500px at 18% 8%, rgba(255,255,255,0.95) 0%, transparent 55%),
-                radial-gradient(ellipse 700px 400px at 82% 18%, rgba(0,255,150,0.18) 0%, transparent 60%),
-                radial-gradient(ellipse 600px 300px at 50% 100%, rgba(0,180,120,0.12) 0%, transparent 70%),
-                linear-gradient(180deg, #a8e4ff 0%, #7dd8ff 28%, #b8ecff 48%, #e0f6ff 75%, #c8f0d8 100%);
-        }
-        .aero-bg::before {
-            content: "";
-            position: absolute;
-            width: 180px; height: 180px;
-            top: 6%; left: 52%;
-            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.45) 35%, transparent 70%);
-            filter: blur(18px);
-            border-radius: 50%;
+                radial-gradient(ellipse 220px 120px at 18% 100%, #7ec850 60%, transparent 61%),
+                radial-gradient(ellipse 300px 150px at 68% 100%, #6abe45 60%, transparent 61%),
+                radial-gradient(ellipse 180px 100px at 92% 100%, #7ec850 60%, transparent 61%);
             opacity: 0.9;
-            animation: aeroLens 14s ease-in-out infinite alternate;
         }
-        .aero-hill {
-            position: absolute; bottom: 0; left: -10%; right: -10%; height: 160px;
-            background: linear-gradient(180deg, #7ad46a 0%, #43b047 45%, #2d8a2a 100%);
-            border-top: 3px solid rgba(255,255,255,0.6);
-            border-radius: 50% 50% 0 0 / 30% 30% 0 0;
-            box-shadow: 0 -8px 32px rgba(0,149,255,0.18), inset 0 12px 24px rgba(255,255,255,0.25);
+        @keyframes marioSunPulse { 0%,100% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.07) rotate(8deg); } }
+        /* SMB tipi blok bulutlar */
+        .mario-cloud { position: absolute; width: 96px; height: 30px; background: #fff; border: 3px solid #1a1a1a; border-radius: 16px; box-shadow: 0 4px 0 #1a1a1a; animation: marioDrift linear infinite; }
+        .mario-cloud::before, .mario-cloud::after { content: ""; position: absolute; background: #fff; border: 3px solid #1a1a1a; border-radius: 50%; }
+        .mario-cloud::before { width: 34px; height: 34px; top: -22px; left: 16px; border-bottom-color: transparent; }
+        .mario-cloud::after { width: 26px; height: 26px; top: -16px; right: 16px; border-bottom-color: transparent; }
+        .mario-cloud.c1 { top: 11%; left: -130px; animation-duration: 34s; transform: scale(1); }
+        .mario-cloud.c2 { top: 24%; left: -130px; animation-duration: 42s; animation-delay: -12s; transform: scale(0.75); }
+        .mario-cloud.c3 { top: 6%; left: -160px; animation-duration: 50s; animation-delay: -24s; transform: scale(1.2); }
+        .mario-cloud.c4 { top: 32%; left: -130px; animation-duration: 38s; animation-delay: -30s; transform: scale(0.6); }
+        @keyframes marioDrift { from { margin-left: 0; } to { margin-left: calc(100vw + 340px); } }
+        /* Zemin: çim + tuğla (3D hafif eğim) */
+        .mario-hill { position: absolute; bottom: 0; left: -4%; right: -4%; height: 108px; transform: rotateX(24deg); transform-origin: bottom; border-top: 5px solid #1a1a1a;
+            background:
+                linear-gradient(180deg, #58c93f 0 16px, #1a1a1a 16px 20px, transparent 20px),
+                repeating-linear-gradient(90deg, #c84c2a 0 34px, #1a1a1a 34px 37px),
+                repeating-linear-gradient(0deg, #d2691e 0 15px, #1a1a1a 15px 17px),
+                #b34a24;
         }
-        .aero-bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 28% 28%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.55) 22%, rgba(0,180,255,0.14) 58%, rgba(0,149,255,0.08) 100%); border: 1.5px solid rgba(255,255,255,0.85); box-shadow: inset 0 8px 16px rgba(255,255,255,0.9), inset 0 -6px 12px rgba(0,120,200,0.15), 0 8px 24px rgba(0,149,255,0.18); backdrop-filter: blur(6px); animation: aeroFloat 16s ease-in-out infinite; }
-        .aero-bubble::after {
-            content: ""; position: absolute; width: 28%; height: 18%; top: 18%; left: 22%; background: radial-gradient(ellipse, rgba(255,255,255,0.95), transparent 70%); border-radius: 50%; transform: rotate(-18deg);
+        /* Borular — 3 boy, 3D parlama */
+        .mario-pipe { position: absolute; bottom: 96px; width: 52px; background: linear-gradient(90deg, #2e7d32 0%, #66d36e 22%, #43b047 45%, #2e7d32 80%, #1c5a20 100%); border: 4px solid #1a1a1a; border-bottom: none; box-shadow: inset -6px 0 0 rgba(0,0,0,0.22), 0 6px 0 rgba(0,0,0,0.35); }
+        .mario-pipe::before { content: ""; position: absolute; top: -16px; left: -8px; right: -8px; height: 18px; background: linear-gradient(180deg, #7ce495 0%, #43b047 60%, #2e7d32 100%); border: 4px solid #1a1a1a; border-radius: 5px; box-shadow: 0 4px 0 rgba(0,0,0,0.3); }
+        .mario-pipe.pipe-1 { right: 7%; height: 118px; }
+        .mario-pipe.pipe-2 { right: 30%; height: 78px; }
+        .mario-pipe.pipe-3 { left: 10%; height: 56px; }
+        /* Soru bloğu — zıplama + parlama */
+        .mario-question-block { position: absolute; bottom: 218px; left: 44%; width: 36px; height: 36px; background: linear-gradient(180deg, #ffd54a 0%, #f5a623 70%, #d98a12 100%); border: 4px solid #1a1a1a; border-radius: 6px; box-shadow: 0 4px 0 #1a1a1a, 0 0 16px rgba(255, 200, 40, 0.65), inset 0 3px 0 rgba(255,255,255,0.55); animation: questionBounce 3.2s ease-in-out infinite; }
+        .mario-question-block::before { content: "?"; position: absolute; inset: 0; display: grid; place-items: center; font-family: "Press Start 2P", monospace; font-size: 15px; color: #fff; text-shadow: 2px 2px 0 #7a4a00; animation: questionFlip 3.2s ease-in-out infinite; }
+        .mario-question-block::after { content: ""; position: absolute; width: 6px; height: 6px; background: #7a4a00; border-radius: 1px; top: 4px; left: 4px; box-shadow: 22px 0 #7a4a00, 0 22px #7a4a00, 22px 22px #7a4a00; opacity: 0.8; }
+        @keyframes questionBounce { 0%,100% { transform: translateY(0); } 8% { transform: translateY(-12px); } 16% { transform: translateY(0); } }
+        @keyframes questionFlip { 0%,100% { transform: scaleX(1); } 8% { transform: scaleX(-1); } 16% { transform: scaleX(1); } }
+        /* Coinler — soru bloğu üstünde yay */
+        .mario-coin { position: absolute; width: 24px; height: 24px; background: radial-gradient(circle at 32% 30%, #fff59d 0%, #ffcc00 48%, #d99a00 100%); border: 3px solid #1a1a1a; border-radius: 50%; box-shadow: 0 3px 0 #1a1a1a, 0 0 12px rgba(255, 205, 0, 0.7), inset 0 2px 0 rgba(255,255,255,0.65); animation: marioCoinSpin 1.6s ease-in-out infinite; }
+        .mario-coin::before { content: ""; position: absolute; inset: 4px; border: 2px solid #b37a00; border-radius: 50%; opacity: 0.8; }
+        .mario-coin.coin-1 { bottom: 268px; left: 40.5%; }
+        .mario-coin.coin-2 { bottom: 282px; left: 44%; animation-delay: -0.4s; }
+        .mario-coin.coin-3 { bottom: 268px; left: 47.5%; animation-delay: -0.8s; }
+        @keyframes marioCoinSpin { 0%,100% { transform: translateY(0) rotateY(-24deg); } 50% { transform: translateY(-9px) rotateY(24deg); } }
+        /* Goomba — soldan sağa yürüyüş + ezilme animasyonu */
+        .mario-goomba { position: absolute; bottom: 100px; left: -60px; width: 36px; height: 26px; animation: goombaWalk 26s linear infinite; filter: drop-shadow(0 3px 0 rgba(0,0,0,0.3)); }
+        .mario-goomba::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 3px; box-shadow: 9px 0px 0 #a05a2c, 12px 0px 0 #a05a2c, 15px 0px 0 #a05a2c, 18px 0px 0 #a05a2c, 21px 0px 0 #a05a2c, 24px 0px 0 #a05a2c, 3px 3px 0 #a05a2c, 6px 3px 0 #a05a2c, 9px 3px 0 #a05a2c, 12px 3px 0 #a05a2c, 15px 3px 0 #a05a2c, 18px 3px 0 #a05a2c, 21px 3px 0 #a05a2c, 24px 3px 0 #a05a2c, 27px 3px 0 #a05a2c, 30px 3px 0 #a05a2c, 0px 6px 0 #a05a2c, 3px 6px 0 #a05a2c, 6px 6px 0 #a05a2c, 9px 6px 0 #a05a2c, 12px 6px 0 #a05a2c, 15px 6px 0 #a05a2c, 18px 6px 0 #a05a2c, 21px 6px 0 #a05a2c, 24px 6px 0 #a05a2c, 27px 6px 0 #a05a2c, 30px 6px 0 #a05a2c, 33px 6px 0 #a05a2c, 0px 9px 0 #a05a2c, 3px 9px 0 #a05a2c, 6px 9px 0 #ffffff, 9px 9px 0 #ffffff, 12px 9px 0 #a05a2c, 15px 9px 0 #a05a2c, 18px 9px 0 #a05a2c, 21px 9px 0 #a05a2c, 24px 9px 0 #ffffff, 27px 9px 0 #ffffff, 30px 9px 0 #a05a2c, 33px 9px 0 #a05a2c, 0px 12px 0 #a05a2c, 3px 12px 0 #a05a2c, 6px 12px 0 #ffffff, 9px 12px 0 #1a1a1a, 12px 12px 0 #ffffff, 15px 12px 0 #a05a2c, 18px 12px 0 #a05a2c, 21px 12px 0 #ffffff, 24px 12px 0 #1a1a1a, 27px 12px 0 #ffffff, 30px 12px 0 #a05a2c, 33px 12px 0 #a05a2c, 0px 15px 0 #a05a2c, 3px 15px 0 #a05a2c, 6px 15px 0 #a05a2c, 9px 15px 0 #a05a2c, 12px 15px 0 #a05a2c, 15px 15px 0 #a05a2c, 18px 15px 0 #a05a2c, 21px 15px 0 #a05a2c, 24px 15px 0 #a05a2c, 27px 15px 0 #a05a2c, 30px 15px 0 #a05a2c, 33px 15px 0 #a05a2c, 3px 18px 0 #a05a2c, 6px 18px 0 #a05a2c, 9px 18px 0 #a05a2c, 12px 18px 0 #a05a2c, 15px 18px 0 #a05a2c, 18px 18px 0 #a05a2c, 21px 18px 0 #a05a2c, 24px 18px 0 #a05a2c, 27px 18px 0 #a05a2c, 30px 18px 0 #a05a2c, 6px 21px 0 #3a2410, 9px 21px 0 #3a2410, 12px 21px 0 #3a2410, 21px 21px 0 #3a2410, 24px 21px 0 #3a2410, 27px 21px 0 #3a2410; image-rendering: pixelated; animation: goombaSquash 0.5s ease-in-out infinite; transform-origin: bottom center; }
+        @keyframes goombaWalk { from { margin-left: 0; } to { margin-left: calc(100vw + 160px); } }
+        @keyframes goombaSquash { 0%,100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.88) scaleX(1.06); } }
+        /* MARIO — piksel sprite, koşu + zıplama turu */
+        .mario-mario { position: absolute; bottom: 102px; left: -70px; width: 36px; height: 42px; animation: marioRunAcross 22s linear infinite; filter: drop-shadow(0 4px 0 rgba(0,0,0,0.3)); }
+        .mario-mario::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 3px; box-shadow: 12px 0px 0 #e52521, 15px 0px 0 #e52521, 18px 0px 0 #e52521, 21px 0px 0 #e52521, 9px 3px 0 #e52521, 12px 3px 0 #e52521, 15px 3px 0 #e52521, 18px 3px 0 #e52521, 21px 3px 0 #e52521, 24px 3px 0 #e52521, 27px 3px 0 #e52521, 30px 3px 0 #e52521, 9px 6px 0 #6b3a12, 12px 6px 0 #6b3a12, 15px 6px 0 #ffcf9e, 18px 6px 0 #ffcf9e, 21px 6px 0 #ffcf9e, 24px 6px 0 #1a1a1a, 6px 9px 0 #6b3a12, 9px 9px 0 #ffcf9e, 12px 9px 0 #ffcf9e, 15px 9px 0 #ffcf9e, 18px 9px 0 #ffcf9e, 21px 9px 0 #ffcf9e, 24px 9px 0 #1a1a1a, 27px 9px 0 #ffcf9e, 6px 12px 0 #6b3a12, 9px 12px 0 #ffcf9e, 12px 12px 0 #6b3a12, 15px 12px 0 #ffcf9e, 18px 12px 0 #ffcf9e, 21px 12px 0 #ffcf9e, 24px 12px 0 #ffcf9e, 27px 12px 0 #ffcf9e, 30px 12px 0 #ffcf9e, 9px 15px 0 #ffcf9e, 12px 15px 0 #ffcf9e, 15px 15px 0 #ffcf9e, 18px 15px 0 #ffcf9e, 21px 15px 0 #ffcf9e, 24px 15px 0 #ffcf9e, 6px 18px 0 #e52521, 9px 18px 0 #e52521, 12px 18px 0 #2456e0, 15px 18px 0 #2456e0, 18px 18px 0 #e52521, 21px 18px 0 #e52521, 24px 18px 0 #e52521, 3px 21px 0 #e52521, 6px 21px 0 #e52521, 9px 21px 0 #e52521, 12px 21px 0 #2456e0, 15px 21px 0 #2456e0, 18px 21px 0 #2456e0, 21px 21px 0 #2456e0, 24px 21px 0 #e52521, 27px 21px 0 #e52521, 30px 21px 0 #e52521, 3px 24px 0 #e52521, 6px 24px 0 #e52521, 9px 24px 0 #2456e0, 12px 24px 0 #2456e0, 15px 24px 0 #2456e0, 18px 24px 0 #2456e0, 21px 24px 0 #2456e0, 24px 24px 0 #2456e0, 27px 24px 0 #e52521, 30px 24px 0 #e52521, 3px 27px 0 #ffcf9e, 6px 27px 0 #ffcf9e, 9px 27px 0 #2456e0, 12px 27px 0 #2456e0, 15px 27px 0 #ffcc00, 18px 27px 0 #ffcc00, 21px 27px 0 #2456e0, 24px 27px 0 #2456e0, 27px 27px 0 #ffcf9e, 30px 27px 0 #ffcf9e, 3px 30px 0 #ffcf9e, 6px 30px 0 #ffcf9e, 9px 30px 0 #ffcf9e, 12px 30px 0 #2456e0, 15px 30px 0 #2456e0, 18px 30px 0 #2456e0, 21px 30px 0 #2456e0, 24px 30px 0 #ffcf9e, 27px 30px 0 #ffcf9e, 30px 30px 0 #ffcf9e, 12px 33px 0 #2456e0, 15px 33px 0 #2456e0, 18px 33px 0 #2456e0, 21px 33px 0 #2456e0, 9px 36px 0 #2456e0, 12px 36px 0 #2456e0, 15px 36px 0 #2456e0, 21px 36px 0 #2456e0, 24px 36px 0 #2456e0, 27px 36px 0 #2456e0, 6px 39px 0 #6b3a12, 9px 39px 0 #6b3a12, 12px 39px 0 #6b3a12, 24px 39px 0 #6b3a12, 27px 39px 0 #6b3a12, 30px 39px 0 #6b3a12; animation: marioLegs 0.26s steps(1) infinite; image-rendering: pixelated; }
+        @keyframes marioLegs { 0%, 49% { box-shadow: 12px 0px 0 #e52521, 15px 0px 0 #e52521, 18px 0px 0 #e52521, 21px 0px 0 #e52521, 9px 3px 0 #e52521, 12px 3px 0 #e52521, 15px 3px 0 #e52521, 18px 3px 0 #e52521, 21px 3px 0 #e52521, 24px 3px 0 #e52521, 27px 3px 0 #e52521, 30px 3px 0 #e52521, 9px 6px 0 #6b3a12, 12px 6px 0 #6b3a12, 15px 6px 0 #ffcf9e, 18px 6px 0 #ffcf9e, 21px 6px 0 #ffcf9e, 24px 6px 0 #1a1a1a, 6px 9px 0 #6b3a12, 9px 9px 0 #ffcf9e, 12px 9px 0 #ffcf9e, 15px 9px 0 #ffcf9e, 18px 9px 0 #ffcf9e, 21px 9px 0 #ffcf9e, 24px 9px 0 #1a1a1a, 27px 9px 0 #ffcf9e, 6px 12px 0 #6b3a12, 9px 12px 0 #ffcf9e, 12px 12px 0 #6b3a12, 15px 12px 0 #ffcf9e, 18px 12px 0 #ffcf9e, 21px 12px 0 #ffcf9e, 24px 12px 0 #ffcf9e, 27px 12px 0 #ffcf9e, 30px 12px 0 #ffcf9e, 9px 15px 0 #ffcf9e, 12px 15px 0 #ffcf9e, 15px 15px 0 #ffcf9e, 18px 15px 0 #ffcf9e, 21px 15px 0 #ffcf9e, 24px 15px 0 #ffcf9e, 6px 18px 0 #e52521, 9px 18px 0 #e52521, 12px 18px 0 #2456e0, 15px 18px 0 #2456e0, 18px 18px 0 #e52521, 21px 18px 0 #e52521, 24px 18px 0 #e52521, 3px 21px 0 #e52521, 6px 21px 0 #e52521, 9px 21px 0 #e52521, 12px 21px 0 #2456e0, 15px 21px 0 #2456e0, 18px 21px 0 #2456e0, 21px 21px 0 #2456e0, 24px 21px 0 #e52521, 27px 21px 0 #e52521, 30px 21px 0 #e52521, 3px 24px 0 #e52521, 6px 24px 0 #e52521, 9px 24px 0 #2456e0, 12px 24px 0 #2456e0, 15px 24px 0 #2456e0, 18px 24px 0 #2456e0, 21px 24px 0 #2456e0, 24px 24px 0 #2456e0, 27px 24px 0 #e52521, 30px 24px 0 #e52521, 3px 27px 0 #ffcf9e, 6px 27px 0 #ffcf9e, 9px 27px 0 #2456e0, 12px 27px 0 #2456e0, 15px 27px 0 #ffcc00, 18px 27px 0 #ffcc00, 21px 27px 0 #2456e0, 24px 27px 0 #2456e0, 27px 27px 0 #ffcf9e, 30px 27px 0 #ffcf9e, 3px 30px 0 #ffcf9e, 6px 30px 0 #ffcf9e, 9px 30px 0 #ffcf9e, 12px 30px 0 #2456e0, 15px 30px 0 #2456e0, 18px 30px 0 #2456e0, 21px 30px 0 #2456e0, 24px 30px 0 #ffcf9e, 27px 30px 0 #ffcf9e, 30px 30px 0 #ffcf9e, 12px 33px 0 #2456e0, 15px 33px 0 #2456e0, 18px 33px 0 #2456e0, 21px 33px 0 #2456e0, 9px 36px 0 #2456e0, 12px 36px 0 #2456e0, 15px 36px 0 #2456e0, 21px 36px 0 #2456e0, 24px 36px 0 #2456e0, 27px 36px 0 #2456e0, 6px 39px 0 #6b3a12, 9px 39px 0 #6b3a12, 12px 39px 0 #6b3a12, 24px 39px 0 #6b3a12, 27px 39px 0 #6b3a12, 30px 39px 0 #6b3a12; } 50%, 100% { box-shadow: 12px 0px 0 #e52521, 15px 0px 0 #e52521, 18px 0px 0 #e52521, 21px 0px 0 #e52521, 9px 3px 0 #e52521, 12px 3px 0 #e52521, 15px 3px 0 #e52521, 18px 3px 0 #e52521, 21px 3px 0 #e52521, 24px 3px 0 #e52521, 27px 3px 0 #e52521, 30px 3px 0 #e52521, 9px 6px 0 #6b3a12, 12px 6px 0 #6b3a12, 15px 6px 0 #ffcf9e, 18px 6px 0 #ffcf9e, 21px 6px 0 #ffcf9e, 24px 6px 0 #1a1a1a, 6px 9px 0 #6b3a12, 9px 9px 0 #ffcf9e, 12px 9px 0 #ffcf9e, 15px 9px 0 #ffcf9e, 18px 9px 0 #ffcf9e, 21px 9px 0 #ffcf9e, 24px 9px 0 #1a1a1a, 27px 9px 0 #ffcf9e, 6px 12px 0 #6b3a12, 9px 12px 0 #ffcf9e, 12px 12px 0 #6b3a12, 15px 12px 0 #ffcf9e, 18px 12px 0 #ffcf9e, 21px 12px 0 #ffcf9e, 24px 12px 0 #ffcf9e, 27px 12px 0 #ffcf9e, 30px 12px 0 #ffcf9e, 9px 15px 0 #ffcf9e, 12px 15px 0 #ffcf9e, 15px 15px 0 #ffcf9e, 18px 15px 0 #ffcf9e, 21px 15px 0 #ffcf9e, 24px 15px 0 #ffcf9e, 6px 18px 0 #e52521, 9px 18px 0 #e52521, 12px 18px 0 #2456e0, 15px 18px 0 #2456e0, 18px 18px 0 #e52521, 21px 18px 0 #e52521, 24px 18px 0 #e52521, 3px 21px 0 #e52521, 6px 21px 0 #e52521, 9px 21px 0 #e52521, 12px 21px 0 #2456e0, 15px 21px 0 #2456e0, 18px 21px 0 #2456e0, 21px 21px 0 #2456e0, 24px 21px 0 #e52521, 27px 21px 0 #e52521, 30px 21px 0 #e52521, 3px 24px 0 #e52521, 6px 24px 0 #e52521, 9px 24px 0 #2456e0, 12px 24px 0 #2456e0, 15px 24px 0 #2456e0, 18px 24px 0 #2456e0, 21px 24px 0 #2456e0, 24px 24px 0 #2456e0, 27px 24px 0 #e52521, 30px 24px 0 #e52521, 3px 27px 0 #ffcf9e, 6px 27px 0 #ffcf9e, 9px 27px 0 #2456e0, 12px 27px 0 #2456e0, 15px 27px 0 #ffcc00, 18px 27px 0 #ffcc00, 21px 27px 0 #2456e0, 24px 27px 0 #2456e0, 27px 27px 0 #ffcf9e, 30px 27px 0 #ffcf9e, 3px 30px 0 #ffcf9e, 6px 30px 0 #ffcf9e, 9px 30px 0 #ffcf9e, 12px 30px 0 #2456e0, 15px 30px 0 #2456e0, 18px 30px 0 #2456e0, 21px 30px 0 #2456e0, 24px 30px 0 #ffcf9e, 27px 30px 0 #ffcf9e, 30px 30px 0 #ffcf9e, 12px 33px 0 #2456e0, 15px 33px 0 #2456e0, 18px 33px 0 #2456e0, 21px 33px 0 #2456e0, 12px 36px 0 #2456e0, 15px 36px 0 #2456e0, 18px 36px 0 #2456e0, 21px 36px 0 #2456e0, 24px 36px 0 #2456e0, 27px 36px 0 #2456e0, 9px 39px 0 #6b3a12, 12px 39px 0 #6b3a12, 15px 39px 0 #6b3a12, 24px 39px 0 #6b3a12, 27px 39px 0 #6b3a12, 30px 39px 0 #6b3a12; } }
+        @keyframes marioRunAcross {
+            0% { margin-left: 0; transform: translateY(0); }
+            22% { margin-left: 24vw; transform: translateY(0); }
+            27% { margin-left: 30vw; transform: translateY(-46px); }
+            32% { margin-left: 36vw; transform: translateY(0); }
+            58% { margin-left: 62vw; transform: translateY(0); }
+            63% { margin-left: 68vw; transform: translateY(-46px); }
+            68% { margin-left: 74vw; transform: translateY(0); }
+            100% { margin-left: calc(100vw + 180px); transform: translateY(0); }
         }
-        .aero-bubble.b1 { width: 140px; height: 140px; top: 14%; left: 6%; animation-delay: 0s; }
-        .aero-bubble.b2 { width: 96px; height: 96px; top: 42%; right: 10%; animation-delay: -5s; }
-        .aero-bubble.b3 { width: 180px; height: 180px; bottom: 16%; left: 14%; animation-delay: -10s; }
-        .aero-bubble.b4 { width: 72px; height: 72px; top: 26%; right: 24%; animation-delay: -3s; }
-        @keyframes aeroFloat { 0%,100% { transform: translateY(0) scale(1) rotate(0deg); } 33% { transform: translateY(-14px) scale(1.03) rotate(0.5deg); } 66% { transform: translateY(-8px) scale(0.98) rotate(-0.5deg); } }
-        @keyframes aeroLens { 0% { transform: translateX(0) scale(1); opacity: 0.9; } 100% { transform: translateX(18px) scale(1.08); opacity: 0.7; } }
-        /* Galaxy: yıldızlar + nebula */
-        .galaxy-bg { background: radial-gradient(ellipse at 50% 0%, #1a1240 0%, #070b1a 55%, #020205 100%); }
-        .galaxy-stars { position: absolute; inset: 0; background-image: radial-gradient(1px 1px at 12% 18%, #fff 100%, transparent), radial-gradient(1.2px 1.2px at 38% 42%, #a5b4fc 100%, transparent), radial-gradient(1px 1px at 72% 12%, #22d3ee 100%, transparent), radial-gradient(0.8px 0.8px at 82% 68%, #fff 100%, transparent), radial-gradient(1.4px 1.4px at 18% 78%, #c084fc 100%, transparent), radial-gradient(1px 1px at 58% 88%, #fff 100%, transparent); background-size: 400px 400px; opacity: 0.7; animation: galaxyTwinkle 6s ease-in-out infinite alternate; }
-        .galaxy-nebula { position: absolute; width: 700px; height: 700px; top: -140px; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(168,85,247,0.22) 0%, rgba(34,211,238,0.12) 45%, transparent 72%); filter: blur(28px); animation: nebulaPulse 12s ease-in-out infinite alternate; }
-        .galaxy-shooting { position: absolute; width: 140px; height: 2px; top: 22%; left: -160px; background: linear-gradient(90deg, transparent, #fff 55%, #22d3ee); border-radius: 2px; box-shadow: 0 0 8px #22d3ee; opacity: 0; animation: shooting 9s linear infinite; animation-delay: 3s; }
-        .black-hole { position: absolute; width: 92px; height: 92px; top: 16%; right: 14%; border-radius: 50%; background: radial-gradient(circle, #000 28%, #0a0a0a 36%, transparent 38%); box-shadow: 0 0 24px rgba(168,85,247,0.55), 0 0 48px rgba(34,211,238,0.25); animation: blackHoleDrift 28s ease-in-out infinite; }
-        .black-hole .accretion { position: absolute; inset: -14px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, #a855f7 42deg, #22d3ee 118deg, #f59e0b 182deg, #a855f7 268deg, transparent 360deg); mask: radial-gradient(circle, transparent 38%, black 39%, black 52%, transparent 53%); -webkit-mask: radial-gradient(circle, transparent 38%, black 39%, black 52%, transparent 53%); animation: accretionSpin 6s linear infinite; opacity: 0.95; }
-        .black-hole .event-horizon { position: absolute; inset: 22px; border-radius: 50%; background: radial-gradient(circle, #000 55%, #020205 100%); box-shadow: inset 0 0 18px rgba(168,85,247,0.4), 0 0 12px rgba(0,0,0,0.9); }
-        .galaxy-spiral { position: absolute; width: 420px; height: 420px; bottom: -60px; left: -40px; border-radius: 50%; background: conic-gradient(from 20deg, transparent 0deg, rgba(168,85,247,0.14) 55deg, transparent 110deg, rgba(34,211,238,0.12) 180deg, transparent 260deg, rgba(244,114,182,0.10) 320deg, transparent 360deg); mask: radial-gradient(circle, transparent 22%, black 26%, black 52%, transparent 54%); -webkit-mask: radial-gradient(circle, transparent 22%, black 26%, black 52%, transparent 54%); animation: spiralRotate 44s linear infinite; opacity: 0.7; }
-        @keyframes galaxyTwinkle { from { opacity: 0.55; } to { opacity: 0.85; } }
-        @keyframes nebulaPulse { from { transform: translateX(-50%) scale(1); opacity: 0.9; } to { transform: translateX(-50%) scale(1.08); opacity: 1; } }
-        @keyframes shooting { 0% { transform: translateX(0) translateY(0); opacity: 0; } 8% { opacity: 1; } 22% { transform: translateX(calc(100vw + 320px)) translateY(90px); opacity: 0; } 100% { opacity: 0; } }
-        @keyframes blackHoleDrift { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.03); } }
-        @keyframes accretionSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes spiralRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* Ön katman çalılar */
+        .mario-bush { position: absolute; bottom: 96px; left: 22%; width: 120px; height: 34px; }
+        .mario-bush::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle 20px at 22px 26px, #58c93f 96%, transparent), radial-gradient(circle 26px at 58px 18px, #58c93f 96%, transparent), radial-gradient(circle 20px at 96px 26px, #58c93f 96%, transparent); filter: drop-shadow(0 3px 0 #1a1a1a); }
+        .mario-bush.bush-2 { left: auto; right: 20%; transform: scaleX(-1) scale(0.8); }
+        .mario-pipe-front { position: absolute; bottom: 0; left: -24px; width: 64px; height: 190px; background: linear-gradient(90deg, #1e6b24 0%, #4caf50 25%, #2e7d32 60%, #17451b 100%); border: 4px solid #1a1a1a; border-left: none; opacity: 0.96; }
+        /* ============ AERO: Frutiger Aero — cam gökyüzü, lens flare, su ============ */
+        .aero-bg {
+            background: linear-gradient(180deg, #8fd4ff 0%, #a8e2ff 30%, #c9efff 55%, #e4f7ff 78%, #d2f2e2 100%);
+            perspective: 600px;
+        }
+        .aero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; }
+        .aero-layer { position: absolute; inset: 0; }
+        .aero-sky { background:
+                radial-gradient(ellipse 900px 460px at 16% 6%, rgba(255,255,255,0.95) 0%, transparent 55%),
+                radial-gradient(ellipse 700px 380px at 84% 16%, rgba(0,255,150,0.20) 0%, transparent 60%),
+                radial-gradient(ellipse 620px 300px at 55% 96%, rgba(0,180,120,0.14) 0%, transparent 70%); animation: aeroSkyDrift 26s ease-in-out infinite alternate; }
+        @keyframes aeroSkyDrift { from { transform: translateX(-12px); } to { transform: translateX(12px); } }
+        /* Yumuşak XP bulutları (cam kenarlı) */
+        .aero-cloud { position: absolute; height: 34px; background: rgba(255,255,255,0.92); border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.95); box-shadow: 0 6px 22px rgba(120,190,255,0.35), inset 0 -6px 12px rgba(160,210,255,0.35); filter: blur(0.4px); animation: aeroCloudDrift linear infinite; }
+        .aero-cloud::before, .aero-cloud::after { content: ""; position: absolute; background: inherit; border: inherit; border-radius: 50%; box-shadow: inherit; }
+        .aero-cloud::before { width: 44px; height: 44px; top: -24px; left: 18px; }
+        .aero-cloud::after { width: 32px; height: 32px; top: -16px; right: 20px; }
+        .aero-cloud.c1 { width: 130px; top: 10%; left: -160px; animation-duration: 46s; }
+        .aero-cloud.c2 { width: 100px; top: 20%; left: -140px; animation-duration: 58s; animation-delay: -18s; transform: scale(0.8); }
+        .aero-cloud.c3 { width: 160px; top: 5%; left: -200px; animation-duration: 70s; animation-delay: -36s; }
+        .aero-cloud.c4 { width: 84px; top: 30%; left: -120px; animation-duration: 52s; animation-delay: -28s; transform: scale(0.7); }
+        @keyframes aeroCloudDrift { from { margin-left: 0; } to { margin-left: calc(100vw + 420px); } }
+        /* Lens flare — diyagonal ışık şeritleri */
+        .aero-lens-flare { overflow: hidden; }
+        .aero-lens-flare::before { content: ""; position: absolute; top: -20%; left: 30%; width: 130px; height: 150%; transform: rotate(18deg); background: linear-gradient(180deg, transparent, rgba(255,255,255,0.35) 40%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.35) 60%, transparent); filter: blur(9px); animation: aeroFlareSweep 13s ease-in-out infinite; }
+        .aero-lens-flare::after { content: ""; position: absolute; top: 8%; right: 12%; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 30%, transparent 68%); filter: blur(6px); animation: aeroLensPulse 7s ease-in-out infinite alternate; }
+        @keyframes aeroFlareSweep { 0%,100% { transform: rotate(18deg) translateX(-46px); opacity: 0.65; } 50% { transform: rotate(18deg) translateX(46px); opacity: 1; } }
+        @keyframes aeroLensPulse { from { transform: scale(1); opacity: 0.8; } to { transform: scale(1.14); opacity: 1; } }
+        /* Su yansıması — alt cam şerit */
+        .aero-water { top: auto; bottom: 0; height: 23%; background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(120,200,255,0.22) 18%, rgba(40,140,220,0.30) 60%, rgba(10,80,150,0.38) 100%); border-top: 2px solid rgba(255,255,255,0.75); box-shadow: 0 -6px 26px rgba(140,210,255,0.5), inset 0 2px 0 rgba(255,255,255,0.6); overflow: hidden; }
+        .aero-water::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(178deg, transparent 0 9px, rgba(255,255,255,0.20) 9px 11px); animation: aeroWaterShimmer 4.5s linear infinite; }
+        .aero-water::after { content: ""; position: absolute; top: 0; left: -30%; width: 45%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-14deg); animation: aeroWaterGlint 9s ease-in-out infinite; }
+        @keyframes aeroWaterShimmer { from { transform: translateY(0); } to { transform: translateY(11px); } }
+        @keyframes aeroWaterGlint { 0%,100% { left: -30%; } 50% { left: 85%; } }
+        /* ============ GALAXY: canvas tek kaynak (merceklenmeli karadelik) ============ */
+        .galaxy-bg { background: radial-gradient(ellipse at 50% 0%, #141031 0%, #070b1a 55%, #020205 100%); }
+        .galaxy-bg canvas.galaxy-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        /* Eski statik kopyalar kapalı — çift karadelik hatası vermesin */
+        .galaxy-stars, .galaxy-nebula, .galaxy-shooting, .black-hole, .galaxy-spiral { display: none !important; }
         /* Responsive — tema arka planları mobilde sadeleşir, oranlar korunur */
         @media (max-width: 640px) {
-            .mario-hill { height: 70px; }
-            .mario-pipe-bg { display: none; }
-            .mario-coin { width: 22px; height: 22px; top: 14%; }
-            .mario-coin::before { font-size: 8px; }
-            .aero-hill { height: 90px; }
-            .aero-bubble.b1 { width: 90px; height: 90px; }
-            .aero-bubble.b3 { width: 120px; height: 120px; }
-            .galaxy-nebula { width: 420px; height: 420px; }
+            .mario-hill { height: 72px; }
+            .mario-pipe.pipe-2, .mario-pipe.pipe-3 { display: none; }
+            .mario-pipe.pipe-1 { height: 84px; right: 6%; }
+            .mario-question-block { bottom: 170px; left: 38%; }
+            .mario-coin.coin-1 { bottom: 216px; left: 33%; }
+            .mario-coin.coin-2 { bottom: 228px; left: 38%; }
+            .mario-coin.coin-3 { bottom: 216px; left: 43%; }
+            .mario-mario, .mario-goomba { animation-duration: 14s; }
+            .mario-pipe-front { display: none; }
+            .aero-water { height: 16%; }
             body.theme-mario .container { border-width: 3px; box-shadow: 0 4px 0 #000; }
             body.theme-mario h1 { font-size: 1.1rem; }
             body.theme-mario .custom-title { font-size: 0.62rem; }

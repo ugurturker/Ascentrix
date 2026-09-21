@@ -92,10 +92,12 @@ function lensedPos(sx, sy, bhx, bhy) {
   return { x: sx + ux*shift, y: sy + uy*shift, alpha: 1 + ringBoost, ring: r < 90 };
 }
 
+let cssW = 0, cssH = 0;
+
 function draw() {
   if (!ctx || !canvas) return;
   t += 0.016;
-  const w = canvas.width, h = canvas.height;
+  const w = cssW || canvas.width, h = cssH || canvas.height;
   // BH pozisyonu — responsive: sağ üstte, ama hareketli (hafif drift)
   BH.x = w * (0.78 + Math.sin(t*0.07)*0.02);
   BH.y = h * (0.22 + Math.cos(t*0.05)*0.015);
@@ -220,11 +222,13 @@ function draw() {
 
 function resize() {
   if (!canvas) return;
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = window.innerWidth * dpr;
-  canvas.height = window.innerHeight * dpr;
-  canvas.style.width = window.innerWidth + 'px';
-  canvas.style.height = window.innerHeight + 'px';
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cssW = window.innerWidth;
+  cssH = window.innerHeight;
+  canvas.width = Math.floor(cssW * dpr);
+  canvas.height = Math.floor(cssH * dpr);
+  canvas.style.width = cssW + 'px';
+  canvas.style.height = cssH + 'px';
   if (ctx) ctx.setTransform(dpr,0,0,dpr,0,0);
 }
 

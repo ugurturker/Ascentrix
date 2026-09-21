@@ -10,13 +10,54 @@
 <body>
 <script>try{var t=localStorage.getItem('ascentrix_theme');if(t&&['matrix','mario','aero','galaxy'].includes(t))document.body.classList.add('theme-'+t);else document.body.classList.add('theme-matrix');var s=localStorage.getItem('ascentrix_simplify');if(s!==null&&['0','1','2','3'].includes(s))document.body.classList.add('simplify-'+s);else document.body.classList.add('simplify-0');}catch(e){}</script>
 <canvas id="matrixRain" class="matrix-rain"></canvas>
+<div class="theme-matrix-floor" aria-hidden="true"></div>
 <div class="orb orb-a"></div>
 <div class="orb orb-b"></div>
 <div class="orb orb-c"></div>
 <!-- Tema bazlı arka planlar -->
-<div class="theme-bg mario-bg" aria-hidden="true"><div class="mario-cloud c1"></div><div class="mario-cloud c2"></div><div class="mario-cloud c3"></div><div class="mario-coin"></div><div class="mario-hill"></div><div class="mario-pipe-bg"></div></div>
-<div class="theme-bg aero-bg" aria-hidden="true"><div class="aero-bubble b1"></div><div class="aero-bubble b2"></div><div class="aero-bubble b3"></div><div class="aero-bubble b4"></div><div class="aero-hill"></div></div>
-<div class="theme-bg galaxy-bg" aria-hidden="true"><canvas id="galaxyCanvas" class="galaxy-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas><div class="galaxy-stars"></div><div class="galaxy-nebula"></div><div class="galaxy-shooting"></div><div class="black-hole"><div class="accretion"></div><div class="event-horizon"></div></div><div class="galaxy-spiral"></div></div>
+<div class="theme-bg mario-bg" aria-hidden="true">
+  <div class="mario-parallax">
+    <div class="mario-layer mario-bg-layer"></div>
+    <div class="mario-layer mario-cloud-layer">
+      <div class="mario-cloud c1"></div>
+      <div class="mario-cloud c2"></div>
+      <div class="mario-cloud c3"></div>
+      <div class="mario-cloud c4"></div>
+    </div>
+    <div class="mario-layer mario-mid-layer">
+      <div class="mario-hill"></div>
+      <div class="mario-pipe pipe-1"></div>
+      <div class="mario-pipe pipe-2"></div>
+      <div class="mario-pipe pipe-3"></div>
+      <div class="mario-question-block"></div>
+      <div class="mario-coin coin-1"></div>
+      <div class="mario-coin coin-2"></div>
+      <div class="mario-coin coin-3"></div>
+      <div class="mario-goomba"></div>
+      <div class="mario-mario"></div>
+    </div>
+    <div class="mario-layer mario-fg-layer">
+      <div class="mario-bush"></div>
+      <div class="mario-bush bush-2"></div>
+      <div class="mario-pipe-front"></div>
+    </div>
+  </div>
+</div>
+<div class="theme-bg aero-bg" aria-hidden="true">
+  <canvas id="aeroCanvas" class="aero-canvas"></canvas>
+  <div class="aero-layer aero-sky"></div>
+  <div class="aero-layer aero-cloud-layer">
+    <div class="aero-cloud c1"></div>
+    <div class="aero-cloud c2"></div>
+    <div class="aero-cloud c3"></div>
+    <div class="aero-cloud c4"></div>
+  </div>
+  <div class="aero-layer aero-lens-flare"></div>
+  <div class="aero-layer aero-water"></div>
+</div>
+<div class="theme-bg galaxy-bg" aria-hidden="true">
+  <canvas id="galaxyCanvas" class="galaxy-canvas"></canvas>
+</div>
 
 <div class="container">
     <div class="lang-bar">
