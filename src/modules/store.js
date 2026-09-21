@@ -77,10 +77,10 @@ let cloudSaveTimer = null;
 let firestoreUnsub = null;
 
 export function saveUserData() {
-  // Sadece Firestore'a yaz (debounced)
+  // Her etkileşim sonrası anlık push — 200ms debounce ile Firestore'a
   if (cloudEnabled) {
     clearTimeout(cloudSaveTimer);
-    cloudSaveTimer = setTimeout(() => { cloudSave().catch(()=>{}); }, 800);
+    cloudSaveTimer = setTimeout(() => { cloudSave().catch(()=>{}); }, 200);
   }
 }
 
@@ -98,33 +98,65 @@ async function cloudSave() {
 export async function enableCloudSync() {
   try {
     const { isFirebaseConfigured, auth, db } = await import('./firebase.js');
-    const { doc, getDoc } = await import('firebase/firestore');
+    const { doc, getDoc, onSnapshot } = await import('firebase/firestore');
     if (!isFirebaseConfigured || !auth || !db || !auth.currentUser) return false;
     cloudEnabled = true;
     const uid = auth.currentUser.uid;
     const ref = doc(db, 'users', uid);
+    // İlk çekiş — anlık pull
     try {
       const snap = await getDoc(ref);
       if (snap.exists() && snap.data() && snap.data().data) {
         const cloudData = snap.data().data;
         const merged = normalizeUserData(cloudData);
-        Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
-        // Sync to legacy module's userData if exists (dual store)
-        try {
-            if (typeof window !== 'undefined' && window._legacyUserData) {
-                Object.keys(merged).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(merged[k])); });
-                // Trigger legacy UI refresh
-                if (window.renderTPeakUI) window.renderTPeakUI();
-                if (window.updateProfileUI) window.updateProfileUI();
-                if (window.renderStats) window.renderStats();
-            }
-        } catch(_){}
-        console.log('[Ascentrix] Firestore verisi yüklendi — bellek overwrite');
+        const isDifferent = JSON.stringify(merged) !== JSON.stringify(userData);
+        if (isDifferent) {
+          Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
+          try {
+              if (typeof window !== 'undefined' && window._legacyUserData) {
+                  Object.keys(merged).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(merged[k])); });
+                  if (window.renderTPeakUI) window.renderTPeakUI();
+                  if (window.updateProfileUI) window.updateProfileUI();
+                  if (window.renderStats) window.renderStats();
+                  if (window.updateDisplay) window.updateDisplay();
+                  if (window.renderTracker) window.renderTracker();
+              }
+          } catch(_){}
+          console.log('[Ascentrix] Firestore verisi yüklendi — bellek overwrite');
+        }
       } else {
         await cloudSave();
       }
     } catch(e) { console.warn('[Ascentrix] cloud load hatası:', e?.message); }
+    // Real-time pull — her değişiklikte anlık sync, stale önlenir
     try { if (firestoreUnsub) firestoreUnsub(); } catch(_){}
+    let isFirstSnap = true;
+    firestoreUnsub = onSnapshot(ref, (snap) => {
+      try {
+        if (!snap.exists() || !snap.data() || !snap.data().data) return;
+        // İlk snap zaten getDoc ile işlendi, atla (çift render önle)
+        if (isFirstSnap) { isFirstSnap = false; return; }
+        const cloudData = snap.data().data;
+        const merged = normalizeUserData(cloudData);
+        if (JSON.stringify(merged) === JSON.stringify(userData)) return; // aynı ise atla (kendi push'umuz)
+        Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
+        try {
+          if (typeof window !== 'undefined' && window._legacyUserData) {
+            Object.keys(merged).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(merged[k])); });
+          }
+        } catch(_){}
+        // Anlık UI yenile — ölü veri görülmez
+        try {
+          if (window.renderTPeakUI) window.renderTPeakUI();
+          if (window.updateProfileUI) window.updateProfileUI();
+          if (window.renderStats) window.renderStats();
+          if (window.updateDisplay) window.updateDisplay();
+          if (window.renderTracker) window.renderTracker();
+          if (window.renderPlanCard) window.renderPlanCard();
+        } catch(_){}
+        console.log('[Ascentrix] Real-time pull — UI güncellendi');
+      } catch(e) { console.warn('[Ascentrix] onSnapshot hatası:', e?.message); }
+    }, (err) => { console.warn('[Ascentrix] onSnapshot error:', err?.message); });
     return true;
   } catch (e) { console.warn('[Ascentrix] enableCloudSync hatası:', e?.message); return false; }
 }
