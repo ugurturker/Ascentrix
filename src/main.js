@@ -5,8 +5,10 @@ import { isFirebaseConfigured } from './modules/firebase.js';
 import { onAuthChange, getCurrentUser } from './modules/auth.js';
 import { enableCloudSync, disableCloudSync } from './modules/store.js';
 import { applyTheme, getTheme, getSimplifyLevel, setSimplifyLevel } from './modules/theme.js';
+import { initGalaxyBackground } from './modules/galaxyBackground.js';
 
 try { applyTheme(); } catch(_){}
+try { setTimeout(()=> initGalaxyBackground(), 400); } catch(_){}
 console.log('[Ascentrix] v2.0 — Vite + PWA aktif');
 
 // Firebase Auth UI — matrix terminal style

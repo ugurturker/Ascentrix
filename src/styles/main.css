@@ -61,6 +61,13 @@
         body.theme-aero h1, body.theme-aero .custom-title { font-family: "Outfit", sans-serif; font-weight: 800; letter-spacing: -0.02em; }
         body.theme-galaxy { font-family: "Space Grotesk", system-ui, sans-serif; }
         body.theme-galaxy h1, body.theme-galaxy .custom-title { font-family: "Orbitron", sans-serif; letter-spacing: 0.08em; }
+        /* Kontrast AAA — metinler her temada okunaklı */
+        .stat-label, .plan-grid span, .plan-notes { font-weight: 700; }
+        body.theme-galaxy .stat-label, body.theme-galaxy .plan-grid span, body.theme-galaxy .plan-notes, body.theme-galaxy .stat-card { text-shadow: 0 1px 10px rgba(0,0,0,0.85); }
+        body.theme-aero .stat-label, body.theme-aero .plan-grid span { color: #1e293b; }
+        body.theme-mario .stat-label, body.theme-mario .plan-grid span { color: #334155; }
+        body.theme-galaxy .galaxy-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+        body.theme-galaxy .galaxy-stars, body.theme-galaxy .galaxy-nebula, body.theme-galaxy .black-hole, body.theme-galaxy .galaxy-spiral { z-index: 1; }
         /* Per-theme cards — kapsamlı */
         body.theme-mario .container { border: 4px solid #1a1a1a; border-radius: 0; box-shadow: 0 8px 0 #000, 0 0 0 4px #fff; background: #ffffff; }
         body.theme-mario .custom-panel, body.theme-mario .plan-card, body.theme-mario .xp-widget, body.theme-mario .goal-container, body.theme-mario .stat-card, body.theme-mario .donate-card { background: #ffffff; border: 3px solid #1a1a1a; border-radius: 0; box-shadow: 0 4px 0 #1a1a1a; color: #1a1a1a; }
