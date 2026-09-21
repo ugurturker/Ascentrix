@@ -1,6 +1,5 @@
-// audio.js — ses & bildirim
+// audio.js — ses
 import { userData } from './store.js';
-import { t } from './i18n.js';
 
 let audioCtx = null;
 
@@ -13,7 +12,7 @@ export function ensureAudio() {
     return audioCtx;
   } catch (e) { return null; }
 }
-export function primeAudio() { if (!audioCtx) ensureAudio(); requestNotificationPermission(); }
+export function primeAudio() { if (!audioCtx) ensureAudio(); }
 
 export function playTone(freq, delay, dur, type, gainVal) {
   if (!soundEnabled()) return;
@@ -41,45 +40,6 @@ export function playLevelUpSound(){ [523.25,659.25,783.99,1046.5,783.99,1046.5,1
 export function playBadgeSound(){ playTone(1567.98,0,0.08,'square',0.07); playTone(2093,0.09,0.14,'square',0.07); }
 export function playFlowSound(){ playTone(740,0,0.14,'triangle',0.1); playTone(987.77,0.12,0.3,'triangle',0.1); }
 export function playAlertSound(){ playTone(587.33,0,0.35,'sine',0.16); playTone(880,0.22,0.5,'sine',0.16); }
-
-export function requestNotificationPermission(){
-  try { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(()=>{}); } catch(_){}
-  // UX polish: show banner if still default after short delay — handled in app.js
-}
-export async function showSystemNotification(title, body, actionType = 'work'){
-  // actionType: 'work' | 'break' | 'session'
-  try {
-    if (!('Notification' in window) || Notification.permission !== 'granted') return;
-    // Prefer ServiceWorker notification with actions (works even when page hidden/background)
-    if ('serviceWorker' in navigator) {
-      try {
-        const reg = await navigator.serviceWorker.ready;
-        if (reg && reg.showNotification) {
-          const actions = actionType === 'break'
-            ? [{ action: 'stop', title: t('alarm_stop') }, { action: 'gowork', title: t('alarm_go_work') }]
-            : actionType === 'session'
-            ? [{ action: 'finish', title: t('alarm_finish') }, { action: 'continue', title: t('alarm_continue') }]
-            : [{ action: 'stop', title: t('alarm_stop') }, { action: 'gobreak', title: t('alarm_go_break') }];
-          await reg.showNotification(title, {
-            body,
-            icon: '/icon-192.png',
-            badge: '/icon-192.png',
-            requireInteraction: true,
-            silent: false,
-            vibrate: [400,300,400],
-            actions,
-            data: { actionType, url: location.href }
-          });
-          return;
-        }
-      } catch(_){}
-    }
-    // Fallback: classic Notification
-    const n = new Notification(title, { body, silent:false, requireInteraction:true, icon: '/icon-192.png' });
-    n.onclick = () => { try{ window.focus(); }catch(_){} n.close(); };
-    setTimeout(()=>{ try{ n.close(); }catch(_){} }, 12000);
-  } catch(_){}
-}
 
 export function playNotifySuccess(){
   // Terminal success chime: crisp two-tone

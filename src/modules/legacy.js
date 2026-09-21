@@ -981,7 +981,6 @@
             timerDisplay.classList.remove('running');
         } else {
             if (testRunning) { showToast(t('toast_test_run'), 'warn'); return; }
-            requestNotificationPermission();
             endAt = Date.now() + secondsLeft * 1000;
             timerInterval = setInterval(() => {
                 try {
@@ -1065,7 +1064,6 @@
         goBtn.disabled = true;
         startAlarmLoop();
         if (navigator.vibrate) navigator.vibrate([400, 300, 400, 300, 400]);
-        showSystemNotification(t('alarm_work_done'), currentSequence[stepIndex] ? currentSequence[stepIndex].label : t('status_work_done'), 'work');
     }
 
     // Mola bitti: döngüsel MOLA alarmı başlar (farklı ses). Kullanıcı "Molayı Bitir" diyene kadar sürer.
@@ -1094,7 +1092,6 @@
         goBtn.disabled = true;
         startBreakAlarmLoop();
         if (navigator.vibrate) navigator.vibrate([300, 200, 300, 200, 300]);
-        showSystemNotification(t('alarm_break_done'), t('status_break_done'), 'break');
     }
 
     // 1. Adım: kullanıcı alarmı kendisi durdurur (çalışma ve mola alarmlarında ortak).
@@ -2162,7 +2159,6 @@ p.upStamp = recent.length;
     // Proaktif AudioContext oluşturma (ilk kullanıcı etkileşiminde)
     function primeAudio() {
         if (!audioCtx) ensureAudio();
-        requestNotificationPermission();
     }
     document.addEventListener('click', primeAudio, { once: true });
     document.addEventListener('keydown', primeAudio, { once: true });
@@ -2239,35 +2235,6 @@ p.upStamp = recent.length;
     });
 
     // ============ BİLDİRİM (Notification) YARDIMCISI ============
-    function requestNotificationPermission() {
-        try {
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission().catch(()=>{});
-            }
-        } catch(_) {}
-    }
-    async function showSystemNotification(title, body, actionType = 'work') {
-        try {
-            if (!('Notification' in window) || Notification.permission !== 'granted') return;
-            if ('serviceWorker' in navigator) {
-                try {
-                    const reg = await navigator.serviceWorker.ready;
-                    if (reg && reg.showNotification) {
-                        const actions = actionType === 'break'
-                            ? [{ action: 'stop', title: t('alarm_stop') }, { action: 'gowork', title: t('alarm_go_work') }]
-                            : actionType === 'session'
-                            ? [{ action: 'finish', title: t('alarm_finish') }, { action: 'continue', title: t('alarm_continue') }]
-                            : [{ action: 'stop', title: t('alarm_stop') }, { action: 'gobreak', title: t('alarm_go_break') }];
-                        await reg.showNotification(title, { body, icon: '/icon-192.png', badge: '/icon-192.png', requireInteraction: true, silent: false, vibrate: [400,300,400], actions, data: { actionType, url: location.href } });
-                        return;
-                    }
-                } catch(_){}
-            }
-            const n = new Notification(title, { body, silent:false, requireInteraction:true, icon: '/icon-192.png' });
-            n.onclick = () => { try{ window.focus(); }catch(_){} n.close(); };
-            setTimeout(()=>{ try{ n.close(); }catch(_){} }, 12000);
-        } catch(_){}
-    }
     function handleTimerExpiration() {
         if (!isRunning || secondsLeft > 0) return;
         clearInterval(timerInterval);
@@ -2395,20 +2362,6 @@ p.upStamp = recent.length;
     // BAŞLANGIÇ: tüm modül durumu (let/const) init edildikten sonra çalıştır (TDZ koruması)
     initApp();
 
-    // Notification action bridge (SW -> client)
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            const data = event.data || {};
-            if (data.type === 'notification-action') {
-                try { window.focus(); } catch(_){}
-                const action = data.action;
-                if (action === 'stop') alarmPrimary();
-                else if (action === 'gobreak' || action === 'gowork') alarmSecondary();
-                else if (action === 'finish') alarmPrimary();
-                else if (action === 'continue') alarmSecondary();
-            }
-        });
-    }
 
 // ---- Vite module compatibility: expose globals for HTML onclick ----
 try {
