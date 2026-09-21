@@ -1,59 +1,59 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@500;700;800&family=Orbitron:wght@600;800&family=Space+Grotesk:wght@500;700&display=swap');
         :root {
             --bg-color: #020805;
-            --card-bg: rgba(0, 22, 11, 0.82);
-            --border-color: rgba(0, 255, 65, 0.16);
+            --card-bg: rgba(0, 22, 11, 0.88);
+            --border-color: rgba(0, 255, 65, 0.18);
             --primary: #00ff41;
             --work-color: #00ff41;
             --break-color: #00ff9d;
             --accent: #00ffcc;
-            --text-main: #d8ffe0;
-            --text-muted: #4fae63;
-            --danger: #ff5757;
+            --text-main: #dcfce7;
+            --text-muted: #86efac;
+            --danger: #f87171;
         }
 
         /* Theme variables */
         body.theme-mario {
             --bg-color: #5c94fc;
             --card-bg: #ffffff;
-            --border-color: rgba(0,0,0,0.12);
-            --primary: #e52521;
-            --work-color: #e52521;
-            --break-color: #43b047;
-            --accent: #ffcc00;
-            --text-main: #1a1a1a;
-            --text-muted: #6b7280;
-            --danger: #e52521;
+            --border-color: rgba(0,0,0,0.14);
+            --primary: #d0201a;
+            --work-color: #d0201a;
+            --break-color: #2e7d32;
+            --accent: #b45309;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --danger: #dc2626;
         }
         body.theme-aero {
             --bg-color: #c8efff;
-            --card-bg: rgba(255,255,255,0.72);
-            --border-color: rgba(0,149,255,0.18);
-            --primary: #0095ff;
-            --work-color: #0095ff;
-            --break-color: #00c896;
-            --accent: #00d4ff;
-            --text-main: #0a2540;
-            --text-muted: #5a8ab0;
-            --danger: #ff3b30;
+            --card-bg: rgba(255,255,255,0.78);
+            --border-color: rgba(0,120,200,0.22);
+            --primary: #0066cc;
+            --work-color: #0066cc;
+            --break-color: #0e7c5a;
+            --accent: #0077b6;
+            --text-main: #0f2540;
+            --text-muted: #334155;
+            --danger: #dc2626;
         }
         body.theme-galaxy {
-            --bg-color: #070b1a;
-            --card-bg: rgba(18,12,40,0.82);
-            --border-color: rgba(168,85,247,0.28);
-            --primary: #a855f7;
-            --work-color: #a855f7;
+            --bg-color: #05081a;
+            --card-bg: rgba(16,12,36,0.92);
+            --border-color: rgba(168,85,247,0.35);
+            --primary: #c084fc;
+            --work-color: #c084fc;
             --break-color: #22d3ee;
-            --accent: #22d3ee;
-            --text-main: #e9d5ff;
-            --text-muted: #9ca3d6;
-            --danger: #f43f5e;
+            --accent: #67e8f9;
+            --text-main: #f5f3ff;
+            --text-muted: #c4b5fd;
+            --danger: #fb7185;
         }
         /* Per-theme fonts — kapsamlı */
         body.theme-matrix { font-family: "Consolas", "Courier New", "Ubuntu Mono", monospace; }
         body.theme-mario { font-family: "Outfit", system-ui, sans-serif; }
         body.theme-mario h1, body.theme-mario .custom-title, body.theme-mario .plan-title { font-family: "Press Start 2P", monospace; letter-spacing: 0.02em; line-height: 1.4; }
-        body.theme-mario .step-title { font-family: "Press Start 2P", monospace; font-size: 0.42rem; letter-spacing: 0.04em; line-height: 1.5; }
+        body.theme-mario .step-title { font-family: "Press Start 2P", monospace; font-size: 0.5rem; letter-spacing: 0.04em; line-height: 1.6; }
         body.theme-mario .step-time { font-family: "Outfit", sans-serif; font-weight: 800; font-size: 0.95rem; }
         body.theme-mario .time-text { font-family: "Outfit", sans-serif; font-weight: 900; letter-spacing: -0.02em; }
         body.theme-mario .stat-label, body.theme-mario .plan-grid span { font-family: "Outfit", sans-serif; font-weight: 600; }
@@ -63,24 +63,37 @@
         body.theme-galaxy h1, body.theme-galaxy .custom-title { font-family: "Orbitron", sans-serif; letter-spacing: 0.08em; }
         /* Per-theme cards — kapsamlı */
         body.theme-mario .container { border: 4px solid #1a1a1a; border-radius: 0; box-shadow: 0 8px 0 #000, 0 0 0 4px #fff; background: #ffffff; }
+        body.theme-mario .custom-panel, body.theme-mario .plan-card, body.theme-mario .xp-widget, body.theme-mario .goal-container, body.theme-mario .stat-card, body.theme-mario .donate-card { background: #ffffff; border: 3px solid #1a1a1a; border-radius: 0; box-shadow: 0 4px 0 #1a1a1a; color: #1a1a1a; }
+        body.theme-mario .custom-panel .custom-title, body.theme-mario .plan-card .plan-title { color: #e52521; text-shadow: none; }
         body.theme-mario .step-card { background: #43b047; border: 3px solid #1a1a1a; border-radius: 0; box-shadow: 0 4px 0 #1a1a1a; color: #fff; }
         body.theme-mario .step-card::before { content: "▛"; color: #ffcc00; opacity: 1; left: 50%; top: -8px; transform: translateX(-50%); font-size: 10px; }
         body.theme-mario .step-card.active { background: #e52521; border-color: #1a1a1a; box-shadow: 0 0 0 3px #ffcc00, 0 4px 0 #1a1a1a; }
         body.theme-mario .step-card.completed { opacity: 0.9; background: #5a9c3a; }
         body.theme-mario .progress-ring__circle { stroke: #e52521; }
+        body.theme-mario h1 { font-size: 1.05rem; }
+        body.theme-mario .custom-title { font-size: 0.58rem; }
         body.theme-aero .container { border-radius: 24px; background: rgba(255,255,255,0.55); backdrop-filter: blur(20px) saturate(1.6); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 20px 40px rgba(0,149,255,0.15), inset 0 1px 0 rgba(255,255,255,0.8); }
+        body.theme-aero .custom-panel, body.theme-aero .plan-card, body.theme-aero .xp-widget, body.theme-aero .goal-container, body.theme-aero .stat-card, body.theme-aero .donate-card { background: rgba(255,255,255,0.68); backdrop-filter: blur(14px) saturate(1.4); border: 1px solid rgba(255,255,255,0.75); border-radius: 18px; box-shadow: 0 12px 32px rgba(0,149,255,0.14), inset 0 1px 0 rgba(255,255,255,0.9); }
+        body.theme-aero .stat-card.accent { background: linear-gradient(135deg, rgba(0,149,255,0.14), rgba(0,212,255,0.08)); }
         body.theme-aero .step-card { background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 8px 24px rgba(0,149,255,0.12); }
         body.theme-aero .step-card.active { background: rgba(0,149,255,0.12); border-color: #0095ff; box-shadow: 0 0 20px rgba(0,149,255,0.3); }
         body.theme-galaxy .container { border: 1px solid rgba(168,85,247,0.35); background: rgba(12,10,30,0.88); box-shadow: 0 0 40px rgba(168,85,247,0.25), inset 0 0 40px rgba(34,211,238,0.06); }
+        body.theme-galaxy .custom-panel, body.theme-galaxy .plan-card, body.theme-galaxy .xp-widget, body.theme-galaxy .goal-container, body.theme-galaxy .stat-card, body.theme-galaxy .donate-card { background: rgba(18,14,38,0.88); border: 1px solid rgba(168,85,247,0.32); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(168,85,247,0.15); }
+        body.theme-galaxy .stat-card.accent { background: linear-gradient(135deg, rgba(168,85,247,0.18), rgba(34,211,238,0.10)); }
         body.theme-galaxy .step-card { background: radial-gradient(ellipse at top, rgba(168,85,247,0.25), rgba(18,12,40,0.9)); border: 1px solid rgba(168,85,247,0.4); border-radius: 14px; box-shadow: 0 0 16px rgba(168,85,247,0.2); }
         body.theme-galaxy .step-card.active { border-color: #a855f7; box-shadow: 0 0 20px rgba(168,85,247,0.55), 0 0 40px rgba(34,211,238,0.2); }
         body.theme-galaxy .progress-ring__circle { stroke: #a855f7; filter: drop-shadow(0 0 10px #a855f7); }
         /* Simplify levels — 4 seviye, en alt en sade */
         body.simplify-1 .orb { opacity: 0.06 !important; }
         body.simplify-1 .matrix-rain { opacity: 0.3 !important; }
+        body.simplify-1 .theme-bg { opacity: 0.7 !important; }
         body.simplify-2 .orb,
         body.simplify-2 .matrix-rain,
-        body.simplify-2 body::before { display: none !important; }
+        body.simplify-2 body::before,
+        body.simplify-2 .aero-bubble,
+        body.simplify-2 .mario-cloud,
+        body.simplify-2 .galaxy-stars { display: none !important; }
+        body.simplify-2 .theme-bg { opacity: 0.45 !important; }
         body.simplify-2 .container { box-shadow: 0 8px 24px rgba(0,0,0,0.25) !important; }
         body.simplify-3 .orb,
         body.simplify-3 .matrix-rain,
@@ -227,9 +240,16 @@
         .galaxy-stars { position: absolute; inset: 0; background-image: radial-gradient(1px 1px at 12% 18%, #fff 100%, transparent), radial-gradient(1.2px 1.2px at 38% 42%, #a5b4fc 100%, transparent), radial-gradient(1px 1px at 72% 12%, #22d3ee 100%, transparent), radial-gradient(0.8px 0.8px at 82% 68%, #fff 100%, transparent), radial-gradient(1.4px 1.4px at 18% 78%, #c084fc 100%, transparent), radial-gradient(1px 1px at 58% 88%, #fff 100%, transparent); background-size: 400px 400px; opacity: 0.7; animation: galaxyTwinkle 6s ease-in-out infinite alternate; }
         .galaxy-nebula { position: absolute; width: 700px; height: 700px; top: -140px; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse, rgba(168,85,247,0.22) 0%, rgba(34,211,238,0.12) 45%, transparent 72%); filter: blur(28px); animation: nebulaPulse 12s ease-in-out infinite alternate; }
         .galaxy-shooting { position: absolute; width: 140px; height: 2px; top: 22%; left: -160px; background: linear-gradient(90deg, transparent, #fff 55%, #22d3ee); border-radius: 2px; box-shadow: 0 0 8px #22d3ee; opacity: 0; animation: shooting 9s linear infinite; animation-delay: 3s; }
+        .black-hole { position: absolute; width: 92px; height: 92px; top: 16%; right: 14%; border-radius: 50%; background: radial-gradient(circle, #000 28%, #0a0a0a 36%, transparent 38%); box-shadow: 0 0 24px rgba(168,85,247,0.55), 0 0 48px rgba(34,211,238,0.25); animation: blackHoleDrift 28s ease-in-out infinite; }
+        .black-hole .accretion { position: absolute; inset: -14px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, #a855f7 42deg, #22d3ee 118deg, #f59e0b 182deg, #a855f7 268deg, transparent 360deg); mask: radial-gradient(circle, transparent 38%, black 39%, black 52%, transparent 53%); -webkit-mask: radial-gradient(circle, transparent 38%, black 39%, black 52%, transparent 53%); animation: accretionSpin 6s linear infinite; opacity: 0.95; }
+        .black-hole .event-horizon { position: absolute; inset: 22px; border-radius: 50%; background: radial-gradient(circle, #000 55%, #020205 100%); box-shadow: inset 0 0 18px rgba(168,85,247,0.4), 0 0 12px rgba(0,0,0,0.9); }
+        .galaxy-spiral { position: absolute; width: 420px; height: 420px; bottom: -60px; left: -40px; border-radius: 50%; background: conic-gradient(from 20deg, transparent 0deg, rgba(168,85,247,0.14) 55deg, transparent 110deg, rgba(34,211,238,0.12) 180deg, transparent 260deg, rgba(244,114,182,0.10) 320deg, transparent 360deg); mask: radial-gradient(circle, transparent 22%, black 26%, black 52%, transparent 54%); -webkit-mask: radial-gradient(circle, transparent 22%, black 26%, black 52%, transparent 54%); animation: spiralRotate 44s linear infinite; opacity: 0.7; }
         @keyframes galaxyTwinkle { from { opacity: 0.55; } to { opacity: 0.85; } }
         @keyframes nebulaPulse { from { transform: translateX(-50%) scale(1); opacity: 0.9; } to { transform: translateX(-50%) scale(1.08); opacity: 1; } }
         @keyframes shooting { 0% { transform: translateX(0) translateY(0); opacity: 0; } 8% { opacity: 1; } 22% { transform: translateX(calc(100vw + 320px)) translateY(90px); opacity: 0; } 100% { opacity: 0; } }
+        @keyframes blackHoleDrift { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.03); } }
+        @keyframes accretionSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spiralRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         /* Responsive — tema arka planları mobilde sadeleşir, oranlar korunur */
         @media (max-width: 640px) {
             .mario-hill { height: 70px; }
