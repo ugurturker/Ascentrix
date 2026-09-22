@@ -526,7 +526,18 @@
         .plan-mode { font-size: 0.85rem; text-align: center; margin-bottom: 4px; }
         .plan-mode strong { color: var(--accent); }
         .plan-steps { font-size: 1rem; font-weight: 800; text-align: center; color: var(--text-main); font-variant-numeric: tabular-nums; margin-bottom: 4px; }
+        .plan-breaks { font-size: 0.85rem; font-weight: 700; text-align: center; color: var(--break-color); font-variant-numeric: tabular-nums; margin-bottom: 4px; }
         .plan-notes { font-size: 0.7rem; color: var(--accent); text-align: center; min-height: 1em; }
+        /* Mola ritmi seçici */
+        .breakmode-card { border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 16px; background: rgba(255,255,255,0.02); animation: glowIn 0.6s ease; }
+        .bm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+        .bm-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 10px; padding: 9px 2px; cursor: pointer; color: var(--text-main); transition: all 0.2s ease; font-family: inherit; display: flex; flex-direction: column; gap: 2px; align-items: center; }
+        .bm-btn strong { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.02em; }
+        .bm-btn span { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .bm-btn:hover { border-color: var(--primary); transform: translateY(-1px); }
+        .bm-btn.active { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 14px var(--primary); }
+        .bm-btn.active span { color: var(--primary); }
+        @media (max-width: 520px) { .bm-grid { grid-template-columns: repeat(2, 1fr); } }
 
         /* T-Peak Grafik */
         #tpeakChart { width: 100%; display: block; }

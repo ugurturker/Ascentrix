@@ -10,7 +10,7 @@ function getDefaultUserData() {
       todayDate: null, maxStepMins: 0, partialRuns: 0
     },
     gamification: { xp: 0, achievements: [] },
-    settings: { soundEnabled: true, lang: 'tr', theme: 'matrix', simplifyLevel: 0 },
+    settings: { soundEnabled: true, lang: 'tr', theme: 'matrix', simplifyLevel: 0, breakMode: 'natural' },
     logs: [],
     partialRuns: [],
     peak: { current: null, record: null, history: [], completions: [], extras: [], dailyFocus: [], upStamp: 0 },
@@ -64,6 +64,7 @@ function normalizeUserData(data) {
   delete merged.settings.difficulty;
   if (typeof merged.settings.theme !== 'string' || !['matrix','mario','aero','galaxy'].includes(merged.settings.theme)) merged.settings.theme = 'matrix';
   if (typeof merged.settings.simplifyLevel !== 'number' || merged.settings.simplifyLevel < 0 || merged.settings.simplifyLevel > 3) merged.settings.simplifyLevel = 0;
+  if (typeof merged.settings.breakMode !== 'string' || !['natural','easy','medium','hard'].includes(merged.settings.breakMode)) merged.settings.breakMode = 'natural';
   return merged;
 }
 // Offline yedek kaldırıldı — sadece Firestore, bellekte başlar

@@ -9,15 +9,31 @@ import { fmtMin, todayStr, avgArr } from './utils.js';
  * >4 steps → cap 0.50 unless re-initialized
  */
 export const MULTIPLIERS = [1.00, 0.80, 0.65, 0.50];
-export function protocolSteps(T, count = 4) {
+/**
+ * Mola ritimleri — bilimsel varsayılan: odak süresinin %25'i mola.
+ * 90 dk ultradian ritim (~20 dk toparlanma) ile 52/17 verimlilik
+ * araştırmasının (%33) ve Pomodoro'nun (%20) ortak aralığı: %20–30.
+ */
+export const BREAK_MODES = {
+  easy:    { ratio: 0.40, min: 4, max: 30 },
+  natural: { ratio: 0.25, min: 3, max: 20 },
+  medium:  { ratio: 0.20, min: 3, max: 15 },
+  hard:    { ratio: 0.12, min: 2, max: 10 },
+};
+export function getBreakMode() {
+  const m = userData.settings.breakMode;
+  return BREAK_MODES[m] ? m : 'natural';
+}
+export function protocolSteps(T, count = 4, breakMode) {
   T = Math.max(5, Math.round(T * 10) / 10);
   const r1 = v => Math.max(1, Math.round(v * 2) / 2);
+  const bm = BREAK_MODES[breakMode] || BREAK_MODES[getBreakMode()] || BREAK_MODES.natural;
   const n = Math.max(1, Math.floor(count));
   const works = Array.from({ length: n }, (_, i) => {
     const m = i < MULTIPLIERS.length ? MULTIPLIERS[i] : 0.50;
     return Math.max(5, r1(T * m));
   });
-  const brks = works.map(w => r1(w / 3));
+  const brks = works.map(w => r1(Math.min(bm.max, Math.max(bm.min, w * bm.ratio))));
   return works.map((w, i) => ({ work: w, break: brks[i], label: t('proto_step', { n: i + 1, x: fmtMin(w) }) }));
 }
 export function avgLastDays(n){
@@ -65,7 +81,7 @@ export function buildSessionPlan(){
   const capacity=(p.record&&p.current)? Math.round(p.current/p.record*1000)/10 : null;
   const totalWork=steps.reduce((a,s)=>a+s.work,0);
   timerState.currentModeKey='ascending';
-  userData.plan={ date:todayStr(), mode:'ascending', steps, energy, capacity, mult:2.95, totalWork, record:p.record, tpeak:p.current, notes, rate:completionRate7(), compLen:(p.completions||[]).length, abandLen:(userData.partialRuns||[]).length };
+  userData.plan={ date:todayStr(), mode:'ascending', steps, energy, capacity, mult:2.95, totalWork, record:p.record, tpeak:p.current, notes, rate:completionRate7(), compLen:(p.completions||[]).length, abandLen:(userData.partialRuns||[]).length, breakMode:getBreakMode() };
   saveUserData(); return userData.plan;
 }
 export function maybeRefreshPlan(){
@@ -75,7 +91,7 @@ export function maybeRefreshPlan(){
   const today=todayStr(); const pl=userData.plan; const p=userData.peak;
   const compLen=(p.completions||[]).length; const abandLen=(userData.partialRuns||[]).length;
   const energyNow=computeEnergy();
-  if(!pl||pl.date!==today||pl.tpeak!==p.current||pl.record!==p.record||pl.energy!==energyNow||pl.compLen!==compLen||pl.abandLen!==abandLen){
+  if(!pl||pl.date!==today||pl.tpeak!==p.current||pl.record!==p.record||pl.energy!==energyNow||pl.compLen!==compLen||pl.abandLen!==abandLen||pl.breakMode!==getBreakMode()){
     buildSessionPlan();
     if(pristine && userData.plan && Array.isArray(userData.plan.steps) && userData.plan.steps.length){
       s.currentSequence=userData.plan.steps; s.currentModeKey=userData.plan.mode||'ascending'; s.totalSeconds=s.currentSequence[0].work*60; s.secondsLeft=s.totalSeconds;
@@ -94,9 +110,10 @@ function renderPlanCard(){
   set('planTpeak', p.current==null?'—':fmtMin(p.current)+' '+t('minUnit'));
   set('planRecord', p.record==null?'—':fmtMin(p.record)+' '+t('minUnit'));
   set('planCap', (p.record&&p.current)? '%'+(Math.round(p.current/p.record*1000)/10):'—');
-  if(!pl){ set('planModeName','—'); set('planSteps','—'); set('planGoal','—'); set('planNotes',''); return; }
+  if(!pl){ set('planModeName','—'); set('planSteps','—'); set('planBreakMode','—'); set('planGoal','—'); set('planNotes',''); return; }
   set('planModeName', '~'+fmtMin(pl.totalWork||0)+' '+t('minUnit')+' ('+ (pl.mult||2)+'×T)');
   set('planSteps', pl.steps.map(s=>fmtMin(s.work)).join(' → ')+' '+t('minUnit'));
+  set('planBreakMode', t('breakmode_'+(pl.breakMode||'natural'))+': '+pl.steps.map(s=>fmtMin(s.break)).join(' → ')+' '+t('minUnit'));
   set('planNotes', (pl.notes||[]).filter(Boolean).map(n=> t('plan_note_'+n)!==('plan_note_'+n)? t('plan_note_'+n):n).join(' • '));
   const goal=userData.profile.dailyGoalMins||180; const today=Math.round((userData.stats.todayWorkMins||0)*10)/10; const done=today>=goal;
   set('planGoal', fmtMin(today)+' / '+goal+' '+t('minUnit')+' (%'+(goal? Math.min(100,Math.round(today/goal*100)):0)+')'+(done? t('plan_goal_done'):''));

@@ -33,20 +33,47 @@
 
     // Dynamic Time Multiplier Array (Spec 1): T*1.00, T*0.80, T*0.65, T*0.50, >4 cap 0.50
     const MULTIPLIERS = [1.00, 0.80, 0.65, 0.50];
-    function protocolSteps(T, count = 4) {
+    // Mola ritimleri — bilimsel varsayılan %25 (ultradian 90 dk + 52/17 ortak aralığı %20–30)
+    const BREAK_MODES = {
+        easy: { ratio: 0.40, min: 4, max: 30 },
+        natural: { ratio: 0.25, min: 3, max: 20 },
+        medium: { ratio: 0.20, min: 3, max: 15 },
+        hard: { ratio: 0.12, min: 2, max: 10 }
+    };
+    function getBreakMode() {
+        const m = userData.settings.breakMode;
+        return BREAK_MODES[m] ? m : 'natural';
+    }
+    function protocolSteps(T, count = 4, breakMode) {
         T = Math.max(5, Math.round(T * 10) / 10);
         const r1 = v => Math.max(1, Math.round(v * 2) / 2);
+        const bm = BREAK_MODES[breakMode] || BREAK_MODES[getBreakMode()] || BREAK_MODES.natural;
         const n = Math.max(1, Math.floor(count));
         const works = Array.from({ length: n }, (_, i) => {
             const m = i < MULTIPLIERS.length ? MULTIPLIERS[i] : 0.50;
             return Math.max(5, r1(T * m));
         });
-        const brks = works.map(w => r1(w / 3));
+        const brks = works.map(w => r1(Math.min(bm.max, Math.max(bm.min, w * bm.ratio))));
         return works.map((w, i) => ({
             work: w,
             break: brks[i],
             label: t('proto_step', { n: i + 1, x: fmtMin(w) })
         }));
+    }
+    function setBreakMode(mode) {
+        if (!BREAK_MODES[mode]) return;
+        userData.settings.breakMode = mode;
+        saveUserData();
+        maybeRefreshPlan();
+        renderTracker();
+        updateDisplay();
+        renderPlanCard();
+        syncBreakModeUI();
+        showToast(t('toast_breakmode', { x: t('breakmode_' + mode) }), 'success');
+    }
+    function syncBreakModeUI() {
+        const cur = getBreakMode();
+        document.querySelectorAll('.bm-btn').forEach(b => b.classList.toggle('active', b.dataset.bmode === cur));
     }
 
     // ============ ÇOKLU DİL (i18n) ============
@@ -99,6 +126,7 @@
         renderTPeakUI();
         renderPlanCard();
         renderStats();
+        syncBreakModeUI();
     }
 
     const I18N = {
@@ -125,6 +153,13 @@
         plan_vol: 'Oturum hacmi:',
         plan_start: 'Çalışmaya Başla',
         plan_goal_done: ' — HEDEF TAMAMLANDI',
+        breakmode_title: 'MOLA RİTMİ',
+        breakmode_natural: 'Doğal Ritim',
+        breakmode_easy: 'Kolay',
+        breakmode_medium: 'Orta',
+        breakmode_hard: 'Zor',
+        breakmode_sci: "Bilimsel varsayılan: odak süresinin %25'i mola — 90 dk ultradian ritim ile 52/17 verimlilik araştırmasının ortak aralığı (%20–30).",
+        toast_breakmode: 'Mola ritmi: {x}',
         xp_level: 'SEVİYE',
         sound_on: '♪ AÇIK',
         sound_off: '♪ KAPALI',
@@ -277,6 +312,13 @@
         plan_vol: 'Session volume:',
         plan_start: 'Start Working',
         plan_goal_done: ' — GOAL COMPLETED',
+        breakmode_title: 'BREAK RHYTHM',
+        breakmode_natural: 'Natural Rhythm',
+        breakmode_easy: 'Easy',
+        breakmode_medium: 'Medium',
+        breakmode_hard: 'Hard',
+        breakmode_sci: 'Science-based default: 25% of focus as break — the shared window of the 90-min ultradian rhythm and the 52/17 productivity study (20–30%).',
+        toast_breakmode: 'Break rhythm: {x}',
         xp_level: 'LEVEL',
         sound_on: '♪ ON',
         sound_off: '♪ OFF',
@@ -431,6 +473,13 @@
         plan_vol: 'Sitzungsvolumen:',
         plan_start: 'Arbeit starten',
         plan_goal_done: ' — ZIEL ERREICHT',
+        breakmode_title: 'PAUSENRHYTHMUS',
+        breakmode_natural: 'Natürlicher Rhythmus',
+        breakmode_easy: 'Leicht',
+        breakmode_medium: 'Mittel',
+        breakmode_hard: 'Schwer',
+        breakmode_sci: 'Wissenschaftlicher Standard: 25 % der Fokuszeit als Pause — Schnittmenge aus 90-Min-Ultradian-Rhythmus und 52/17-Studie (20–30 %).',
+        toast_breakmode: 'Pausenrhythmus: {x}',
         xp_level: 'STUFE',
         sound_on: '♪ AN',
         sound_off: '♪ AUS',
@@ -629,7 +678,7 @@
                 todayDate: null, maxStepMins: 0, partialRuns: 0
             },
             gamification: { xp: 0, achievements: [] },
-            settings: { soundEnabled: true, lang: 'tr', theme: 'matrix', simplifyLevel: 0 },
+            settings: { soundEnabled: true, lang: 'tr', theme: 'matrix', simplifyLevel: 0, breakMode: 'natural' },
             logs: [],
             partialRuns: [],
             peak: { current: null, record: null, history: [], completions: [], extras: [], dailyFocus: [], upStamp: 0 },
@@ -694,6 +743,7 @@
         delete merged.settings.difficulty;
   if (typeof merged.settings.theme !== 'string' || !['matrix','mario','aero','galaxy'].includes(merged.settings.theme)) merged.settings.theme = 'matrix';
   if (typeof merged.settings.simplifyLevel !== 'number' || merged.settings.simplifyLevel < 0 || merged.settings.simplifyLevel > 3) merged.settings.simplifyLevel = 0;
+  if (typeof merged.settings.breakMode !== 'string' || !['natural','easy','medium','hard'].includes(merged.settings.breakMode)) merged.settings.breakMode = 'natural';
         return merged;
     }
 
@@ -842,6 +892,7 @@
         renderTPeakUI();
         renderPlanCard();
         renderStats();
+        syncBreakModeUI();
         saveTimerState();
     }
 
@@ -1747,7 +1798,8 @@ p.upStamp = recent.length;
             record: p.record, tpeak: p.current,
             notes, rate: completionRate7(),
             compLen: (p.completions || []).length,
-            abandLen: (userData.partialRuns || []).length
+            abandLen: (userData.partialRuns || []).length,
+            breakMode: getBreakMode()
         };
         saveUserData();
         return userData.plan;
@@ -1763,7 +1815,7 @@ p.upStamp = recent.length;
         const compLen = (p.completions || []).length;
         const abandLen = (userData.partialRuns || []).length;
         const energyNow = computeEnergy();
-        if (!pl || pl.date !== today || pl.tpeak !== p.current || pl.record !== p.record || pl.energy !== energyNow || pl.compLen !== compLen || pl.abandLen !== abandLen) {
+        if (!pl || pl.date !== today || pl.tpeak !== p.current || pl.record !== p.record || pl.energy !== energyNow || pl.compLen !== compLen || pl.abandLen !== abandLen || pl.breakMode !== getBreakMode()) {
             buildSessionPlan();
             if (pristine && userData.plan && Array.isArray(userData.plan.steps) && userData.plan.steps.length) {
                 // El değmemiş sayaç: yeni planın ilk adımına hizala
@@ -1794,11 +1846,12 @@ p.upStamp = recent.length;
         set('planRecord', p.record == null ? '—' : fmtMin(p.record) + ' ' + t('minUnit'));
         set('planCap', (p.record && p.current) ? '%' + (Math.round(p.current / p.record * 1000) / 10) : '—');
         if (!pl) {
-            set('planModeName', '—'); set('planSteps', '—'); set('planGoal', '—'); set('planNotes', '');
+            set('planModeName', '—'); set('planSteps', '—'); set('planBreakMode', '—'); set('planGoal', '—'); set('planNotes', '');
             return;
         }
         set('planModeName', `~${fmtMin(pl.totalWork || 0)} ${t('minUnit')} (${pl.mult || 2}×T)`);
         set('planSteps', pl.steps.map(s => fmtMin(s.work)).join(' → ') + ' ' + t('minUnit'));
+        set('planBreakMode', t('breakmode_' + (pl.breakMode || 'natural')) + ': ' + pl.steps.map(s => fmtMin(s.break)).join(' → ') + ' ' + t('minUnit'));
         set('planNotes', (pl.notes || []).filter(Boolean).map(n => t('plan_note_' + n) !== ('plan_note_' + n) ? t('plan_note_' + n) : n).join(' • '));
         const goal = userData.profile.dailyGoalMins || 180;
         const today = Math.round((userData.stats.todayWorkMins || 0) * 10) / 10;
@@ -2453,6 +2506,7 @@ try {
   const _g = typeof window !== 'undefined' ? window : globalThis;
   _g.switchTab = switchTab;
   _g.setLang = setLang;
+  _g.setBreakMode = setBreakMode;
   _g.togglePeakTest = togglePeakTest;
   _g.finishPeakTest = finishPeakTest;
   _g.clearTPeak = clearTPeak;

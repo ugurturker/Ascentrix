@@ -1,23 +1,39 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { protocolSteps, computeEnergy } from '../../src/modules/peak.js';
+import { protocolSteps, computeEnergy, BREAK_MODES, getBreakMode } from '../../src/modules/peak.js';
 import { userData } from '../../src/modules/store.js';
 
 describe('peak', () => {
-  it('protocolSteps T=20 için doğru adımları üretir (1.00/0.80/0.65/0.50)', () => {
+  it('protocolSteps T=20 varsayılan (natural %25) adımları üretir', () => {
     const steps = protocolSteps(20);
     expect(steps).toHaveLength(4);
     expect(steps[0].work).toBe(20);
-    expect(steps[0].break).toBeCloseTo(6.5, 1);
+    expect(steps[0].break).toBe(5);
     expect(steps[1].work).toBe(16); // 0.80
+    expect(steps[1].break).toBe(4);
     expect(steps[2].work).toBe(13); // 0.65
+    expect(steps[2].break).toBe(3.5);
     expect(steps[3].work).toBe(10); // 0.50
+    expect(steps[3].break).toBe(3); // 2.5 -> min 3
   });
   it('protocolSteps >4 cap 0.50', () => {
     const steps = protocolSteps(20, 6);
     expect(steps).toHaveLength(6);
     expect(steps[4].work).toBe(10);
     expect(steps[5].work).toBe(10);
-    expect(steps[4].break).toBeCloseTo(3.5, 1);
+    expect(steps[4].break).toBe(3);
+  });
+  it('mola ritimleri oranları uygular (easy/medium/hard)', () => {
+    expect(protocolSteps(20, 4, 'easy').map(s => s.break)).toEqual([8, 6.5, 5, 4]);
+    expect(protocolSteps(20, 4, 'medium').map(s => s.break)).toEqual([4, 3, 3, 3]);
+    expect(protocolSteps(20, 4, 'hard').map(s => s.break)).toEqual([2.5, 2, 2, 2]);
+  });
+  it('natural üst sınırı kırpar (T=90 -> 20 dk)', () => {
+    expect(protocolSteps(90, 4, 'natural')[0].break).toBe(20);
+  });
+  it('geçersiz mod naturale düşer', () => {
+    expect(getBreakMode()).toBe('natural');
+    expect(protocolSteps(20, 4, 'bozuk').map(s => s.break)).toEqual(protocolSteps(20, 4, 'natural').map(s => s.break));
+    expect(BREAK_MODES.natural.ratio).toBe(0.25);
   });
   it('computeEnergy rekor olmadan null döner', () => {
     const origCurrent = userData.peak.current;

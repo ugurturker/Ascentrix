@@ -103,9 +103,21 @@
             </div>
             <div class="plan-mode"><span data-i18n="plan_vol">Oturum hacmi:</span> <strong id="planModeName">—</strong></div>
             <div class="plan-steps" id="planSteps">—</div>
+            <div class="plan-breaks" id="planBreakMode">—</div>
             <div class="plan-goal" id="planGoal">—</div>
             <div class="plan-notes" id="planNotes"></div>
             <button class="btn btn-primary" id="planStartBtn" style="width:100%; margin-top:10px;" onclick="startPlannedSession()" data-i18n="plan_start">Çalışmaya Başla</button>
+        </div>
+
+        <div class="breakmode-card">
+            <div class="plan-title" data-i18n="breakmode_title">MOLA RİTMİ</div>
+            <div class="bm-grid">
+                <button class="bm-btn" data-bmode="natural" onclick="setBreakMode('natural')"><strong data-i18n="breakmode_natural">Doğal Ritim</strong><span>%25</span></button>
+                <button class="bm-btn" data-bmode="easy" onclick="setBreakMode('easy')"><strong data-i18n="breakmode_easy">Kolay</strong><span>%40</span></button>
+                <button class="bm-btn" data-bmode="medium" onclick="setBreakMode('medium')"><strong data-i18n="breakmode_medium">Orta</strong><span>%20</span></button>
+                <button class="bm-btn" data-bmode="hard" onclick="setBreakMode('hard')"><strong data-i18n="breakmode_hard">Zor</strong><span>%12</span></button>
+            </div>
+            <div class="plan-notes" data-i18n="breakmode_sci">Bilimsel varsayılan: odak süresinin %25'i mola.</div>
         </div>
 
         <div class="xp-widget">
