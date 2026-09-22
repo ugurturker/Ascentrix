@@ -10,6 +10,11 @@ describe('utils', () => {
   it('todayStr ISO tarih döner', () => {
     expect(todayStr()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
+  it('todayStr yerel günü döner (UTC değil)', () => {
+    const d = new Date();
+    const local = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    expect(todayStr()).toBe(local);
+  });
   it('avgArr ortalamayı hesaplar', () => {
     expect(avgArr([2,4,6])).toBe(4);
     expect(avgArr([])).toBe(null);

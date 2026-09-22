@@ -115,9 +115,11 @@ export async function enableCloudSync() {
         const isDifferent = JSON.stringify(merged) !== JSON.stringify(userData);
         if (isDifferent) {
           Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
+          // Bayat gün verisi gelmiş olabilir (dünkü sayaç) — ÖNCE reset, sonra UI
+          if (applyDailyResetIfNeeded()) saveUserData();
           try {
               if (typeof window !== 'undefined' && window._legacyUserData) {
-                  Object.keys(merged).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(merged[k])); });
+                  Object.keys(userData).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(userData[k])); });
                   if (window.renderTPeakUI) window.renderTPeakUI();
                   if (window.updateProfileUI) window.updateProfileUI();
                   if (window.renderStats) window.renderStats();
@@ -148,9 +150,11 @@ export async function enableCloudSync() {
         const merged = normalizeUserData(cloudData);
         if (JSON.stringify(merged) === JSON.stringify(userData)) return; // aynı ise atla (kendi push'umuz)
         Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
+        // Bayat gün verisi gelmiş olabilir — ÖNCE reset, sonra legacy/UI
+        if (applyDailyResetIfNeeded()) saveUserData();
         try {
           if (typeof window !== 'undefined' && window._legacyUserData) {
-            Object.keys(merged).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(merged[k])); });
+            Object.keys(userData).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(userData[k])); });
           }
         } catch(_){}
         // Anlık UI yenile — ölü veri görülmez
@@ -202,18 +206,20 @@ export function resetDailyProgress() {
   }
   saveUserData();
 }
-export function checkDailyReset() {
+export function applyDailyResetIfNeeded() {
   const today = todayStr();
-  if (userData.stats.todayDate !== today) {
-    if (userData.stats.lastActiveDate) {
-      const lastDate = new Date(userData.stats.lastActiveDate);
-      const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-      if (lastDate.getTime() < yesterday.getTime()) userData.stats.streakDays = 0;
-    }
-    userData.stats.todayWorkMins = 0;
-    userData.stats.todayDate = today;
-    saveUserData();
+  if (userData.stats.todayDate === today) return false;
+  if (userData.stats.lastActiveDate) {
+    const lastDate = new Date(userData.stats.lastActiveDate);
+    const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+    if (lastDate.getTime() < yesterday.getTime()) userData.stats.streakDays = 0;
   }
+  userData.stats.todayWorkMins = 0;
+  userData.stats.todayDate = today;
+  return true;
+}
+export function checkDailyReset() {
+  if (applyDailyResetIfNeeded()) saveUserData();
 }
 // peak.js spec kütüphanesi için oturum durumu (canlı kod legacy'de kendi değişkenlerini kullanır)
 export const timerState = {

@@ -974,18 +974,18 @@
     }
 
     function checkDailyReset() {
-        const todayStr = new Date().toISOString().split('T')[0];
-        if (userData.stats.todayDate !== todayStr) {
+        const today = todayStr();
+        if (userData.stats.todayDate !== today) {
             if (userData.stats.lastActiveDate) {
                 const lastDate = new Date(userData.stats.lastActiveDate);
-                const yesterday = new Date(todayStr);
+                const yesterday = new Date(today);
                 yesterday.setDate(yesterday.getDate() - 1);
                 if (lastDate.getTime() < yesterday.getTime()) {
                     userData.stats.streakDays = 0;
                 }
             }
             userData.stats.todayWorkMins = 0;
-            userData.stats.todayDate = todayStr;
+            userData.stats.todayDate = today;
             saveUserData();
         }
     }
@@ -1316,10 +1316,10 @@
         bumpDailyFocus(currentStep.work);
         userData.stats.maxStepMins = Math.max(userData.stats.maxStepMins || 0, currentStep.work);
 
-        const todayStr = new Date().toISOString().split('T')[0];
-        if (userData.stats.lastActiveDate !== todayStr) {
+        const today = todayStr();
+        if (userData.stats.lastActiveDate !== today) {
             userData.stats.streakDays++;
-            userData.stats.lastActiveDate = todayStr;
+            userData.stats.lastActiveDate = today;
         }
 
         awardXp(Math.round(currentStep.work));
@@ -1642,10 +1642,10 @@ p.upStamp = recent.length;
     function markActiveDay(t) {
         userData.stats.completedSteps++;
         userData.stats.maxStepMins = Math.max(userData.stats.maxStepMins || 0, t);
-        const todayStr = new Date().toISOString().split('T')[0];
-        if (userData.stats.lastActiveDate !== todayStr) {
+        const today = todayStr();
+        if (userData.stats.lastActiveDate !== today) {
             userData.stats.streakDays++;
-            userData.stats.lastActiveDate = todayStr;
+            userData.stats.lastActiveDate = today;
         }
     }
 
@@ -1710,7 +1710,9 @@ p.upStamp = recent.length;
     // ============ T-PEAK TABANLI ADAPTİF ENERJİ + OTOMATİK PLAN MOTORU ============
     // Döngü: Ölç → Analiz et → Planla → Uygula → Kaydet → Optimize et
     function todayStr() {
-        return new Date().toISOString().split('T')[0];
+        // Yerel gün — UTC değil (00:00–03:00 arası kaymayı önler)
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
 
     function avgArr(a) {
@@ -1931,7 +1933,7 @@ p.upStamp = recent.length;
             const days = [];
             for (let k = 29; k >= 0; k--) {
                 const d = new Date(Date.now() - k * 864e5);
-                days.push(d.toISOString().split('T')[0]);
+                days.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
             }
             const tmap = {};
             userData.peak.history.forEach(r => { tmap[r.date] = r.tpeak; });
