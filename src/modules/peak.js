@@ -106,5 +106,5 @@ function renderPlanCard(){
 export function refreshPlanUI(){
   renderPlanCard();
   const statsTab=document.getElementById('statsTab');
-  if(statsTab && statsTab.classList.contains('active')){ import('./ui.js').then(m=>m.renderStats()); }
+  if(statsTab && statsTab.classList.contains('active')){ try { if (typeof window !== 'undefined' && window.renderStats) window.renderStats(); } catch(_){} }
 }

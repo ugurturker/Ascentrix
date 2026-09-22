@@ -124,6 +124,11 @@ export async function enableCloudSync() {
                   if (window.renderTracker) window.renderTracker();
               }
           } catch(_){}
+          try {
+            localStorage.setItem('ascentrix_theme', merged.settings.theme || 'matrix');
+            localStorage.setItem('ascentrix_simplify', String(merged.settings.simplifyLevel || 0));
+            window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: merged.settings.theme } }));
+          } catch(_){}
           console.log('[Ascentrix] Firestore verisi yüklendi — bellek overwrite');
         }
       } else {
@@ -155,6 +160,9 @@ export async function enableCloudSync() {
           if (window.updateDisplay) window.updateDisplay();
           if (window.renderTracker) window.renderTracker();
           if (window.renderPlanCard) window.renderPlanCard();
+          localStorage.setItem('ascentrix_theme', merged.settings.theme || 'matrix');
+          localStorage.setItem('ascentrix_simplify', String(merged.settings.simplifyLevel || 0));
+          window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: merged.settings.theme } }));
         } catch(_){}
         console.log('[Ascentrix] Real-time pull — UI güncellendi');
       } catch(e) { console.warn('[Ascentrix] onSnapshot hatası:', e?.message); }
@@ -206,31 +214,16 @@ export function checkDailyReset() {
     saveUserData();
   }
 }
-// Timer / session mutable state — single source of truth (oturum persist için localStorage korunuyor, veri değil)
+// peak.js spec kütüphanesi için oturum durumu (canlı kod legacy'de kendi değişkenlerini kullanır)
 export const timerState = {
   currentModeKey: 'ascending',
   stepIndex: 0,
   isBreak: false,
-  timerInterval: null,
   isRunning: false,
   alarmActive: false,
   workStepPending: false,
   breakStepPending: false,
-  alarmMode: null,
-  alarmTimer: null,
   testRunning: false,
-  testSeconds: 0,
-  testInterval: null,
-  suppressPartial: false,
-  endAt: null,
-  testBase: 0,
-  sessionDone: false,
-  extraActive: false,
-  extraSeconds: 0,
-  extraBase: 0,
-  extraInterval: null,
-  fullBreak: false,
-  currentSequence: [],
   totalSeconds: 0,
   secondsLeft: 0,
 };

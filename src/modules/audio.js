@@ -3,7 +3,15 @@ import { userData } from './store.js';
 
 let audioCtx = null;
 
-export function soundEnabled() { return userData.settings.soundEnabled !== false; }
+export function soundEnabled() {
+  // Canlı ayar legacy modülündedir (toggleSound oraya yazar); önce oraya bak
+  try {
+    if (typeof window !== 'undefined' && window._legacyUserData && window._legacyUserData.settings) {
+      return window._legacyUserData.settings.soundEnabled !== false;
+    }
+  } catch(_){}
+  return userData.settings.soundEnabled !== false;
+}
 
 export function ensureAudio() {
   try {
@@ -75,7 +83,6 @@ export function playBadgeSound(){
   if (th==='galaxy') { playTone(300,0,0.12,'sine',0.08); playTone(500,0.12,0.15,'sine',0.07); return; }
   playTone(1567.98,0,0.08,'square',0.07); playTone(2093,0.09,0.14,'square',0.07);
 }
-export function playFlowSound(){ playTone(740,0,0.14,'triangle',0.1); playTone(987.77,0.12,0.3,'triangle',0.1); }
 export function playAlertSound(){
   const th = currentTheme();
   if (th==='mario') { playTone(800,0,0.15,'square',0.12); playTone(600,0.15,0.15,'square',0.12); playTone(800,0.3,0.15,'square',0.12); return; }

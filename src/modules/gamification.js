@@ -57,36 +57,36 @@ export function awardXp(amount) {
   userData.gamification.xp += amount;
   const nowLevel = levelInfoOf();
   saveUserData();
-  // lazy load side effects
+  // lazy load side effects (window globals — canlı kod legacy'dedir)
   import('./audio.js').then(m => {
-    if (nowLevel.level > prevLevel) { m.playLevelUpSound(); setTimeout(() => import('./ui.js').then(u=>u.celebrate('level')), 250); showLevelBanner(nowLevel.level); }
+    if (nowLevel.level > prevLevel) { m.playLevelUpSound(); setTimeout(() => { try { if (window.celebrate) window.celebrate('level'); } catch(_){} }, 250); showLevelBanner(nowLevel.level); }
   });
-  import('./ui.js').then(u => {
-    if (nowLevel.level > prevLevel) { u.showToast(t('toast_levelup', { x: nowLevel.level, y: nowLevel.title }), 'level'); }
-    u.updateGamificationUI();
+  try {
+    if (nowLevel.level > prevLevel && window.showToast) window.showToast(t('toast_levelup', { x: nowLevel.level, y: nowLevel.title }), 'level');
+    if (window.updateGamificationUI) window.updateGamificationUI();
     checkAchievements();
-  });
+  } catch(_){}
 }
 
 export function checkAchievements() {
   let gained = 0;
-  Promise.all([import('./audio.js'), import('./ui.js')]).then(([audio, ui]) => {
+  import('./audio.js').then((audio) => {
     ACHIEVEMENTS.forEach(a => {
       if (userData.gamification.achievements.includes(a.id)) return;
       if (a.unlocked(userData.stats, userData.gamification)) {
         userData.gamification.achievements.push(a.id);
         audio.playBadgeSound();
-        ui.showToast(t('toast_badge', { x: L(a.name), y: a.xp }), 'success');
+        try { if (window.showToast) window.showToast(t('toast_badge', { x: L(a.name), y: a.xp }), 'success'); } catch(_){}
         // awardXp will re-enter; avoid recursion deadlock by direct xp add for badge
         userData.gamification.xp += a.xp;
         saveUserData();
         gained++;
       }
     });
-    if (gained) ui.renderBadges();
+    try { if (gained && window.renderBadges) window.renderBadges(); } catch(_){}
   });
 }
 
 function showLevelBanner(level) {
-  import('./ui.js').then(m=>m.showLevelBanner(level));
+  try { if (window.showLevelBanner) window.showLevelBanner(level); } catch(_){}
 }

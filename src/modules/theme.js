@@ -9,36 +9,23 @@ export const THEMES = {
 };
 
 export function getTheme() {
-  // Firestore öncelikli, fallback localStorage (unauthenticated için)
+  // Açık seçim (userData) öncelikli; varsayılanda localStorage yedeğine düş
+  const t = userData.settings.theme;
+  if (THEMES[t] && t !== 'matrix') return t;
   try {
     const ls = localStorage.getItem('ascentrix_theme');
-    if (ls && THEMES[ls] && (!userData.settings.theme || userData.settings.theme === 'matrix')) {
-      // Eğer userData hala default ve localStorage'da farklı tema varsa, local'i kullan (hızlı)
-      // Ama Firestore yüklendikten sonra userData güncellenecek
-      if (userData.settings.theme === 'matrix' && ls !== 'matrix') {
-        // Sadece ilk yüklemede local'i tercih et, sonra Firestore overwrite eder
-        // Bu check'i atla ve Firestore'u bekle — ama unauth için local gerekli
-        const isAuth = (()=>{ try{ return !!JSON.parse(localStorage.getItem('ascentrix_has_auth')); }catch{return false}})();
-        if (!isAuth) return ls;
-      }
-    }
+    if (ls && THEMES[ls]) return ls;
   } catch(_){}
-  const t = userData.settings.theme;
   return THEMES[t] ? t : 'matrix';
 }
 export function getSimplifyLevel() {
-  try {
-    const ls = localStorage.getItem('ascentrix_simplify');
-    if (ls !== null && !isNaN(Number(ls))) {
-      const v = Number(ls);
-      if (v>=0 && v<=3 && (userData.settings.simplifyLevel === 0 || userData.settings.simplifyLevel === undefined)) {
-        // Unauth fallback
-        return v;
-      }
-    }
-  } catch(_){}
   const v = userData.settings.simplifyLevel;
-  return typeof v === 'number' && v >=0 && v <=3 ? v : 0;
+  if (typeof v === 'number' && v >= 0 && v <= 3 && v !== 0) return v;
+  try {
+    const ls = Number(localStorage.getItem('ascentrix_simplify'));
+    if (ls >= 0 && ls <= 3) return ls;
+  } catch(_){}
+  return 0;
 }
 
 export function applyTheme() {

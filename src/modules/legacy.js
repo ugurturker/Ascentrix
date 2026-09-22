@@ -124,7 +124,6 @@
         plan_cappct: 'Kapasite %',
         plan_vol: 'Oturum hacmi:',
         plan_start: 'Çalışmaya Başla',
-        plan_remeasure: "T-Peak'i Yeniden Ölç",
         plan_goal_done: ' — HEDEF TAMAMLANDI',
         xp_level: 'SEVİYE',
         sound_on: '♪ AÇIK',
@@ -204,9 +203,6 @@
         profile_name_ph: 'Örn: Araştırmacı',
         profile_goal: 'Günlük Hedef (Dakika)',
         profile_save: 'Ayarları Kaydet',
-        profile_export: 'Verileri Dışa Aktar (JSON)',
-        profile_import: 'Dışarıdan Yükle',
-        profile_danger: 'Tüm Verileri ve Geçmişi Sıfırla',
         donate_title: 'PROJEYİ DESTEKLE',
         donate_text: 'Merdiven Odak tamamen ücretsiz ve reklamsızdır; verileriniz yalnızca kendi tarayıcınızda saklanır. Patreon üzerinden yapacağınız küçük bir bağış, yeni özelliklerin geliştirilmesine ve uygulamanın sürdürülmesine doğrudan katkı sağlar. Desteğiniz için teşekkürler.',
         donate_btn: "Patreon'da Destekle",
@@ -223,22 +219,15 @@
         toast_badge: 'Rozet sentezlendi: {x} (+{y} XP)',
         toast_ladder: 'Kod tamamlandı! +{x} XP, +{y} Skor kazandın',
         toast_saved: 'Ayarlar kaydedildi',
-        toast_import_ok: 'Veriler başarıyla içe aktarıldı',
-        toast_import_bad: 'Geçersiz veri formatı',
-        toast_import_err: 'Hata: Dosya okunamadı',
-        toast_cleared: 'Tüm veriler sıfırlandı',
         toast_alarm_off: 'Alarm durduruldu',
         toast_break_ready: "Mola hazır — başlamak için Başlat'a bas",
         toast_work_ready: "Sonraki adım hazır — Başlat'a bas",
-        toast_back: 'Başlangıç adımına dönüldü',
         toast_skip: 'Sonraki adıma geçildi',
         toast_extra_start: 'Ekstra odak başladı — sınırsız',
         toast_extra_saved: 'Ekstra odak kaydedildi: +{x} dk',
         toast_test_run: 'Önce ana oturumu bitir ya da sıfırla',
         toast_test_nostart: 'Önce testi başlat',
         toast_test_short: 'Test çok kısa — en az 5 dakika dene',
-        toast_test_saved: 'Zirve süresi kaydedildi: {x} dk — plan güncellendi',
-        toast_test_record: 'Yeni rekor! T-Peak: {x} dk — referans güncellendi',
         toast_test_record_mola: 'Yeni rekor! T-Peak: {x} dk — Mola 1 ({y} dk) hazır',
         toast_test_mola: "T-Peak: {x} dk — Mola 1 ({y} dk) hazır, Başlat'a bas",
         toast_tpeak_cleared: 'T-Peak temizlendi — ölçüm bekleniyor',
@@ -248,11 +237,9 @@
         toast_next_ready: 'Sıradaki oturum hazır — Çalışmaya Başla',
         toast_record: 'Yeni rekor! T-Peak: {x} dk',
         toast_tpeak_up: 'T-Peak yükseldi: {x} dk',
-        toast_tpeak_down: 'T-Peak güncellendi: {x} dk (sürdürülebilirlik)',
         toast_back_full: 'Tüm oturum en başa alındı',
         confirm_back: 'Oturum tamamen iptal edilip en başa dönülecek. Emin misiniz?',
         confirm_tpeak: 'Güncel T-Peak temizlenecek (rekor ve geçmiş korunur). Emin misin?',
-        confirm_wipe: 'Tüm odak geçmişiniz, istatistikleriniz, seviyeniz ve rozetleriniz silinecek. Emin misiniz?',
         log_session: 'OTURUM {n}',
         log_extra: 'Ekstra Odak',
         log_test: 'T-Peak Testi',
@@ -261,7 +248,6 @@
         reason_reset: 'sıfırlama',
         reason_close: 'kapanış',
         proto_step: 'Oturum {n} ({x} dk)',
-        extra_finish: 'Ekstrayı Bitir',
         toast_fullbreak_ready: "Tam mola hazır — başlamak için Başlat'a bas",
         toast_step_reset: 'Adım baştan başlatıldı',
         toast_break_reset: 'Mola baştan başlatıldı',
@@ -290,7 +276,6 @@
         plan_cappct: 'Capacity %',
         plan_vol: 'Session volume:',
         plan_start: 'Start Working',
-        plan_remeasure: 'Re-measure T-Peak',
         plan_goal_done: ' — GOAL COMPLETED',
         xp_level: 'LEVEL',
         sound_on: '♪ ON',
@@ -370,9 +355,6 @@
         profile_name_ph: 'E.g.: Researcher',
         profile_goal: 'Daily Goal (Minutes)',
         profile_save: 'Save Settings',
-        profile_export: 'Export Data (JSON)',
-        profile_import: 'Import from File',
-        profile_danger: 'Erase All Data and History',
         donate_title: 'SUPPORT THE PROJECT',
         donate_text: 'Staircase Focus is completely free and ad-free; your data stays only in your own browser. A small donation via Patreon directly contributes to new features and keeping the app alive. Thank you for your support.',
         donate_btn: 'Support on Patreon',
@@ -389,22 +371,15 @@
         toast_badge: 'Badge synthesized: {x} (+{y} XP)',
         toast_ladder: 'Cycle complete! +{x} XP, +{y} Score earned',
         toast_saved: 'Settings saved',
-        toast_import_ok: 'Data imported successfully',
-        toast_import_bad: 'Invalid data format',
-        toast_import_err: 'Error: file could not be read',
-        toast_cleared: 'All data has been reset',
         toast_alarm_off: 'Alarm stopped',
         toast_break_ready: "Break ready — press Start to begin",
         toast_work_ready: "Next step ready — press Start",
-        toast_back: 'Returned to start step',
         toast_skip: 'Moved to next step',
         toast_extra_start: 'Extra focus started — unlimited',
         toast_extra_saved: 'Extra focus saved: +{x} min',
         toast_test_run: 'Finish or reset the main session first',
         toast_test_nostart: 'Start the test first',
         toast_test_short: 'Test too short — try at least 5 minutes',
-        toast_test_saved: 'Peak duration saved: {x} min — plan updated',
-        toast_test_record: 'New record! T-Peak: {x} min — reference updated',
         toast_test_record_mola: 'New record! T-Peak: {x} min — Break 1 ({y} min) ready',
         toast_test_mola: "T-Peak: {x} min — Break 1 ({y} min) ready, press Start",
         toast_tpeak_cleared: 'T-Peak cleared — measurement pending',
@@ -414,11 +389,9 @@
         toast_next_ready: 'Next session ready — Start Working',
         toast_record: 'New record! T-Peak: {x} min',
         toast_tpeak_up: 'T-Peak increased: {x} min',
-        toast_tpeak_down: 'T-Peak updated: {x} min (sustainability)',
         toast_back_full: 'Entire session reset to start',
         confirm_back: 'The entire session will be cancelled and reset to start. Are you sure?',
         confirm_tpeak: 'Current T-Peak will be cleared (record and history kept). Are you sure?',
-        confirm_wipe: 'All your focus history, statistics, level and badges will be deleted. Are you sure?',
         log_session: 'SESSION {n}',
         log_extra: 'Extra Focus',
         log_test: 'T-Peak Test',
@@ -427,7 +400,6 @@
         reason_reset: 'reset',
         reason_close: 'tab closed',
         proto_step: 'Session {n} ({x} min)',
-        extra_finish: 'End Extra',
         toast_fullbreak_ready: 'Full break ready — press Start to begin',
         toast_step_reset: 'Step restarted',
         toast_break_reset: 'Break restarted',
@@ -458,7 +430,6 @@
         plan_cappct: 'Kapazität %',
         plan_vol: 'Sitzungsvolumen:',
         plan_start: 'Arbeit starten',
-        plan_remeasure: 'T-Peak erneut messen',
         plan_goal_done: ' — ZIEL ERREICHT',
         xp_level: 'STUFE',
         sound_on: '♪ AN',
@@ -538,9 +509,6 @@
         profile_name_ph: 'Z.B.: Forscher',
         profile_goal: 'Tagesziel (Minuten)',
         profile_save: 'Einstellungen speichern',
-        profile_export: 'Daten exportieren (JSON)',
-        profile_import: 'Aus Datei laden',
-        profile_danger: 'Alle Daten und Verläufe löschen',
         donate_title: 'PROJEKT UNTERSTÜTZEN',
         donate_text: 'Treppenfokus ist völlig kostenlos und werbefrei; deine Daten bleiben nur in deinem eigenen Browser. Eine kleine Spende über Patreon trägt direkt zu neuen Funktionen und zum Erhalt der App bei. Danke für deine Unterstützung.',
         donate_btn: 'Auf Patreon unterstützen',
@@ -557,22 +525,15 @@
         toast_badge: 'Abzeichen synthetisiert: {x} (+{y} XP)',
         toast_ladder: 'Zyklus geschafft! +{x} XP, +{y} Score erhalten',
         toast_saved: 'Einstellungen gespeichert',
-        toast_import_ok: 'Daten erfolgreich importiert',
-        toast_import_bad: 'Ungültiges Datenformat',
-        toast_import_err: 'Fehler: Datei konnte nicht gelesen werden',
-        toast_cleared: 'Alle Daten zurückgesetzt',
         toast_alarm_off: 'Alarm gestoppt',
         toast_break_ready: 'Pause bereit — zum Starten Start drücken',
         toast_work_ready: 'Nächster Schritt bereit — Start drücken',
-        toast_back: 'Zum Startschritt zurückgekehrt',
         toast_skip: 'Zum nächsten Schritt gesprungen',
         toast_extra_start: 'Extra-Fokus gestartet — unbegrenzt',
         toast_extra_saved: 'Extra-Fokus gespeichert: +{x} Min.',
         toast_test_run: 'Erst die Hauptsitzung beenden oder zurücksetzen',
         toast_test_nostart: 'Erst den Test starten',
         toast_test_short: 'Test zu kurz — mindestens 5 Minuten versuchen',
-        toast_test_saved: 'Spitzenzeit gespeichert: {x} Min. — Plan aktualisiert',
-        toast_test_record: 'Neuer Rekord! T-Peak: {x} Min. — Referenz aktualisiert',
         toast_test_record_mola: 'Neuer Rekord! T-Peak: {x} Min. — Pause 1 ({y} Min.) bereit',
         toast_test_mola: 'T-Peak: {x} Min. — Pause 1 ({y} Min.) bereit, Start drücken',
         toast_tpeak_cleared: 'T-Peak gelöscht — Messung ausstehend',
@@ -582,11 +543,9 @@
         toast_next_ready: 'Nächste Sitzung bereit — Arbeit starten',
         toast_record: 'Neuer Rekord! T-Peak: {x} Min.',
         toast_tpeak_up: 'T-Peak gestiegen: {x} Min.',
-        toast_tpeak_down: 'T-Peak aktualisiert: {x} Min. (Nachhaltigkeit)',
         toast_back_full: 'Gesamte Sitzung zurückgesetzt',
         confirm_back: 'Die gesamte Sitzung wird abgebrochen und zurückgesetzt. Sicher?',
         confirm_tpeak: 'Aktueller T-Peak wird gelöscht (Rekord und Verlauf bleiben). Sicher?',
-        confirm_wipe: 'Dein gesamter Fokusverlauf, Statistiken, Stufe und Abzeichen werden gelöscht. Sicher?',
         log_session: 'SITZUNG {n}',
         log_extra: 'Extra-Fokus',
         log_test: 'T-Peak-Test',
@@ -595,7 +554,6 @@
         reason_reset: 'Zurücksetzen',
         reason_close: 'Tab geschlossen',
         proto_step: 'Sitzung {n} ({x} Min.)',
-        extra_finish: 'Extra beenden',
         toast_fullbreak_ready: 'Volle Pause bereit — zum Starten Start drücken',
         toast_step_reset: 'Schritt neu gestartet',
         toast_break_reset: 'Pause neu gestartet',
@@ -2143,12 +2101,6 @@ p.upStamp = recent.length;
         saveTimerState();
     }
 
-    function applyFlowOverride() {
-        if (extraActive) { endExtraFocus(); return; }
-        // [REMOVED] Extend Flow (+11) deleted per spec
-        return;
-    }
-
     function renderStats() {
         const totalHours = (userData.stats.totalWorkSeconds / 3600).toFixed(1);
         document.getElementById('statTotalTime').innerText = `${totalHours} ${t('hourUnit')}`;
@@ -2362,11 +2314,6 @@ p.upStamp = recent.length;
         playTone(1567.98, 0, 0.08, 'square', 0.07);
         playTone(2093, 0.09, 0.14, 'square', 0.07);
     }
-    function playFlowSound() {
-        playTone(740, 0, 0.14, 'triangle', 0.1);
-        playTone(987.77, 0.12, 0.3, 'triangle', 0.1);
-    }
-
     // Genel buton tıklamalarına ses bağla (delegasyon)
     document.addEventListener('click', (e) => {
         if (e.target.closest('button')) playClickSound();
@@ -2473,58 +2420,6 @@ p.upStamp = recent.length;
         showToast(t('toast_saved'), 'success');
     }
 
-    function exportUserData() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(userData));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `merdiven_yedek_${new Date().toISOString().split('T')[0]}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function importUserData(event) {
-        const fileReader = new FileReader();
-        fileReader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData.profile && importedData.stats) {
-                    userData = normalizeUserData(importedData);
-                    saveUserData();
-                    initApp();
-                    showToast(t('toast_import_ok'), 'success');
-                } else {
-                    showToast(t('toast_import_bad'), 'warn');
-                }
-            } catch (err) {
-                showToast(t('toast_import_err'), 'warn');
-            }
-        };
-        fileReader.readAsText(event.target.files[0]);
-    }
-
-    function clearAllData() {
-        if (confirm(t('confirm_wipe'))) {
-            // Sadece Firestore — localStorage yedeği yok
-            try { localStorage.removeItem('ladder_user_data'); } catch(_){}
-            try { localStorage.removeItem('ascentrix_timer_state'); } catch(_){}
-            userData = getDefaultUserData();
-            // Firestore'da da sil
-            import('./store.js').then(m => { try { m.resetAllData(); } catch(_){} }).catch(()=>{});
-            import('./firebase.js').then(async fb => {
-                try {
-                    const { doc, deleteDoc } = await import('firebase/firestore');
-                    if (fb.isFirebaseConfigured && fb.auth?.currentUser && fb.db) {
-                        await deleteDoc(doc(fb.db, 'users', fb.auth.currentUser.uid)).catch(()=>{});
-                    }
-                } catch(_){}
-            }).catch(()=>{});
-            clearTimerState();
-            initApp();
-            showToast(t('toast_cleared'), 'info');
-        }
-    }
-
     function resetDailyProgress() {
         if (!confirm(t('confirm_daily_reset'))) return;
         userData.stats.todayWorkMins = 0;
@@ -2567,11 +2462,7 @@ try {
   _g.backToStart = backToStart;
   _g.resetTimer = resetTimer;
   _g.skipStep = skipStep;
-  _g.applyFlowOverride = applyFlowOverride;
   _g.saveProfileSettings = saveProfileSettings;
-  _g.exportUserData = exportUserData;
-  _g.importUserData = importUserData;
-  _g.clearAllData = clearAllData;
   _g.resetDailyProgress = resetDailyProgress;
   _g.alarmPrimary = alarmPrimary;
   _g.alarmSecondary = alarmSecondary;
