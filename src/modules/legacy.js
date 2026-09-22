@@ -160,6 +160,9 @@
         breakmode_hard: 'Zor',
         breakmode_sci: "Bilimsel varsayılan: odak süresinin %25'i mola — 90 dk ultradian ritim ile 52/17 verimlilik araştırmasının ortak aralığı (%20–30).",
         toast_breakmode: 'Mola ritmi: {x}',
+        ctl_finish: 'Bitir',
+        log_early: ' — Erken bitir',
+        toast_early: 'Erken bitirildi: {x} dk bankalandı',
         xp_level: 'SEVİYE',
         sound_on: '♪ AÇIK',
         sound_off: '♪ KAPALI',
@@ -319,6 +322,9 @@
         breakmode_hard: 'Hard',
         breakmode_sci: 'Science-based default: 25% of focus as break — the shared window of the 90-min ultradian rhythm and the 52/17 productivity study (20–30%).',
         toast_breakmode: 'Break rhythm: {x}',
+        ctl_finish: 'Finish',
+        log_early: ' — Finished early',
+        toast_early: 'Finished early: {x} min banked',
         xp_level: 'LEVEL',
         sound_on: '♪ ON',
         sound_off: '♪ OFF',
@@ -480,6 +486,9 @@
         breakmode_hard: 'Schwer',
         breakmode_sci: 'Wissenschaftlicher Standard: 25 % der Fokuszeit als Pause — Schnittmenge aus 90-Min-Ultradian-Rhythmus und 52/17-Studie (20–30 %).',
         toast_breakmode: 'Pausenrhythmus: {x}',
+        ctl_finish: 'Fertig',
+        log_early: ' — Früh beendet',
+        toast_early: 'Früh beendet: {x} Min. gutgeschrieben',
         xp_level: 'STUFE',
         sound_on: '♪ AN',
         sound_off: '♪ AUS',
@@ -792,6 +801,7 @@
     let extraBase = 0;
     let extraInterval = null;
     let fullBreak = false;
+    let customBreakMins = null; // erken bitirmede orantılı mola süresi (planı bozmaz)
     let currentSequence = (buildSessionPlan() || {}).steps || [];
     if (!currentSequence.length) {
         currentSequence = [
@@ -1096,7 +1106,9 @@
             `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
         const currentStep = currentSequence[stepIndex];
-        const brk = currentStep ? currentStep.break : 0;
+        const brk = (isBreak && !fullBreak && typeof customBreakMins === 'number' && customBreakMins > 0)
+            ? customBreakMins
+            : (currentStep ? currentStep.break : 0);
         document.getElementById('statusDisplay').innerText = isBreak
             ? `${fullBreak ? t('status_fullbreak') : t('status_break')} (${fmtMin(brk)} ${t('minUnit')})`
             : (currentStep ? currentStep.label : t('status_ready'));
@@ -1330,10 +1342,11 @@
         }
     }
 
-    function enterBreakPaused() {
+    function enterBreakPaused(customBreak) {
         const currentStep = currentSequence[stepIndex];
         isBreak = true;
-        totalSeconds = currentStep.break * 60;
+        customBreakMins = (typeof customBreak === 'number' && customBreak > 0) ? customBreak : null;
+        totalSeconds = (customBreakMins != null ? customBreakMins : currentStep.break) * 60;
         secondsLeft = totalSeconds;
         renderTracker();
         updateDisplay();
@@ -1347,6 +1360,7 @@
     function advanceAfterBreak() {
         try {
             isBreak = false;
+            customBreakMins = null;
             stepIndex++;
 
             if (stepIndex >= currentSequence.length) {
@@ -1574,6 +1588,7 @@ p.upStamp = recent.length;
     // Tam mola bitince: otomatik başlatma YOK, sıradaki oturum hazırlanır.
     function finishFullBreak() {
         fullBreak = false;
+        customBreakMins = null;
         stepIndex = 0;
         isBreak = false;
         endAt = null;
@@ -2072,6 +2087,7 @@ p.upStamp = recent.length;
         stopAlarmLoop();
         if (extraActive) { clearInterval(extraInterval); extraActive = false; }
         fullBreak = false;
+        customBreakMins = null;
         if (!suppressPartial) capturePartialRun(t('reason_reset'), false);
         suppressPartial = false;
         endAt = null;
@@ -2154,6 +2170,63 @@ p.upStamp = recent.length;
             saveTimerState();
         }
         saveTimerState();
+    }
+
+    // Erken bitir: geçen süre günlüğe eklenir, sayaç kapanır, orantılı molaya geçilir
+    function finishEarly() {
+        if (alarmActive || workStepPending || breakStepPending || extraActive) return;
+        if (fullBreak) { finishFullBreak(); saveTimerState(); return; }
+        if (isRunning) {
+            if (endAt) {
+                secondsLeft = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+                endAt = null;
+            }
+            clearInterval(timerInterval);
+            isRunning = false;
+            timerDisplay.classList.remove('running');
+        }
+        if (!isBreak) {
+            const elapsedSec = Math.max(0, totalSeconds - secondsLeft);
+            const elapsedMin = Math.round((elapsedSec / 60) * 10) / 10;
+            const plannedW = currentSequence[stepIndex] ? currentSequence[stepIndex].work : 0;
+            if (elapsedMin >= Math.max(1, 0.2 * plannedW)) pullTPeakDown(elapsedMin);
+            // Bankala: saniye sayacı zaten işledi, güne plan dakikası eklenir
+            if (elapsedMin > 0) {
+                userData.stats.todayWorkMins = Math.round((userData.stats.todayWorkMins + elapsedMin) * 10) / 10;
+                bumpDailyFocus(elapsedMin);
+                userData.stats.completedSteps++;
+                userData.stats.maxStepMins = Math.max(userData.stats.maxStepMins || 0, elapsedMin);
+                const today = todayStr();
+                if (userData.stats.lastActiveDate !== today) {
+                    userData.stats.streakDays++;
+                    userData.stats.lastActiveDate = today;
+                }
+                awardXp(Math.round(elapsedMin));
+            }
+            const now = new Date();
+            userData.logs.unshift({
+                timestamp: `${now.toLocaleDateString(logLocale())} ${now.toLocaleTimeString(logLocale(), { hour: '2-digit', minute: '2-digit' })}`,
+                mode: t('log_session', { n: todaySessionsDone() + 1 }),
+                step: currentSequence[stepIndex].label + t('log_early'),
+                duration: `${fmtMin(elapsedMin)} ${t('minUnit')}`
+            });
+            if (userData.logs.length > 50) userData.logs.pop();
+            saveUserData();
+            if (stepIndex >= currentSequence.length - 1) { showSessionBar(false); saveTimerState(); return; }
+            // Mola, odaklanılan süreye göre aynı ritim oranıyla hesaplanır
+            const bm = BREAK_MODES[getBreakMode()] || BREAK_MODES.natural;
+            const breakMin = Math.max(1, Math.round(Math.min(bm.max, Math.max(bm.min, elapsedMin * bm.ratio)) * 2) / 2);
+            enterBreakPaused(breakMin);
+            showToast(t('toast_early', { x: fmtMin(elapsedMin) }), 'success');
+            saveTimerState();
+        } else {
+            if (advanceAfterBreak()) { saveTimerState(); return; }
+            const startBtn = document.getElementById('startBtn');
+            startBtn.innerText = t('timer_start');
+            startBtn.disabled = false;
+            showToast(t('toast_skip'), 'info');
+            saveTimerState();
+        }
     }
 
     function renderStats() {
@@ -2518,6 +2591,7 @@ try {
   _g.backToStart = backToStart;
   _g.resetTimer = resetTimer;
   _g.skipStep = skipStep;
+  _g.finishEarly = finishEarly;
   _g.saveProfileSettings = saveProfileSettings;
   _g.resetDailyProgress = resetDailyProgress;
   _g.alarmPrimary = alarmPrimary;

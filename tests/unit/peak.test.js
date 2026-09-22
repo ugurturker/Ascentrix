@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { protocolSteps, computeEnergy, BREAK_MODES, getBreakMode } from '../../src/modules/peak.js';
+import { protocolSteps, computeEnergy, BREAK_MODES, getBreakMode, proportionalBreak } from '../../src/modules/peak.js';
 import { userData } from '../../src/modules/store.js';
 
 describe('peak', () => {
@@ -29,6 +29,14 @@ describe('peak', () => {
   });
   it('natural üst sınırı kırpar (T=90 -> 20 dk)', () => {
     expect(protocolSteps(90, 4, 'natural')[0].break).toBe(20);
+  });
+  it('proportionalBreak odaklanılan süreye göre oranlar', () => {
+    expect(proportionalBreak(12, 'natural')).toBe(3);
+    expect(proportionalBreak(20, 'natural')).toBe(5);
+    expect(proportionalBreak(12, 'easy')).toBe(5);
+    expect(proportionalBreak(12, 'hard')).toBe(2);
+    expect(proportionalBreak(0, 'natural')).toBe(3);
+    expect(proportionalBreak(200, 'natural')).toBe(20);
   });
   it('geçersiz mod naturale düşer', () => {
     expect(getBreakMode()).toBe('natural');

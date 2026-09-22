@@ -24,6 +24,12 @@ export function getBreakMode() {
   const m = userData.settings.breakMode;
   return BREAK_MODES[m] ? m : 'natural';
 }
+// Erken bitirmede mola: odaklanılan süre × ritim oranı (min/max kıskaçlı, 0.5 yuvarlama)
+export function proportionalBreak(elapsedMin, breakMode) {
+  const bm = BREAK_MODES[breakMode] || BREAK_MODES[getBreakMode()] || BREAK_MODES.natural;
+  const e = Math.max(0, Number(elapsedMin) || 0);
+  return Math.max(1, Math.round(Math.min(bm.max, Math.max(bm.min, e * bm.ratio)) * 2) / 2);
+}
 export function protocolSteps(T, count = 4, breakMode) {
   T = Math.max(5, Math.round(T * 10) / 10);
   const r1 = v => Math.max(1, Math.round(v * 2) / 2);
