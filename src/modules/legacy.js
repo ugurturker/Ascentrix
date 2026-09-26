@@ -2401,26 +2401,93 @@ p.upStamp = recent.length;
         return userData.settings.silentAlarm === true;
     }
 
-    // Sessiz alarm overlay: ses yerine ekranı kaplayan yanıp sönen uyarı
+    // Sessiz alarm overlay: ses yerine en üste zıplayan popup + zorla dikkat
+    let silentTitleTimer = null;
+    let silentVibrateTimer = null;
+    let silentWatchdog = null;
+    let silentPrevTitle = null;
+    function silentAlarmText() {
+        return alarmMode === 'break' ? t('alarm_break_done') : t('alarm_work_done');
+    }
+    function startSilentAttention() {
+        stopSilentAttention();
+        try { silentPrevTitle = document.title; } catch(_) { silentPrevTitle = null; }
+        // Sekme başlığını flaşla — arka plandaki kullanıcı da maruz kalır
+        try {
+            let on = false;
+            silentTitleTimer = setInterval(() => {
+                try {
+                    on = !on;
+                    document.title = (on ? '🔴 ' : '⚪ ') + silentAlarmText();
+                } catch(_){}
+            }, 800);
+        } catch(_){}
+        // Mobilde periyodik titreşim
+        try {
+            if (navigator.vibrate) {
+                const buzz = () => { try { navigator.vibrate([500, 250, 500]); } catch(_){} };
+                buzz();
+                silentVibrateTimer = setInterval(buzz, 5000);
+            }
+        } catch(_){}
+        // Watchdog: overlay bir şekilde kapanırsa alarm sürerken geri getir
+        try {
+            silentWatchdog = setInterval(() => {
+                try {
+                    if (!alarmActive || !isSilentAlarm()) { stopSilentAttention(); return; }
+                    const ov = document.getElementById('silentOverlay');
+                    if (ov && ov.style.display === 'none') {
+                        ov.style.display = 'flex';
+                        ov.setAttribute('aria-hidden', 'false');
+                    }
+                } catch(_){}
+            }, 1500);
+        } catch(_){}
+    }
+    function stopSilentAttention() {
+        try { if (silentTitleTimer) clearInterval(silentTitleTimer); } catch(_){}
+        try { if (silentVibrateTimer) clearInterval(silentVibrateTimer); } catch(_){}
+        try { if (silentWatchdog) clearInterval(silentWatchdog); } catch(_){}
+        silentTitleTimer = null; silentVibrateTimer = null; silentWatchdog = null;
+        try { if (silentPrevTitle != null) document.title = silentPrevTitle; } catch(_){}
+        silentPrevTitle = null;
+    }
     function showSilentOverlay() {
         const ov = document.getElementById('silentOverlay');
         if (!ov) return;
         const title = document.getElementById('silentTitle');
+        const sub = document.getElementById('silentSub');
         const btnA = document.getElementById('silentPrimaryBtn');
         const btnB = document.getElementById('silentSecondaryBtn');
         if (alarmMode === 'break') {
             if (title) title.innerText = t('alarm_break_done');
+            if (sub) sub.innerText = t('status_break_done');
             if (btnA) btnA.innerText = t('alarm_stop');
             if (btnB) btnB.innerText = t('alarm_go_work');
         } else {
             if (title) title.innerText = t('alarm_work_done');
+            if (sub) sub.innerText = t('status_work_done');
             if (btnA) btnA.innerText = t('alarm_stop');
             if (btnB) btnB.innerText = t('alarm_go_break');
         }
         ov.style.display = 'flex';
         ov.setAttribute('aria-hidden', 'false');
+        // Giriş animasyonunu her gösterimde yeniden tetikle (zıplama hissi)
+        try {
+            const card = ov.querySelector('.silent-card');
+            if (card) {
+                card.style.animation = 'none';
+                void card.offsetWidth;
+                card.style.animation = '';
+            }
+        } catch(_){}
+        // Odağı popup'a kilitle + pencereyi öne getirmeye çalış
+        try { if (btnA) btnA.focus({ preventScroll: true }); } catch(_) { try { if (btnA) btnA.focus(); } catch(_){} }
+        try { window.focus(); } catch(_){}
+        startSilentAttention();
     }
     function hideSilentOverlay() {
+        stopSilentAttention();
         const ov = document.getElementById('silentOverlay');
         if (!ov) return;
         ov.style.display = 'none';

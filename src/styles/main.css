@@ -915,27 +915,55 @@
         @keyframes alarmFlashGreen { from { box-shadow: 0 0 8px rgba(0,255,157,0.25); } to { box-shadow: 0 0 26px rgba(0,255,157,0.6); } }
         .alarm-bar.break .alarm-flash { color: var(--break-color); }
 
-        /* Sessiz alarm: ekranı kaplayan yanıp sönen kırmızı uyarı */
+        /* Sessiz alarm: en üstte zıplayan popup + yanıp sönen kırmızı sahne */
         .silent-overlay {
             position: fixed;
             inset: 0;
-            z-index: 3000;
+            z-index: 9999;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 22px;
-            padding: 24px;
-            text-align: center;
-            background: rgba(120, 0, 0, 0.92);
+            padding: 20px;
+            background: rgba(120, 0, 0, 0.9);
             animation: silentFlash 0.7s steps(2) infinite;
         }
         @keyframes silentFlash {
-            0% { background: rgba(190, 0, 0, 0.94); box-shadow: inset 0 0 120px rgba(255, 0, 0, 0.8); }
-            100% { background: rgba(60, 0, 0, 0.96); box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9); }
+            0% { background: rgba(190, 0, 0, 0.93); box-shadow: inset 0 0 140px rgba(255, 0, 0, 0.85); }
+            100% { background: rgba(55, 0, 0, 0.96); box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.9); }
+        }
+        .silent-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            width: min(520px, 94vw);
+            padding: 30px 26px;
+            text-align: center;
+            color: #fff;
+            background: rgba(20, 0, 0, 0.72);
+            border: 3px solid #ff2d2d;
+            border-radius: 22px;
+            box-shadow: 0 0 34px rgba(255, 45, 45, 0.85), 0 0 90px rgba(255, 0, 0, 0.5), inset 0 0 30px rgba(255, 0, 0, 0.18);
+            backdrop-filter: blur(8px);
+            animation: silentPopIn 0.45s cubic-bezier(0.2, 1.6, 0.35, 1) both;
+        }
+        @keyframes silentPopIn {
+            0% { transform: scale(0.6) translateY(40px); opacity: 0; }
+            60% { transform: scale(1.06) translateY(-6px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .silent-icon {
+            font-size: 3rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.8));
+            animation: silentBellShake 0.6s ease-in-out infinite;
+        }
+        @keyframes silentBellShake {
+            0%, 100% { transform: rotate(-12deg); }
+            50% { transform: rotate(12deg); }
         }
         .silent-tag {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 800;
             letter-spacing: 0.2em;
             color: #fff;
@@ -945,20 +973,28 @@
             background: rgba(0, 0, 0, 0.35);
         }
         .silent-title {
-            font-size: clamp(2rem, 9vw, 3.4rem);
+            font-size: clamp(1.8rem, 8vw, 3rem);
             font-weight: 900;
             letter-spacing: 0.08em;
             color: #fff;
             text-shadow: 0 0 18px rgba(255, 255, 255, 0.7), 0 4px 0 rgba(0, 0, 0, 0.45);
             animation: silentTitlePulse 0.7s ease-in-out infinite alternate;
         }
-        @keyframes silentTitlePulse { from { transform: scale(1); } to { transform: scale(1.05); } }
-        .silent-btns { display: flex; gap: 12px; width: min(480px, 92vw); }
+        @keyframes silentTitlePulse { from { transform: scale(1); } to { transform: scale(1.04); } }
+        .silent-sub {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            min-height: 1.2em;
+        }
+        .silent-btns { display: flex; gap: 12px; width: 100%; }
         .silent-btns .btn { flex: 1; font-size: 1rem; padding: 14px 10px; }
         .silent-btns .btn-danger { background: #fff; color: #b00000; border-color: #fff; box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5); }
         .silent-btns .btn-break { background: rgba(0, 0, 0, 0.45); color: #fff; border: 2px solid #fff; }
         body.simplify-3 .silent-overlay { animation: none; background: rgba(120, 0, 0, 0.94); }
-        body.simplify-3 .silent-title { animation: none; }
+        body.simplify-3 .silent-card,
+        body.simplify-3 .silent-title,
+        body.simplify-3 .silent-icon { animation: none; }
 
         /* T_peak Rozeti & Özel Test Paneli */
         .tpeak-badge { text-align: center; font-size: 0.78rem; font-weight: 700; color: var(--break-color); border: 1px solid var(--break-color); border-radius: 10px; padding: 8px 10px; margin-bottom: 14px; background: rgba(0, 255, 157, 0.06); }

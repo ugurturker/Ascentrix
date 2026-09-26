@@ -62,6 +62,10 @@ describe('kapsamlı temizlik — sick/pyramid/flow', () => {
     const css = fs.readFileSync('src/styles/main.css','utf-8');
     expect(css.includes('.silent-overlay')).toBe(true);
     expect(css.includes('silentFlash')).toBe(true);
+    expect(css.includes('.silent-card')).toBe(true);
+    expect(css.includes('silentPopIn')).toBe(true);
+    expect(html.includes('silent-card')).toBe(true);
+    expect(html.includes('silentTitle')).toBe(true);
     const legacy = fs.readFileSync('src/modules/legacy.js','utf-8');
     expect(legacy.includes('showSilentOverlay')).toBe(true);
     expect(legacy.includes('toggleAlarmMode')).toBe(true);
