@@ -128,6 +128,10 @@
         renderStats();
         syncBreakModeUI();
         updateAlarmModeUI();
+        try {
+            const ov = document.getElementById('silentOverlay');
+            if (ov && ov.style.display !== 'none') showSilentOverlay();
+        } catch(_){}
     }
 
     const I18N = {
@@ -877,11 +881,13 @@
                 } catch(_){}
             }
             if (alarmActive) {
-                // Alarm çalıyorsa döngüyü yeniden başlat (sessizde overlay)
+                // Alarm çalıyorsa popup + sesi yeniden başlat
                 try {
-                    if (isSilentAlarm()) showSilentOverlay();
-                    else if (alarmMode === 'break') startBreakAlarmLoop();
-                    else if (alarmMode === 'work') startAlarmLoop();
+                    showSilentOverlay();
+                    if (!isSilentAlarm()) {
+                        if (alarmMode === 'break') startBreakAlarmLoop();
+                        else if (alarmMode === 'work') startAlarmLoop();
+                    }
                 } catch(_){}
             }
             if (extraActive && extraBase) {
@@ -1236,8 +1242,9 @@
         const goBtn = document.getElementById('goBreakBtn');
         goBtn.innerText = t('alarm_go_break');
         goBtn.disabled = true;
-        if (isSilentAlarm()) showSilentOverlay();
-        else startAlarmLoop();
+        // Popup HER modda en öne fırlar; sessizde ses çalmaz
+        showSilentOverlay();
+        if (!isSilentAlarm()) startAlarmLoop();
         if (navigator.vibrate) navigator.vibrate([400, 300, 400, 300, 400]);
     }
 
@@ -1265,8 +1272,9 @@
         const goBtn = document.getElementById('goBreakBtn');
         goBtn.innerText = t('alarm_go_work');
         goBtn.disabled = true;
-        if (isSilentAlarm()) showSilentOverlay();
-        else startBreakAlarmLoop();
+        // Popup HER modda en öne fırlar; sessizde ses çalmaz
+        showSilentOverlay();
+        if (!isSilentAlarm()) startBreakAlarmLoop();
         if (navigator.vibrate) navigator.vibrate([300, 200, 300, 200, 300]);
     }
 
@@ -1458,11 +1466,15 @@
         goBtn.innerText = t('alarm_continue');
         goBtn.disabled = false;
         // ring parametresi artık kullanılmıyor - alarm yok
+        // Seçim ekranı da popup ile en öne fırlar
+        showSilentOverlay();
+        if (navigator.vibrate) navigator.vibrate([300, 200, 300, 200, 300]);
     }
 
     // [Bitir]: oturumu kapat, tam molaya geç.
     function finishSession() {
         stopAlarmLoop();
+        hideSilentOverlay();
         alarmActive = false;
         alarmMode = null;
         container.classList.remove('alarm-mode');
@@ -1479,6 +1491,7 @@
     // [Odaklanmaya Devam Et]: sınırsız ekstra odak. Akış butonu ile bitirilir.
     function continueFocus() {
         stopAlarmLoop();
+        hideSilentOverlay();
         alarmActive = false;
         alarmMode = null;
         container.classList.remove('alarm-mode');
@@ -2457,13 +2470,20 @@ p.upStamp = recent.length;
         if (!ov) return;
         const title = document.getElementById('silentTitle');
         const sub = document.getElementById('silentSub');
+        const tag = document.getElementById('silentTag');
         const btnA = document.getElementById('silentPrimaryBtn');
         const btnB = document.getElementById('silentSecondaryBtn');
+        if (tag) tag.innerText = isSilentAlarm() ? t('alarm_mode_silent') : t('alarm_mode_sound');
         if (alarmMode === 'break') {
             if (title) title.innerText = t('alarm_break_done');
             if (sub) sub.innerText = t('status_break_done');
             if (btnA) btnA.innerText = t('alarm_stop');
             if (btnB) btnB.innerText = t('alarm_go_work');
+        } else if (alarmMode === 'session') {
+            if (title) title.innerText = t('alarm_session_done');
+            if (sub) sub.innerText = t('status_session_done');
+            if (btnA) btnA.innerText = t('alarm_finish');
+            if (btnB) btnB.innerText = t('alarm_continue');
         } else {
             if (title) title.innerText = t('alarm_work_done');
             if (sub) sub.innerText = t('status_work_done');
@@ -2497,13 +2517,11 @@ p.upStamp = recent.length;
         userData.settings.silentAlarm = !isSilentAlarm();
         saveUserData();
         updateAlarmModeUI();
-        // Anlık geçiş: çalan alarm varsa yeni moda geçir
+        // Anlık geçiş: popup zaten her modda görünür, sadece ses açılıp kapatılır
         if (alarmActive && (alarmMode === 'work' || alarmMode === 'break')) {
             if (isSilentAlarm()) {
                 stopAlarmLoop();
-                showSilentOverlay();
             } else {
-                hideSilentOverlay();
                 try {
                     if (alarmMode === 'break') startBreakAlarmLoop();
                     else startAlarmLoop();
@@ -2642,12 +2660,13 @@ p.upStamp = recent.length;
             if (isRunning && secondsLeft <= 0) {
                 handleTimerExpiration();
             } else if (alarmActive) {
-                // Alarm arka plandayken susturulmuş olabilir — geri dönünce tekrar başlat
-                // Sessiz modda ses yok, overlay gösterilir
+                // Alarm arka plandayken susturulmuş olabilir — geri dönünce popup + ses
                 try {
-                    if (isSilentAlarm()) showSilentOverlay();
-                    else if (alarmMode === 'break') startBreakAlarmLoop();
-                    else if (alarmMode === 'work') startAlarmLoop();
+                    showSilentOverlay();
+                    if (!isSilentAlarm()) {
+                        if (alarmMode === 'break') startBreakAlarmLoop();
+                        else if (alarmMode === 'work') startAlarmLoop();
+                    }
                 } catch(_){}
             }
         } else {
