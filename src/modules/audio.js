@@ -12,6 +12,14 @@ export function soundEnabled() {
   } catch(_){}
   return userData.settings.soundEnabled !== false;
 }
+export function isSilentAlarm() {
+  try {
+    if (typeof window !== 'undefined' && window._legacyUserData && window._legacyUserData.settings) {
+      return window._legacyUserData.settings.silentAlarm === true;
+    }
+  } catch(_){}
+  return userData.settings.silentAlarm === true;
+}
 
 export function ensureAudio() {
   try {

@@ -135,6 +135,7 @@
                 </div>
             </div>
             <button class="sound-btn" id="soundBtn" onclick="toggleSound()" title="Ses ayarları">♪ AÇIK</button>
+            <button class="sound-btn" id="alarmModeBtn" onclick="toggleAlarmMode()" title="Alarm modu">🔔 SESLİ</button>
         </div>
 
         <div class="tpeak-badge" id="tpeakBadge" style="display:none;"><span data-i18n="badge_active_a">ZİRVE SÜRESİ AKTİF — T-peak: </span><span id="tpeakBadgeVal">—</span><span data-i18n="badge_active_b"> (günlük plan otomatik güncellenir)</span></div>
@@ -374,6 +375,16 @@
     </div>
 
     <div class="app-footer" data-i18n="footer_copyright">© 2026 CoderS568. Tüm hakları saklıdır. Lisanssız kopyalanamaz ve dağıtılamaz.</div>
+</div>
+
+<!-- Sessiz alarm: ekranı kaplayan yanıp sönen uyarı -->
+<div id="silentOverlay" class="silent-overlay" style="display:none;" aria-hidden="true">
+    <div class="silent-tag">🔕 <span data-i18n="alarm_mode_silent">SESSİZ</span></div>
+    <div class="silent-title" id="silentTitle">OTURUM BİTTİ</div>
+    <div class="silent-btns">
+        <button class="btn btn-danger" id="silentPrimaryBtn" onclick="alarmPrimary()">Alarmı Durdur</button>
+        <button class="btn btn-break" id="silentSecondaryBtn" onclick="alarmSecondary()">Molaya Geç</button>
+    </div>
 </div>
 
 <script type="module" src="/src/main.js"></script>

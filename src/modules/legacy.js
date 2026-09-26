@@ -127,6 +127,7 @@
         renderPlanCard();
         renderStats();
         syncBreakModeUI();
+        updateAlarmModeUI();
     }
 
     const I18N = {
@@ -160,6 +161,9 @@
         breakmode_hard: 'Zor',
         breakmode_sci: "Bilimsel varsayılan: odak süresinin %25'i mola — 90 dk ultradian ritim ile 52/17 verimlilik araştırmasının ortak aralığı (%20–30).",
         toast_breakmode: 'Mola ritmi: {x}',
+        alarm_mode_sound: '🔔 SESLİ',
+        alarm_mode_silent: '🔕 SESSİZ',
+        toast_alarm_mode: 'Alarm modu: {x}',
         ctl_finish: 'Bitir',
         log_early: ' — Erken bitir',
         toast_early: 'Erken bitirildi: {x} dk bankalandı',
@@ -322,6 +326,9 @@
         breakmode_hard: 'Hard',
         breakmode_sci: 'Science-based default: 25% of focus as break — the shared window of the 90-min ultradian rhythm and the 52/17 productivity study (20–30%).',
         toast_breakmode: 'Break rhythm: {x}',
+        alarm_mode_sound: '🔔 SOUND',
+        alarm_mode_silent: '🔕 SILENT',
+        toast_alarm_mode: 'Alarm mode: {x}',
         ctl_finish: 'Finish',
         log_early: ' — Finished early',
         toast_early: 'Finished early: {x} min banked',
@@ -486,6 +493,9 @@
         breakmode_hard: 'Schwer',
         breakmode_sci: 'Wissenschaftlicher Standard: 25 % der Fokuszeit als Pause — Schnittmenge aus 90-Min-Ultradian-Rhythmus und 52/17-Studie (20–30 %).',
         toast_breakmode: 'Pausenrhythmus: {x}',
+        alarm_mode_sound: '🔔 TON AN',
+        alarm_mode_silent: '🔕 STUMM',
+        toast_alarm_mode: 'Alarmmodus: {x}',
         ctl_finish: 'Fertig',
         log_early: ' — Früh beendet',
         toast_early: 'Früh beendet: {x} Min. gutgeschrieben',
@@ -687,7 +697,7 @@
                 todayDate: null, maxStepMins: 0, partialRuns: 0
             },
             gamification: { xp: 0, achievements: [] },
-            settings: { soundEnabled: true, lang: 'tr', theme: 'matrix', simplifyLevel: 0, breakMode: 'natural' },
+            settings: { soundEnabled: true, lang: 'tr', theme: 'matrix', simplifyLevel: 0, breakMode: 'natural', silentAlarm: false },
             logs: [],
             partialRuns: [],
             peak: { current: null, record: null, history: [], completions: [], extras: [], dailyFocus: [], upStamp: 0 },
@@ -753,6 +763,7 @@
   if (typeof merged.settings.theme !== 'string' || !['matrix','mario','aero','galaxy'].includes(merged.settings.theme)) merged.settings.theme = 'matrix';
   if (typeof merged.settings.simplifyLevel !== 'number' || merged.settings.simplifyLevel < 0 || merged.settings.simplifyLevel > 3) merged.settings.simplifyLevel = 0;
   if (typeof merged.settings.breakMode !== 'string' || !['natural','easy','medium','hard'].includes(merged.settings.breakMode)) merged.settings.breakMode = 'natural';
+  if (typeof merged.settings.silentAlarm !== 'boolean') merged.settings.silentAlarm = false;
         return merged;
     }
 
@@ -866,9 +877,10 @@
                 } catch(_){}
             }
             if (alarmActive) {
-                // Alarm çalıyorsa döngüyü yeniden başlat
+                // Alarm çalıyorsa döngüyü yeniden başlat (sessizde overlay)
                 try {
-                    if (alarmMode === 'break') startBreakAlarmLoop();
+                    if (isSilentAlarm()) showSilentOverlay();
+                    else if (alarmMode === 'break') startBreakAlarmLoop();
                     else if (alarmMode === 'work') startAlarmLoop();
                 } catch(_){}
             }
@@ -903,6 +915,7 @@
         renderPlanCard();
         renderStats();
         syncBreakModeUI();
+        updateAlarmModeUI();
         saveTimerState();
     }
 
@@ -1223,7 +1236,8 @@
         const goBtn = document.getElementById('goBreakBtn');
         goBtn.innerText = t('alarm_go_break');
         goBtn.disabled = true;
-        startAlarmLoop();
+        if (isSilentAlarm()) showSilentOverlay();
+        else startAlarmLoop();
         if (navigator.vibrate) navigator.vibrate([400, 300, 400, 300, 400]);
     }
 
@@ -1251,13 +1265,15 @@
         const goBtn = document.getElementById('goBreakBtn');
         goBtn.innerText = t('alarm_go_work');
         goBtn.disabled = true;
-        startBreakAlarmLoop();
+        if (isSilentAlarm()) showSilentOverlay();
+        else startBreakAlarmLoop();
         if (navigator.vibrate) navigator.vibrate([300, 200, 300, 200, 300]);
     }
 
     // 1. Adım: kullanıcı alarmı kendisi durdurur (çalışma ve mola alarmlarında ortak).
     function stopAlarmFlow() {
         stopAlarmLoop();
+        hideSilentOverlay();
         alarmActive = false;
         container.classList.remove('alarm-mode');
         container.classList.remove('alarm-mode-break');
@@ -1290,6 +1306,7 @@
         if (alarmMode !== null && alarmMode !== 'work') return;
         if (!workStepPending && !alarmActive) return;
         stopAlarmLoop();
+        hideSilentOverlay();
         alarmActive = false;
         workStepPending = false;
         alarmMode = null;
@@ -1307,6 +1324,7 @@
         if (alarmMode !== 'break') return;
         if (!breakStepPending && !alarmActive) return;
         stopAlarmLoop();
+        hideSilentOverlay();
         alarmActive = false;
         breakStepPending = false;
         alarmMode = null;
@@ -2048,6 +2066,7 @@ p.upStamp = recent.length;
 
     function resetTimer() {
         // SIFIRLA: yalnızca mevcut faz sayacını başa alır, adım/mola korunur.
+        hideSilentOverlay();
         if (extraActive) {
             extraSeconds = 0;
             extraBase = Date.now();
@@ -2085,6 +2104,7 @@ p.upStamp = recent.length;
     // Tüm oturum tamamen sıfırlanır (Başa Dön için)
     function resetSession() {
         stopAlarmLoop();
+        hideSilentOverlay();
         if (extraActive) { clearInterval(extraInterval); extraActive = false; }
         fullBreak = false;
         customBreakMins = null;
@@ -2377,6 +2397,65 @@ p.upStamp = recent.length;
         return userData.settings.soundEnabled !== false;
     }
 
+    function isSilentAlarm() {
+        return userData.settings.silentAlarm === true;
+    }
+
+    // Sessiz alarm overlay: ses yerine ekranı kaplayan yanıp sönen uyarı
+    function showSilentOverlay() {
+        const ov = document.getElementById('silentOverlay');
+        if (!ov) return;
+        const title = document.getElementById('silentTitle');
+        const btnA = document.getElementById('silentPrimaryBtn');
+        const btnB = document.getElementById('silentSecondaryBtn');
+        if (alarmMode === 'break') {
+            if (title) title.innerText = t('alarm_break_done');
+            if (btnA) btnA.innerText = t('alarm_stop');
+            if (btnB) btnB.innerText = t('alarm_go_work');
+        } else {
+            if (title) title.innerText = t('alarm_work_done');
+            if (btnA) btnA.innerText = t('alarm_stop');
+            if (btnB) btnB.innerText = t('alarm_go_break');
+        }
+        ov.style.display = 'flex';
+        ov.setAttribute('aria-hidden', 'false');
+    }
+    function hideSilentOverlay() {
+        const ov = document.getElementById('silentOverlay');
+        if (!ov) return;
+        ov.style.display = 'none';
+        ov.setAttribute('aria-hidden', 'true');
+    }
+    function toggleAlarmMode() {
+        userData.settings.silentAlarm = !isSilentAlarm();
+        saveUserData();
+        updateAlarmModeUI();
+        // Anlık geçiş: çalan alarm varsa yeni moda geçir
+        if (alarmActive && (alarmMode === 'work' || alarmMode === 'break')) {
+            if (isSilentAlarm()) {
+                stopAlarmLoop();
+                showSilentOverlay();
+            } else {
+                hideSilentOverlay();
+                try {
+                    if (alarmMode === 'break') startBreakAlarmLoop();
+                    else startAlarmLoop();
+                } catch(_){}
+            }
+        }
+        const label = isSilentAlarm() ? t('alarm_mode_silent') : t('alarm_mode_sound');
+        showToast(t('toast_alarm_mode', { x: label }), 'info');
+        try { playClickSound(); } catch(_){}
+    }
+    function updateAlarmModeUI() {
+        const silent = isSilentAlarm();
+        const btn = document.getElementById('alarmModeBtn');
+        if (btn) {
+            btn.innerText = silent ? t('alarm_mode_silent') : t('alarm_mode_sound');
+            btn.classList.toggle('off', silent);
+        }
+    }
+
     function ensureAudio() {
         try {
             if (!audioCtx) {
@@ -2497,8 +2576,10 @@ p.upStamp = recent.length;
                 handleTimerExpiration();
             } else if (alarmActive) {
                 // Alarm arka plandayken susturulmuş olabilir — geri dönünce tekrar başlat
+                // Sessiz modda ses yok, overlay gösterilir
                 try {
-                    if (alarmMode === 'break') startBreakAlarmLoop();
+                    if (isSilentAlarm()) showSilentOverlay();
+                    else if (alarmMode === 'break') startBreakAlarmLoop();
                     else if (alarmMode === 'work') startAlarmLoop();
                 } catch(_){}
             }
@@ -2587,6 +2668,7 @@ try {
   _g.clearTPeak = clearTPeak;
   _g.startPlannedSession = startPlannedSession;
   _g.toggleSound = toggleSound;
+  _g.toggleAlarmMode = toggleAlarmMode;
   _g.toggleTimer = toggleTimer;
   _g.backToStart = backToStart;
   _g.resetTimer = resetTimer;

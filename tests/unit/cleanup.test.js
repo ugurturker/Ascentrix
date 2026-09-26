@@ -53,4 +53,22 @@ describe('kapsamlı temizlik — sick/pyramid/flow', () => {
     expect(legacy.includes('sickPoints')).toBe(false);
     expect(legacy.includes("set('histSick'")).toBe(false);
   });
+
+  it('sessiz alarm öğeleri mevcut', () => {
+    const html = fs.readFileSync('index.html','utf-8');
+    expect(html.includes('id="silentOverlay"')).toBe(true);
+    expect(html.includes('id="alarmModeBtn"')).toBe(true);
+    expect(html.includes('toggleAlarmMode()')).toBe(true);
+    const css = fs.readFileSync('src/styles/main.css','utf-8');
+    expect(css.includes('.silent-overlay')).toBe(true);
+    expect(css.includes('silentFlash')).toBe(true);
+    const legacy = fs.readFileSync('src/modules/legacy.js','utf-8');
+    expect(legacy.includes('showSilentOverlay')).toBe(true);
+    expect(legacy.includes('toggleAlarmMode')).toBe(true);
+    for (const lang of ['tr','en','de']) {
+      expect(I18N[lang].alarm_mode_sound, `${lang}.alarm_mode_sound`).toBeDefined();
+      expect(I18N[lang].alarm_mode_silent, `${lang}.alarm_mode_silent`).toBeDefined();
+      expect(I18N[lang].toast_alarm_mode, `${lang}.toast_alarm_mode`).toBeDefined();
+    }
+  });
 });
