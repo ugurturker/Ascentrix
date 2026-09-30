@@ -1016,7 +1016,9 @@
             userData.stats.todayWorkMins = 0;
             userData.stats.todayDate = today;
             saveUserData();
+            return true;
         }
+        return false;
     }
 
     // ============ OYUNLAŞTIRMA YARDIMCILARI ============
@@ -2657,6 +2659,10 @@ p.upStamp = recent.length;
         }
         if (!document.hidden) {
             try { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); } catch(_){}
+            // Sekme günlerce açık kalabilir — dönüşte günlük reset kaçırılmasın
+            try {
+                if (checkDailyReset()) { renderStats(); renderPlanCard(); updateDisplay(); }
+            } catch(_){}
             if (isRunning && secondsLeft <= 0) {
                 handleTimerExpiration();
             } else if (alarmActive) {
@@ -2736,6 +2742,12 @@ p.upStamp = recent.length;
 
     // Periyodik timer persist — her 1sn ve her etkileşimde
     setInterval(saveTimerState, 1000);
+    // Gece yarısı reset'i kaçırma: sekme günlerce açık kalsa da 30 sn'de bir kontrol
+    setInterval(() => {
+        try {
+            if (checkDailyReset()) { renderStats(); renderPlanCard(); updateDisplay(); }
+        } catch(_){}
+    }, 30000);
     window.addEventListener('beforeunload', () => { try { saveTimerState(); } catch(_){} });
     document.addEventListener('visibilitychange', () => { if (document.hidden) try { saveTimerState(); } catch(_){} });
 
@@ -2765,5 +2777,6 @@ try {
   _g.alarmPrimary = alarmPrimary;
   _g.alarmSecondary = alarmSecondary;
   window._legacyUserData = userData;
+  window.AscentrixIsBusy = () => { try { return !!(isRunning || alarmActive || extraActive || testRunning); } catch(_) { return false; } };
   window.AscentrixStore = { saveUserData: () => { try { import('./store.js').then(m=>m.saveUserData()); } catch(_){} } };
 } catch(e) { console.warn('expose failed', e); }

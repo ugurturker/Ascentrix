@@ -99,6 +99,15 @@ async function cloudSave() {
   } catch (e) { console.warn('[Ascentrix] cloudSave hatası:', e?.message); }
 }
 
+export function resolveSyncData(localData, cloudData, today) {
+  const t = today || todayStr();
+  const cloudStale = !cloudData || !cloudData.stats || cloudData.stats.todayDate !== t;
+  const localFresh = !!(localData && localData.stats && localData.stats.todayDate === t && (localData.stats.todayWorkMins || 0) > 0);
+  // Bayat bulut + taze local → local kazanır (yeni kazanılmış dakikalar ezilmesin)
+  if (cloudStale && localFresh) return { action: 'keep-local' };
+  return { action: 'overwrite' };
+}
+
 export async function enableCloudSync() {
   try {
     const { isFirebaseConfigured, auth, db } = await import('./firebase.js');
@@ -112,28 +121,32 @@ export async function enableCloudSync() {
       const snap = await getDoc(ref);
       if (snap.exists() && snap.data() && snap.data().data) {
         const cloudData = snap.data().data;
-        const merged = normalizeUserData(cloudData);
-        const isDifferent = JSON.stringify(merged) !== JSON.stringify(userData);
-        if (isDifferent) {
-          Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
-          // Bayat gün verisi gelmiş olabilir (dünkü sayaç) — ÖNCE reset, sonra UI
-          if (applyDailyResetIfNeeded()) saveUserData();
-          try {
-              if (typeof window !== 'undefined' && window._legacyUserData) {
-                  Object.keys(userData).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(userData[k])); });
-                  if (window.renderTPeakUI) window.renderTPeakUI();
-                  if (window.updateProfileUI) window.updateProfileUI();
-                  if (window.renderStats) window.renderStats();
-                  if (window.updateDisplay) window.updateDisplay();
-                  if (window.renderTracker) window.renderTracker();
-              }
-          } catch(_){}
-          try {
-            localStorage.setItem('ascentrix_theme', merged.settings.theme || 'matrix');
-            localStorage.setItem('ascentrix_simplify', String(merged.settings.simplifyLevel || 0));
-            window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: merged.settings.theme } }));
-          } catch(_){}
-          console.log('[Ascentrix] Firestore verisi yüklendi — bellek overwrite');
+        if (resolveSyncData(userData, cloudData, todayStr()).action === 'keep-local') {
+          await cloudSave();
+        } else {
+          const merged = normalizeUserData(cloudData);
+          const isDifferent = JSON.stringify(merged) !== JSON.stringify(userData);
+          if (isDifferent) {
+            Object.keys(merged).forEach(k => { userData[k] = merged[k]; });
+            // Bayat gün verisi gelmiş olabilir (dünkü sayaç) — ÖNCE reset, sonra UI
+            if (applyDailyResetIfNeeded()) saveUserData();
+            try {
+                if (typeof window !== 'undefined' && window._legacyUserData) {
+                    Object.keys(userData).forEach(k => { window._legacyUserData[k] = JSON.parse(JSON.stringify(userData[k])); });
+                    if (window.renderTPeakUI) window.renderTPeakUI();
+                    if (window.updateProfileUI) window.updateProfileUI();
+                    if (window.renderStats) window.renderStats();
+                    if (window.updateDisplay) window.updateDisplay();
+                    if (window.renderTracker) window.renderTracker();
+                }
+            } catch(_){}
+            try {
+              localStorage.setItem('ascentrix_theme', merged.settings.theme || 'matrix');
+              localStorage.setItem('ascentrix_simplify', String(merged.settings.simplifyLevel || 0));
+              window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: merged.settings.theme } }));
+            } catch(_){}
+            console.log('[Ascentrix] Firestore verisi yüklendi — bellek overwrite');
+          }
         }
       } else {
         await cloudSave();
@@ -148,6 +161,11 @@ export async function enableCloudSync() {
         // İlk snap zaten getDoc ile işlendi, atla (çift render önle)
         if (isFirstSnap) { isFirstSnap = false; return; }
         const cloudData = snap.data().data;
+        // Bayat sekme push'u taze local'i ezmesin
+        if (resolveSyncData(userData, cloudData, todayStr()).action === 'keep-local') {
+          cloudSave().catch(()=>{});
+          return;
+        }
         const merged = normalizeUserData(cloudData);
         if (JSON.stringify(merged) === JSON.stringify(userData)) return; // aynı ise atla (kendi push'umuz)
         Object.keys(merged).forEach(k => { userData[k] = merged[k]; });

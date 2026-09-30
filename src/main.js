@@ -7,11 +7,57 @@ import { enableCloudSync, disableCloudSync } from './modules/store.js';
 import { applyTheme, getTheme, getSimplifyLevel, setSimplifyLevel } from './modules/theme.js';
 import { initGalaxyBackground } from './modules/galaxyBackground.js';
 import { initAeroBackground } from './modules/aeroBackground.js';
+import { APP_VERSION } from './version.js';
 
 try { applyTheme(); } catch(_){}
 try { setTimeout(()=> initGalaxyBackground(), 400); } catch(_){}
 try { setTimeout(()=> initAeroBackground(), 500); } catch(_){}
-console.log('[Ascentrix] v2.0 — Vite + PWA aktif');
+try {
+  const vEl = document.getElementById('appVersion');
+  if (vEl) vEl.textContent = 'v' + APP_VERSION;
+} catch(_){}
+console.log('[Ascentrix] v' + APP_VERSION + ' — Vite + PWA aktif');
+
+// SW güncellemesi: yeni build yayındaysa kullanıcıyı bilgilendir
+// Odak oturumu sürerken otomatik yenileme YAPILMAZ (veri kaybı olmasın)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    try {
+      navigator.serviceWorker.ready.then(reg => {
+        try { reg.update(); } catch(_){}
+        const watch = (sw) => {
+          if (!sw) return;
+          sw.addEventListener('statechange', () => {
+            if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+              promptSwUpdate();
+            }
+          });
+        };
+        if (reg.waiting) promptSwUpdate();
+        else if (reg.installing) watch(reg.installing);
+        reg.addEventListener('updatefound', () => watch(reg.installing));
+      }).catch(()=>{});
+      let swReloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (swReloaded) return; swReloaded = true;
+        try {
+          const busy = (typeof window.AscentrixIsBusy === 'function') && window.AscentrixIsBusy();
+          if (busy) {
+            if (window.showToast) window.showToast('Yeni sürüm hazır — mola verince sayfayı yenileyin', 'success');
+          } else {
+            if (window.showToast) window.showToast('Yeni sürüm etkin — sayfa yenileniyor', 'success');
+            setTimeout(() => { try { window.location.reload(); } catch(_){} }, 1500);
+          }
+        } catch(_){}
+      });
+    } catch(_){}
+  });
+}
+function promptSwUpdate() {
+  try {
+    if (window.showToast) window.showToast('Yeni sürüm hazır — etkinleşmesi için sayfayı yenileyin', 'success');
+  } catch(_){}
+}
 
 // Firebase Auth UI — matrix terminal style
 function updateAuthUI(user) {

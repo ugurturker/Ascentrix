@@ -1,6 +1,6 @@
 {
   "name": "ascentrix",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Ascentrix - T-Peak tabanlı merdiven odak sistemi (Vite PWA)",
   "type": "module",
   "scripts": {

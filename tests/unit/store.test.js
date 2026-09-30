@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { userData, saveUserData, applyDailyResetIfNeeded } from '../../src/modules/store.js';
+import { userData, saveUserData, applyDailyResetIfNeeded, resolveSyncData } from '../../src/modules/store.js';
 import { todayStr } from '../../src/modules/utils.js';
+
+function dayStr(offsetDays) {
+  const d = new Date();
+  const t = new Date(d.getFullYear(), d.getMonth(), d.getDate() + offsetDays);
+  return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+}
 
 describe('store', () => {
   it('userData varsayılanları yükler', () => {
@@ -24,6 +30,20 @@ describe('store', () => {
     expect(applyDailyResetIfNeeded()).toBe(false);
     userData.stats.todayDate = origDate;
     userData.stats.todayWorkMins = origMins;
+  });
+  it('resolveSyncData: bayat cloud + taze local → keep-local', () => {
+    const local = { stats: { todayDate: todayStr(), todayWorkMins: 76 } };
+    const cloud = { stats: { todayDate: dayStr(-1), todayWorkMins: 68 } };
+    expect(resolveSyncData(local, cloud, todayStr()).action).toBe('keep-local');
+  });
+  it('resolveSyncData: taze cloud → overwrite', () => {
+    const local = { stats: { todayDate: todayStr(), todayWorkMins: 76 } };
+    const cloud = { stats: { todayDate: todayStr(), todayWorkMins: 68 } };
+    expect(resolveSyncData(local, cloud, todayStr()).action).toBe('overwrite');
+  });
+  it('resolveSyncData: bulutsuz + sıfır local → overwrite', () => {
+    const local = { stats: { todayDate: todayStr(), todayWorkMins: 0 } };
+    expect(resolveSyncData(local, null, todayStr()).action).toBe('overwrite');
   });
   it('saveUserData offline yazmaz, sadece Firestore (unauthenticated no-op)', () => {
     userData.profile.name = 'TestUser';
