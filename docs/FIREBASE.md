@@ -53,7 +53,7 @@ npm run dev
     # ... diğerleri
 ```
 
-Alternatif: `.env` olmadan da çalışır — o zaman auth kartı `[SYS_AUTH: OFFLINE]` gösterir ve localStorage fallback ile devam eder (ücretsiz, sorunsuz).
+Alternatif: `.env` olmadan da çalışır — o zaman auth kartı `[SYS_AUTH: OFFLINE]` gösterir ve uygulama bellekte devam eder (ücretsiz, sorunsuz). Ancak kalıcılık yoktur: veri yalnızca açık oturumda tutulur, sekme kapanınca kaybolur. Kalıcı kullanım için `.env` şart.
 
 ## Maliyet
 - Spark (free) 50K MAU, 1GB Firestore — Ascentrix verisi ~10KB/kullanıcı → ~100K kullanıcı free kalır.

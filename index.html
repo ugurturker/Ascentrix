@@ -421,7 +421,7 @@
             </div>
             <button class="btn btn-primary" id="googleSignInBtn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:#1a1a1a;border:1px solid #dadce0;font-weight:700;" onclick="window.AscentrixAuth && window.AscentrixAuth.signInWithGoogle().catch(e=>{ if(window.showToast) window.showToast(e.message,'warn'); })"><span style="font-size:1.1rem;">G</span> Google ile Giriş Yap</button>
             <button class="btn btn-secondary" id="googleSignOutBtn" style="width:100%;display:none;" onclick="window.AscentrixAuth && window.AscentrixAuth.signOutUser().catch(e=>{ if(window.showToast) window.showToast(e.message,'warn'); })">Çıkış Yap</button>
-            <div style="font-size:0.65rem;color:var(--text-muted);text-align:center;margin-top:8px;opacity:0.8;">Giriş yaparsan verilerin Google hesabına bağlı Firestore'da yedeklenir. Yapılandırma yoksa localStorage ile çalışır.</div>
+            <div style="font-size:0.65rem;color:var(--text-muted);text-align:center;margin-top:8px;opacity:0.8;">Giriş yaparsan verilerin Google hesabına bağlı Firestore'da saklanır. Giriş yapmazsan yalnızca bu oturumda tutulur ve sekmeyi kapattığında kaybolur.</div>
         </div>
 
         <!-- Tema Seçici + Sadeleştir -->

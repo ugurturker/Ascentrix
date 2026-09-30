@@ -151,6 +151,50 @@ describe('SEO sayfaları', () => {
   });
 });
 
+describe('Veri modeli metin tutarlılığı', () => {
+  // store.js Firestore-only: giriş yapılmazsa veri oturumla sınırlı.
+  // Kullanıcıya görünen metinlerde "localStorage" veya "sadece tarayıcı" iddiası kalmamalı.
+  const banned = [/localStorage/i, /tarayıcınızda/i, /own browser/i, /eigenen Browser/i];
+
+  it('donate_text üç dilde de Firestore gerçeğini anlatıyor', () => {
+    for (const lang of ['tr', 'en', 'de']) {
+      const text = I18N[lang].donate_text;
+      expect(text, `${lang}.donate_text`).toMatch(/Firestore/);
+      for (const re of banned) expect(text, `${lang}.donate_text: ${re}`).not.toMatch(re);
+    }
+  });
+
+  it('auth kartı notu localStorage fallback vaat etmiyor', () => {
+    const html = read('index.html');
+    expect(html).not.toMatch(/Yapılandırma yoksa localStorage/);
+    expect(html).toMatch(/oturumda tutulur/);
+  });
+
+  it('guest durum mesajı localStorage demiyor', () => {
+    const main = read('src/main.js');
+    expect(main).not.toMatch(/GUEST\].*localStorage/);
+    expect(main).toMatch(/GUEST\]/);
+  });
+
+  it('SEO sayfalarının depolama SSS yanıtı store.js ile uyumlu', () => {
+    for (const { file } of PAGES) {
+      const html = read(file);
+      const faq = jsonLdBlocks(html)[0]['@graph'].find((n) => n['@type'] === 'FAQPage');
+      const storage = faq.mainEntity.find((q) => /stored|gespeichert|saklan/i.test(q.name));
+      expect(storage, `${file} depolama SSS`).toBeDefined();
+      expect(storage.acceptedAnswer.text, `${file} depolama yanıtı`).toMatch(/Firestore/);
+      expect(storage.acceptedAnswer.text, `${file} depolama yanıtı`).toMatch(/session|Sitzung|oturum/);
+    }
+  });
+
+  it('store.js gerçekten localStorage veri yazmıyor', () => {
+    const store = read('src/modules/store.js');
+    expect(store).toContain('Firestore-only');
+    const writes = [...store.matchAll(/localStorage\.setItem\('([^']+)'/g)].map((m) => m[1]);
+    for (const key of writes) expect(['ascentrix_theme', 'ascentrix_simplify']).toContain(key);
+  });
+});
+
 describe('Teknik SEO dosyaları', () => {
   it('robots.txt sitemap’i işaret ediyor', () => {
     const robots = read('public/robots.txt');

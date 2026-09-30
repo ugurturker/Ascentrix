@@ -59,6 +59,15 @@ npm run og:img   # public/og-image*.png yeniden üret
 
 Lint/typecheck yok — projede ESLint, Prettier veya TypeScript bulunmuyor.
 
+## i18n — tek kaynak kuralı
+
+Sözlük yalnızca `src/modules/i18n.js` içinde yaşar. `legacy.js` `import { I18N } from './i18n.js'`
+ile beslenir; **ikinci bir `const I18N = {...}` kopyası legacy.js'e geri eklenmemeli** (2026'da 500
+satırlık kopya vardı, sessizce iki kez düzeltme gerektiriyordu).
+
+`tests/unit/i18n.test.js` şunları zorlar: kopyanın olmaması, `tr`/`en`/`de` anahtar kümesinin
+birebir eşit olması, `index.html`'daki her `data-i18n` anahtarının çözülebilmesi.
+
 ## SEO
 
 - **4 build girdisi:** `index.html`, `seo.html`, `seo.en.html`, `seo.de.html`

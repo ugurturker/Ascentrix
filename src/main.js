@@ -92,7 +92,7 @@ function updateAuthUI(user) {
     if (window.showToast) window.showToast('[SYS_AUTH: CONNECTED]', 'success');
     enableCloudSync().catch(()=>{});
   } else {
-    status.textContent = '[AUTH: GUEST] Giriş yapmadın — localStorage';
+    status.textContent = '[AUTH: GUEST] Giriş yapmadın — oturum';
     status.style.color = '#4fae63';
     signInBtn.style.display = 'flex';
     signOutBtn.style.display = 'none';
