@@ -1,0 +1,8 @@
+# Ascentrix — https://ugurturker.github.io/Ascentrix/
+# Tüm tarayıcılar için serbest.
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://ugurturker.github.io/Ascentrix/sitemap.xml

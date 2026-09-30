@@ -1,0 +1,292 @@
+/* ================================================================
+           SEO / TANITIM SAYFASI — seo.html, seo.en.html, seo.de.html
+           main.css üzerine ek stil katmanı
+           ================================================================ */
+
+        /* Uzun içerikte dikey ortalama üstten başlasın */
+        body.seo-body { align-items: flex-start; padding: 0; }
+
+        .seo-wrap {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 28px 24px 40px;
+        }
+
+        .seo-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .seo-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            color: var(--primary);
+            text-decoration: none;
+            text-shadow: 0 0 12px rgba(0, 255, 65, 0.45);
+        }
+        .seo-brand:hover { text-decoration: none; opacity: 0.82; }
+
+        /* ---------------- HERO ---------------- */
+        .seo-hero { text-align: center; margin-bottom: 34px; }
+
+        .seo-hero .seo-eyebrow {
+            display: inline-block;
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.24em;
+            color: var(--accent);
+            border: 1px solid rgba(0, 255, 204, 0.35);
+            border-radius: 999px;
+            padding: 5px 14px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        .seo-hero h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            letter-spacing: 0.01em;
+        }
+        .seo-hero h1::after { content: none; }
+
+        .seo-hero .seo-lede {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+            max-width: 680px;
+            margin: 0 auto 20px;
+        }
+
+        .seo-hero .seo-lede strong { color: var(--primary); font-weight: 700; }
+
+        .seo-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .seo-actions .btn { width: auto; padding: 13px 26px; font-size: 0.82rem; text-decoration: none; display: inline-block; }
+
+        .seo-badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.66rem;
+            color: var(--text-muted);
+        }
+        .seo-badges span {
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            padding: 4px 12px;
+            background: rgba(0, 22, 11, 0.5);
+        }
+
+        /* ---------------- BÖLÜM ---------------- */
+        .seo-section { margin-bottom: 34px; scroll-margin-top: 18px; }
+
+        .seo-section > h2 {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 6px;
+            text-shadow: 0 0 14px rgba(0, 255, 65, 0.4);
+        }
+        .seo-section > .seo-section-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.6;
+            max-width: 640px;
+            margin: 0 auto 20px;
+        }
+
+        /* ---------------- MERDIVEN ---------------- */
+        .seo-ladder {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            align-items: end;
+        }
+
+        .seo-rung {
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px 14px;
+            background: linear-gradient(180deg, rgba(0, 255, 65, 0.09), rgba(0, 26, 13, 0.5));
+            text-align: center;
+        }
+        .seo-rung .seo-rung-time {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.1;
+            margin-bottom: 4px;
+        }
+        .seo-rung .seo-rung-name {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        .seo-rung p { font-size: 0.72rem; line-height: 1.55; color: var(--text-muted); }
+        .seo-rung:nth-child(1) { border-color: rgba(0, 255, 65, 0.5); }
+        .seo-rung:nth-child(2) { border-color: rgba(0, 255, 65, 0.35); }
+        .seo-rung:nth-child(3) { border-color: rgba(0, 255, 65, 0.22); }
+
+        .seo-note {
+            font-size: 0.72rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 14px;
+            padding: 12px 14px;
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            background: rgba(0, 22, 11, 0.35);
+        }
+        .seo-note strong { color: var(--primary); }
+
+        /* ---------------- ÖZELLIK KARTLARI ---------------- */
+        .seo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(232px, 1fr));
+            gap: 12px;
+        }
+
+        .seo-card {
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px;
+            background: rgba(0, 26, 13, 0.45);
+        }
+        .seo-card h3 {
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+            margin-bottom: 7px;
+        }
+        .seo-card p { font-size: 0.74rem; line-height: 1.6; color: var(--text-muted); }
+        .seo-card .seo-card-ico { font-size: 1.25rem; margin-bottom: 8px; display: block; }
+
+        /* ---------------- MOLA RITIMLERI ---------------- */
+        .seo-rhythm { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+        .seo-rhythm-item {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            background: rgba(0, 26, 13, 0.45);
+        }
+        .seo-rhythm-item .seo-rhythm-pct {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 3px;
+        }
+        .seo-rhythm-item .seo-rhythm-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .seo-rhythm-item .seo-rhythm-for { font-size: 0.62rem; color: var(--text-muted); line-height: 1.5; }
+        .seo-rhythm-item.is-default { border-color: rgba(0, 255, 65, 0.5); background: rgba(0, 255, 65, 0.08); }
+
+        /* ---------------- SSS ---------------- */
+        .seo-faq { display: grid; gap: 10px; }
+
+        .seo-faq details {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: rgba(0, 26, 13, 0.45);
+            overflow: hidden;
+        }
+        .seo-faq summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 14px 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .seo-faq summary::-webkit-details-marker { display: none; }
+        .seo-faq summary::before {
+            content: "+";
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1rem;
+            flex-shrink: 0;
+            width: 14px;
+        }
+        .seo-faq details[open] summary::before { content: "\2212"; }
+        .seo-faq details p {
+            font-size: 0.75rem;
+            line-height: 1.65;
+            color: var(--text-muted);
+            padding: 0 16px 15px 40px;
+        }
+
+        /* ---------------- CTA ---------------- */
+        .seo-cta {
+            border: 1px solid rgba(0, 255, 65, 0.35);
+            border-radius: 16px;
+            padding: 26px 22px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 255, 65, 0.1), rgba(0, 255, 204, 0.05));
+        }
+        .seo-cta h2 { font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .seo-cta p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; max-width: 520px; margin: 0 auto 18px; }
+        .seo-cta .btn { width: auto; padding: 13px 30px; font-size: 0.82rem; text-decoration: none; display: inline-block; }
+
+        /* ---------------- ALT BILGI ---------------- */
+        .seo-footer {
+            margin-top: 30px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+        .seo-footer a { color: var(--accent); text-decoration: none; }
+        .seo-footer a:hover { text-decoration: underline; }
+        .seo-footer-nav { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
+
+        /* ---------------- DUYARLI ---------------- */
+        @media (max-width: 720px) {
+            .seo-wrap { padding: 22px 16px 34px; }
+            .seo-hero h1 { font-size: 1.5rem; }
+            .seo-hero .seo-lede { font-size: 0.84rem; }
+            .seo-ladder { grid-template-columns: 1fr; align-items: stretch; }
+            .seo-rhythm { grid-template-columns: repeat(2, 1fr); }
+            .seo-actions .btn { width: 100%; }
+            .seo-topbar { justify-content: center; }
+        }
+
+        /* Sadeleştirme seviyeleri — dekoratif efektler kapanır */
+        body.simplify-2 .orb, body.simplify-3 .orb,
+        body.simplify-2 .theme-matrix-floor, body.simplify-3 .theme-matrix-floor { display: none; }
+        body.simplify-3 .seo-hero .seo-eyebrow { letter-spacing: 0.12em; }

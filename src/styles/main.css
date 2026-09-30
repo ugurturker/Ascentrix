@@ -1015,6 +1015,10 @@
         .lang-btn.active { background: rgba(0,255,65,0.12); color: var(--primary); border-color: var(--primary); }
         .app-footer { text-align: center; font-size: 0.68rem; color: var(--text-muted); margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--border-color); opacity: 0.85; line-height: 1.5; }
 
+        /* Alt bilgide SEO sayfası bağlantısı */
+        .footer-seo-link { display: block; color: var(--accent); text-decoration: none; font-size: 0.72rem; font-weight: 700; margin-bottom: 6px; }
+        .footer-seo-link:hover { text-decoration: underline; }
+
         /* Terminal enhancements — blinking cursor, glowing accents */
         header h1::after {
             content: "▋";
