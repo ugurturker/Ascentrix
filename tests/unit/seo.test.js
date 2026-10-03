@@ -250,6 +250,25 @@ describe('Veri modeli metin tutarlılığı', () => {
   });
 });
 
+describe('Search Console dogrulama dosyasi', () => {
+  // Vite yalnizca public/ icerigini dist/ kokune kopyalar. Repo kokundeki bir
+  // .html dosyasi hicbir zaman deploy edilmez -> dogrulama 404 doner.
+  it('dogrulama dosyasi public/ altinda', () => {
+    expect(fs.existsSync('public/google46148e0d0999a16c.html')).toBe(true);
+    expect(fs.existsSync('google46148e0d0999a16c.html'), 'kokte kalan kopya 404 verir').toBe(false);
+  });
+
+  it('icerik google-site-verification biciminde', () => {
+    const c = read('public/google46148e0d0999a16c.html').trim();
+    expect(c).toBe('google-site-verification: google46148e0d0999a16c.html');
+  });
+
+  it('build ciktisina kopyalaniyor', () => {
+    if (!fs.existsSync('dist')) return; // build henuz calismadi
+    expect(fs.existsSync('dist/google46148e0d0999a16c.html'), 'dist icinde olmali').toBe(true);
+  });
+});
+
 describe('Teknik SEO dosyaları', () => {
   it('robots.txt sitemap’i işaret ediyor', () => {
     const robots = read('public/robots.txt');
