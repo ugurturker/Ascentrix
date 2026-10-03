@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { I18N } from '../../src/modules/i18n.js';
+import { MULTIPLIERS, protocolSteps } from '../../src/modules/peak.js';
 import fs from 'fs';
 
 const ORIGIN = 'https://ugurturker.github.io/Ascentrix';
@@ -9,6 +10,60 @@ const PAGES = [
   { file: 'seo.de.html', lang: 'de' }
 ];
 const read = (f) => fs.readFileSync(f, 'utf-8');
+
+describe('Merdiven sabitleri kaynak kodla aynı', () => {
+  // peak.js MULTIPLIERS: [1.00 Full, 0.80 Friction, 0.65 Fatigue, 0.50 Descent]
+  // Yayınlanan metin bu diziden türetilir; elle yazılan çarpan kayabilir.
+  const LADDER = '1.00T / 0.80T / 0.65T / 0.50T';
+
+  it('protokolun kendisi 4 basamak ve 0.50 taban', () => {
+    expect(MULTIPLIERS).toEqual([1.00, 0.80, 0.65, 0.50]);
+    expect(protocolSteps(20).map((s) => s.work)).toEqual([20, 16, 13, 10]);
+    // 5. basamak 0.50'de sabitlenir
+    expect(protocolSteps(20, 5)[4].work).toBe(10);
+  });
+
+  it('eski yanlis carpanlar hicbir yerde kalmadi', () => {
+    const files = ['index.html', 'seo.html', 'seo.en.html', 'seo.de.html', 'scripts/generate-og-image.js'];
+    for (const f of files) {
+      const c = read(f);
+      expect(c, `${f} icinde 0.75 olmamali`).not.toContain('0.75T');
+      expect(c, `${f} icinde 0.25T olmamali`).not.toContain('0.25T');
+      expect(c, `${f} icinde 0,75 olmamali`).not.toContain('0,75T');
+    }
+  });
+
+  it('dort basamak uc SEO sayfasinda da gorunuyor', () => {
+    for (const { file } of PAGES) {
+      const html = read(file);
+      const times = [...html.matchAll(/class="seo-rung-time">([\d.]+T)</g)].map((m) => m[1]);
+      expect(times, `${file} basamak sayisi`).toHaveLength(MULTIPLIERS.length);
+      expect(times, `${file} basamaklar`).toEqual(['1.00T', '0.80T', '0.65T', '0.50T']);
+      expect(html, `${file} og:description`).toContain(LADDER);
+      expect(html, `${file} og:image:alt`).toContain(LADDER);
+    }
+  });
+
+  it('index.html ve i18n direct_desc guncel carpanlari kullanıyor', () => {
+    expect(read('index.html')).toContain(LADDER.split(' / ').join(' → '));
+    for (const lang of ['tr', 'en', 'de']) {
+      expect(I18N[lang].direct_desc, `${lang}.direct_desc`).toContain('1.00T');
+      expect(I18N[lang].direct_desc, `${lang}.direct_desc`).toContain('0.50T');
+      expect(I18N[lang].direct_desc, `${lang}.direct_desc`).not.toContain('0.75T');
+    }
+  });
+
+  it('OG gorsel scripti kaynak carpanlari kullanıyor', () => {
+    const script = read('scripts/generate-og-image.js');
+    for (const m of MULTIPLIERS) expect(script, `OG scripti ${m}`).toContain(`${m.toFixed(2)}T`);
+    expect(script).toContain('2.95');
+  });
+
+  it('CSS merdiveni 4 sutun olarak ayarliyor', () => {
+    const css = read('src/styles/seo.css');
+    expect(css).toMatch(/\.seo-ladder\s*\{[^}]*repeat\(4, 1fr\)/);
+  });
+});
 
 function jsonLdBlocks(html) {
   return [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));

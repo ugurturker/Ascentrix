@@ -117,39 +117,42 @@
         }
 
         /* ---------------- MERDIVEN ---------------- */
+        /* 4 basamak: 1.00T / 0.80T / 0.65T / 0.50T — peak.js MULTIPLIERS ile aynı */
         .seo-ladder {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             align-items: end;
         }
 
         .seo-rung {
             border: 1px solid var(--border-color);
             border-radius: 14px;
-            padding: 16px 14px;
+            padding: 14px 10px;
             background: linear-gradient(180deg, rgba(0, 255, 65, 0.09), rgba(0, 26, 13, 0.5));
             text-align: center;
         }
         .seo-rung .seo-rung-time {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: var(--primary);
             line-height: 1.1;
             margin-bottom: 4px;
         }
         .seo-rung .seo-rung-name {
-            font-size: 0.7rem;
+            font-size: 0.66rem;
             font-weight: 800;
-            letter-spacing: 0.14em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
             color: var(--accent);
             margin-bottom: 8px;
         }
-        .seo-rung p { font-size: 0.72rem; line-height: 1.55; color: var(--text-muted); }
+        .seo-rung p { font-size: 0.7rem; line-height: 1.55; color: var(--text-muted); }
+        /* merdiven: yukarıdan aşağı sönümlenen kenarlık */
         .seo-rung:nth-child(1) { border-color: rgba(0, 255, 65, 0.5); }
-        .seo-rung:nth-child(2) { border-color: rgba(0, 255, 65, 0.35); }
-        .seo-rung:nth-child(3) { border-color: rgba(0, 255, 65, 0.22); }
+        .seo-rung:nth-child(2) { border-color: rgba(0, 255, 65, 0.38); }
+        .seo-rung:nth-child(3) { border-color: rgba(0, 255, 65, 0.26); }
+        .seo-rung:nth-child(4) { border-color: rgba(0, 255, 65, 0.16); }
 
         .seo-note {
             font-size: 0.72rem;
@@ -276,11 +279,15 @@
         .seo-footer-nav { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
 
         /* ---------------- DUYARLI ---------------- */
+        @media (max-width: 860px) {
+            .seo-ladder { grid-template-columns: repeat(2, 1fr); align-items: stretch; }
+        }
+
         @media (max-width: 720px) {
             .seo-wrap { padding: 22px 16px 34px; }
             .seo-hero h1 { font-size: 1.5rem; }
             .seo-hero .seo-lede { font-size: 0.84rem; }
-            .seo-ladder { grid-template-columns: 1fr; align-items: stretch; }
+            .seo-ladder { grid-template-columns: 1fr; }
             .seo-rhythm { grid-template-columns: repeat(2, 1fr); }
             .seo-actions .btn { width: 100%; }
             .seo-topbar { justify-content: center; }

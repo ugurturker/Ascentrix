@@ -14,25 +14,32 @@ const LOCALES = {
   de: { file: 'og-image.de.png', tagline: 'T-Peak Fokustimer', sub: 'Personalisiertes Pomodoro · Kostenlos und werbefrei', site: 'ugurturker.github.io/Ascentrix' }
 };
 
+// Ascentrix gerçek protokolü — src/modules/peak.js MULTIPLIERS ile birebir aynı.
+// [1.00 Full, 0.80 Friction, 0.65 Fatigue, 0.50 Descent] — taban 0.50, toplam 2.95×T
 const STEPS = [
-  { label: '0.75T', name: { tr: 'Isınma', en: 'Warm-up', de: 'Aufwärmen' } },
-  { label: '0.50T', name: { tr: 'Derin Odak', en: 'Deep Focus', de: 'Tiefer Fokus' } },
-  { label: '0.25T', name: { tr: 'Sönümlenme', en: 'Decay', de: 'Abklingen' } }
+  { label: '1.00T', name: { tr: 'Tam', en: 'Full', de: 'Voll' } },
+  { label: '0.80T', name: { tr: 'Sürtünme', en: 'Friction', de: 'Reibung' } },
+  { label: '0.65T', name: { tr: 'Yorgunluk', en: 'Fatigue', de: 'Ermüdung' } },
+  { label: '0.50T', name: { tr: 'İniş', en: 'Descent', de: 'Abstieg' } }
 ];
+
+const BOX_W = 240;
+const BOX_GAP = 20;
+const BOX_X0 = Math.round((W - (STEPS.length * BOX_W + (STEPS.length - 1) * BOX_GAP)) / 2);
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const font = (size, weight = 700) => `font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="${size}" font-weight="${weight}"`;
 
 function buildSvg(locale, cfg) {
-  const BASE = 500;
+  const BASE = 512;
   const stepBlocks = STEPS.map((s, i) => {
-    const x = 120 + i * 340;
-    const h = 150 - i * 30;
+    const x = BOX_X0 + i * (BOX_W + BOX_GAP);
+    const h = 156 - i * 22;
     return `
       <g>
-        <rect x="${x}" y="${BASE - h}" width="280" height="${h}" rx="12" fill="rgba(0,255,65,${0.09 + i * 0.07})" stroke="#00ff41" stroke-width="2" stroke-opacity="${0.35 + i * 0.2}"/>
-        <text x="${x + 22}" y="${BASE - 52}" fill="#00ff41" ${font(36, 800)}>${esc(s.label)}</text>
-        <text x="${x + 22}" y="${BASE - 20}" fill="#86efac" ${font(18, 600)}>${esc(s.name[locale])}</text>
+        <rect x="${x}" y="${BASE - h}" width="${BOX_W}" height="${h}" rx="10" fill="rgba(0,255,65,${0.08 + i * 0.06})" stroke="#00ff41" stroke-width="2" stroke-opacity="${0.5 - i * 0.09}"/>
+        <text x="${x + BOX_W / 2}" y="${BASE - 54}" text-anchor="middle" fill="#00ff41" ${font(30, 800)}>${esc(s.label)}</text>
+        <text x="${x + BOX_W / 2}" y="${BASE - 20}" text-anchor="middle" fill="#86efac" ${font(17, 600)}>${esc(s.name[locale])}</text>
       </g>`;
   }).join('');
 
@@ -61,12 +68,12 @@ function buildSvg(locale, cfg) {
   ${gridLines}
   ${rainChars}
   <rect x="40" y="40" width="${W - 80}" height="${H - 80}" rx="26" fill="none" stroke="#00ff41" stroke-opacity="0.22" stroke-width="2"/>
-  <text x="${W / 2}" y="176" text-anchor="middle" fill="#dcfce7" ${font(82, 800)} letter-spacing="4">ASCENTRIX</text>
-  <rect x="${W / 2 - 150}" y="202" width="300" height="3" fill="#00ff41" fill-opacity="0.8"/>
-  <text x="${W / 2}" y="262" text-anchor="middle" fill="#00ff41" ${font(40, 700)}>${esc(cfg.tagline)}</text>
-  <text x="${W / 2}" y="308" text-anchor="middle" fill="#86efac" ${font(22, 500)}>${esc(cfg.sub)}</text>
+  <text x="${W / 2}" y="152" text-anchor="middle" fill="#dcfce7" ${font(78, 800)} letter-spacing="4">ASCENTRIX</text>
+  <rect x="${W / 2 - 150}" y="178" width="300" height="3" fill="#00ff41" fill-opacity="0.8"/>
+  <text x="${W / 2}" y="234" text-anchor="middle" fill="#00ff41" ${font(38, 700)}>${esc(cfg.tagline)}</text>
+  <text x="${W / 2}" y="276" text-anchor="middle" fill="#86efac" ${font(21, 500)}>${esc(cfg.sub)}</text>
   ${stepBlocks}
-  <text x="${W / 2}" y="566" text-anchor="middle" fill="#86efac" fill-opacity="0.75" ${font(18, 500)}>${esc(cfg.site)}</text>
+  <text x="${W / 2}" y="574" text-anchor="middle" fill="#86efac" fill-opacity="0.72" ${font(17, 500)}>${esc(cfg.site)}</text>
 </svg>`;
 }
 
@@ -79,5 +86,5 @@ for (const [locale, cfg] of Object.entries(LOCALES)) {
   console.log('[og] yazildi:', cfg.file, locale);
 }
 
-const rowsTag = { tr: 'Isınma', en: 'Warm-up', de: 'Aufwärmen' };
-console.log('[og] tamam —', Object.values(LOCALES).map((c) => c.file).join(', '), '| adim:', rowsTag.tr);
+const rowsTag = { tr: 'Tam', en: 'Full', de: 'Voll' };
+console.log('[og] tamam —', Object.values(LOCALES).map((c) => c.file).join(', '), '| basamak:', STEPS.map((s) => s.label).join(' / '), '| ilk:', rowsTag.tr);
