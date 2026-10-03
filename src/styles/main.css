@@ -1010,6 +1010,12 @@
         .plan-goal { font-size: 0.82rem; font-weight: 700; text-align: center; color: var(--break-color); margin-bottom: 4px; font-variant-numeric: tabular-nums; }
 
         .lang-bar { display: flex; gap: 6px; justify-content: flex-end; margin-bottom: 12px; }
+
+        /* Üst çubuk: SEO sayfası bağlantısı + dil seçici, ilk ekranda görünür */
+        .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+        .top-bar .lang-bar { margin-bottom: 0; }
+        .about-link { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; color: var(--accent); text-decoration: none; border: 1px solid rgba(0, 255, 204, 0.3); border-radius: 8px; padding: 5px 11px; transition: background 0.2s ease, border-color 0.2s ease; }
+        .about-link:hover { background: rgba(0, 255, 204, 0.09); border-color: var(--accent); text-decoration: none; }
         .lang-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; padding: 5px 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.06em; font-family: inherit; }
         .lang-btn:hover { color: var(--text-main); }
         .lang-btn.active { background: rgba(0,255,65,0.12); color: var(--primary); border-color: var(--primary); }

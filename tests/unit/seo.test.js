@@ -227,4 +227,18 @@ describe('Teknik SEO dosyaları', () => {
     expect(read('index.html')).toContain('data-i18n="footer_about"');
     expect(read('index.html')).toContain('href="/Ascentrix/seo.html"');
   });
+
+  it('SEO sayfasi baglantisi ilk ekranda gorunur (ust cubukta)', () => {
+    const html = read('index.html');
+    // ust cubuk lang-bar ile ayni satirda olmali
+    expect(html).toMatch(/class="top-bar">[\s\S]{0,400}?class="about-link"[\s\S]{0,400}?class="lang-bar"/);
+    expect(html).toMatch(/class="about-link"[^>]*href="\/Ascentrix\/seo\.html"/);
+    expect(html).toContain('data-i18n="nav_about"');
+    for (const lang of ['tr', 'en', 'de']) {
+      expect(I18N[lang].nav_about, `${lang}.nav_about`).toBeDefined();
+    }
+    const css = read('src/styles/main.css');
+    expect(css).toContain('.top-bar');
+    expect(css).toContain('.about-link');
+  });
 });
